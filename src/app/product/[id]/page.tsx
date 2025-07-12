@@ -25,7 +25,7 @@ export default function ProductDetailPage() {
         <Header />
         <Container className="text-center py-20">
           <h1 className="text-2xl font-bold">Product not found</h1>
-          <Button   className="mt-4">
+          <Button className="mt-4">
             <Link href="/">Back to Shop</Link>
           </Button>
         </Container>
@@ -38,7 +38,7 @@ export default function ProductDetailPage() {
       <Header />
       <Container className="py-8">
         <div className="mb-6">
-          <Button  >
+          <Button>
             <Link href="/" className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               Back to all products
@@ -63,6 +63,7 @@ export default function ProductDetailPage() {
               <Badge variant="secondary">{product.storage}</Badge>
               <Badge variant="secondary">{product.color}</Badge>
             </div>
+            fd
             <p className="text-3xl font-bold my-4">${product.price.toLocaleString()}</p>
             <p className="text-muted-foreground leading-relaxed">
               {product.description} Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do

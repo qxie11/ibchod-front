@@ -84,6 +84,21 @@
     "tailwindcss": "^3.4.1",
     "turbo": "^2.5.4",
     "typescript": "^5",
-    "typescript-eslint": "^8.0.0-alpha.44"
+    "typescript-eslint": "^8.0.0-alpha.44",
+    "lint-staged": "^15.2.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css,scss,html}": [
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
