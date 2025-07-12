@@ -3,7 +3,6 @@
 import { ShoppingCart, Trash2, Plus, Minus } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import Image from 'next/image';
-import { Separator } from '@/shared/ui/separator';
 import { Header } from '@/widgets/header';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
@@ -16,6 +15,7 @@ import {
   selectCartTotal,
 } from '@/entities/cart/model/slice';
 import type { CartItem } from '@/entities/product';
+import { Separator } from '@/shared/ui/separator';
 
 export default function CartPage() {
   const dispatch = useAppDispatch();
