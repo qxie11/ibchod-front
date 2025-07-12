@@ -7,6 +7,7 @@ import { Header } from '@/widgets/header';
 import { ProductCard } from '@/entities/product';
 import { ProductFilters } from '@/features/filter-products';
 import Link from 'next/link';
+import { LiquidGlass } from '@/shared/ui/liquid-glass';
 
 const models = Array.from(new Set(mockProducts.map(p => p.model)));
 const storages = Array.from(new Set(mockProducts.map(p => p.storage))).sort((a, b) => parseInt(a) - parseInt(b));
@@ -78,7 +79,10 @@ export default function HomePage() {
       <Header />
       <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <aside className="md:col-span-1 bg-card p-6 rounded-lg shadow-sm h-fit sticky top-24">
+          <LiquidGlass
+            as="aside"
+            className="md:col-span-1 p-6 rounded-lg shadow-sm h-fit sticky top-24"
+          >
              <ProductFilters 
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
@@ -96,7 +100,7 @@ export default function HomePage() {
                 colors={colors}
                 resetFilters={resetFilters}
             />
-          </aside>
+          </LiquidGlass>
           <div className="md:col-span-3">
              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
               {products.map((product) => (
