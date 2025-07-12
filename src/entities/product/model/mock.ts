@@ -6,7 +6,7 @@ export const mockProducts: Product[] = [
     name: 'iPhone 15 Pro',
     description: 'Nejlepší iPhone.',
     price: 29990,
-    image: 'https://placehold.co/600x600/737373/FFFFFF',
+    image: 'https://placehold.co/600x600.png',
     storage: '256GB',
     color: 'Přírodní titan',
     model: 'iPhone 15 Pro'
@@ -16,7 +16,7 @@ export const mockProducts: Product[] = [
     name: 'iPhone 15',
     description: 'Absolutní síla.',
     price: 23990,
-    image: 'https://placehold.co/600x600/3b82f6/FFFFFF',
+    image: 'https://placehold.co/600x600.png',
     storage: '128GB',
     color: 'Modrá',
     model: 'iPhone 15'
@@ -26,7 +26,7 @@ export const mockProducts: Product[] = [
     name: 'iPhone 14',
     description: 'Stále úžasný.',
     price: 20990,
-    image: 'https://placehold.co/600x600/a855f7/FFFFFF',
+    image: 'https://placehold.co/600x600.png',
     storage: '128GB',
     color: 'Fialová',
     model: 'iPhone 14'
@@ -36,7 +36,7 @@ export const mockProducts: Product[] = [
     name: 'iPhone SE',
     description: 'Pořádný výkon. Pořádná hodnota.',
     price: 12990,
-    image: 'https://placehold.co/600x600/1e293b/FFFFFF',
+    image: 'https://placehold.co/600x600.png',
     storage: '64GB',
     color: 'Půlnoční',
     model: 'iPhone SE'
@@ -46,7 +46,7 @@ export const mockProducts: Product[] = [
     name: 'iPhone 15 Pro Max',
     description: 'Nejlepší iPhone, jen větší.',
     price: 35990,
-    image: 'https://placehold.co/600x600/f5f5f5/000000',
+    image: 'https://placehold.co/600x600.png',
     storage: '512GB',
     color: 'Bílý titan',
     model: 'iPhone 15 Pro Max'
@@ -56,7 +56,7 @@ export const mockProducts: Product[] = [
     name: 'iPhone 15 Plus',
     description: 'Absolutní síla, jen větší.',
     price: 26990,
-    image: 'https://placehold.co/600x600/4ade80/FFFFFF',
+    image: 'https://placehold.co/600x600.png',
     storage: '256GB',
     color: 'Zelená',
     model: 'iPhone 15 Plus'
