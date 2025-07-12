@@ -6,12 +6,16 @@ export default {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/widgets/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/features/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/entities/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/shared/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        body: ['"Readex Pro"', 'sans-serif'],
+        headline: ['"Readex Pro"', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
