@@ -12,6 +12,7 @@ import {
 import { Button } from '@/shared/ui/button';
 import { Search } from 'lucide-react';
 import { mockProducts } from '@/entities/product';
+import type { Product } from '@/entities/product';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
@@ -22,7 +23,7 @@ export function SearchDialog() {
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (
-        (e.key === 'k' || e.key === 'K' || e.key === 'л' || e.key === 'Л') &&
+        (e.key === 'k' || e.key === 'K') &&
         (e.metaKey || e.ctrlKey)
       ) {
         e.preventDefault();
@@ -46,17 +47,17 @@ export function SearchDialog() {
         onClick={() => setOpen(true)}
       >
         <Search className="h-4 w-4 mr-2" />
-        Hledat...
+        Search...
         <kbd className="pointer-events-none ml-4 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 md:flex">
           <span className="text-xs">⌘</span>K
         </kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Napište název produktu..." />
+        <CommandInput placeholder="Type a product name..." />
         <CommandList>
-          <CommandEmpty>Nebyly nalezeny žádné výsledky.</CommandEmpty>
-          <CommandGroup heading="Produkty">
-            {mockProducts.map((product) => (
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="Products">
+            {mockProducts.map((product: Product) => (
               <CommandItem
                 key={product.id}
                 onSelect={() => handleSelect(product.id)}

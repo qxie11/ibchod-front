@@ -19,7 +19,7 @@ import {
   selectCartItems,
   selectCartCount,
   selectCartTotal,
-} from '@/entities/cart/model/slice';
+} from '@/entities/cart';
 import type { CartItem } from '@/entities/product';
 import { Separator } from '@/shared/ui/separator';
 
@@ -33,7 +33,7 @@ export default function CartPage() {
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold mb-6">Váš košík</h1>
+        <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
         {cartItems.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-4">
@@ -54,7 +54,7 @@ export default function CartPage() {
                       {item.storage} - {item.color}
                     </p>
                     <p className="font-medium mt-2">
-                      {item.price.toLocaleString()} Kč
+                      ${item.price.toLocaleString()}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 mx-4">
@@ -93,7 +93,7 @@ export default function CartPage() {
                     </Button>
                   </div>
                   <div className="font-bold w-24 text-right">
-                    {(item.price * item.quantity).toLocaleString()} Kč
+                    ${(item.price * item.quantity).toLocaleString()}
                   </div>
                   <Button
                     variant="ghost"
@@ -109,26 +109,26 @@ export default function CartPage() {
             <div className="lg:col-span-1">
               <Card>
                 <CardHeader>
-                  <CardTitle>Souhrn objednávky</CardTitle>
+                  <CardTitle>Order Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex justify-between">
-                    <span>Mezisoučet ({cartCount} položek)</span>
-                    <span>{cartTotal.toLocaleString()} Kč</span>
+                    <span>Subtotal ({cartCount} items)</span>
+                    <span>${cartTotal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Doprava</span>
-                    <span>Zdarma</span>
+                    <span>Shipping</span>
+                    <span>Free</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between font-bold text-lg">
-                    <span>Celkem</span>
-                    <span>{cartTotal.toLocaleString()} Kč</span>
+                    <span>Total</span>
+                    <span>${cartTotal.toLocaleString()}</span>
                   </div>
                 </CardContent>
                 <CardFooter>
                   <Button className="w-full" size="lg">
-                    Pokračovat k pokladně
+                    Proceed to Checkout
                   </Button>
                 </CardFooter>
               </Card>
@@ -137,12 +137,12 @@ export default function CartPage() {
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center text-center border-2 border-dashed rounded-lg py-20">
             <ShoppingCart className="h-16 w-16 text-muted-foreground/50" />
-            <h3 className="mt-4 text-xl font-semibold">Váš košík je prázdný</h3>
+            <h3 className="mt-4 text-xl font-semibold">Your cart is empty</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Přidejte si nějaké iPhony, abyste mohli začít.
+              Add some iPhones to get started.
             </p>
             <Button asChild>
-              <Link href="/">Zpět do obchodu</Link>
+              <Link href="/">Back to Shop</Link>
             </Button>
           </div>
         )}

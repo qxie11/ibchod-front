@@ -47,19 +47,19 @@ export function ProductFilters({
 }: ProductFiltersProps) {
   return (
     <>
-      <h2 className="text-xl font-semibold mb-4">Filtry</h2>
+      <h2 className="text-xl font-semibold mb-4">Filters</h2>
       <div className="space-y-6">
         <div>
-          <label className="text-sm font-medium">Hledat</label>
+          <label className="text-sm font-medium">Search</label>
           <Input
-            placeholder="Hledat iPhony..."
+            placeholder="Search iPhones..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <div>
           <label htmlFor="price" className="text-sm font-medium">
-            Cena
+            Price
           </label>
           <Slider
             id="price"
@@ -71,8 +71,8 @@ export function ProductFilters({
             className="mt-2"
           />
           <div className="flex justify-between text-sm text-muted-foreground mt-1">
-            <span>{priceRange[0]} Kč</span>
-            <span>{priceRange[1]} Kč</span>
+            <span>${priceRange[0]}</span>
+            <span>${priceRange[1]}</span>
           </div>
         </div>
         <div>
@@ -82,7 +82,7 @@ export function ProductFilters({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Všechny modely</SelectItem>
+              <SelectItem value="all">All Models</SelectItem>
               {models.map((m) => (
                 <SelectItem key={m} value={m}>
                   {m}
@@ -92,13 +92,13 @@ export function ProductFilters({
           </Select>
         </div>
         <div>
-          <label className="text-sm font-medium">Úložiště</label>
+          <label className="text-sm font-medium">Storage</label>
           <Select value={selectedStorage} onValueChange={setSelectedStorage}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Všechna úložiště</SelectItem>
+              <SelectItem value="all">All Storages</SelectItem>
               {storages.map((s) => (
                 <SelectItem key={s} value={s}>
                   {s}
@@ -108,13 +108,13 @@ export function ProductFilters({
           </Select>
         </div>
         <div>
-          <label className="text-sm font-medium">Barva</label>
+          <label className="text-sm font-medium">Color</label>
           <Select value={selectedColor} onValueChange={setSelectedColor}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Všechny barvy</SelectItem>
+              <SelectItem value="all">All Colors</SelectItem>
               {colors.map((c) => (
                 <SelectItem key={c} value={c}>
                   {c}
@@ -124,7 +124,7 @@ export function ProductFilters({
           </Select>
         </div>
         <Button onClick={resetFilters} variant="outline" className="w-full">
-          Resetovat filtry
+          Reset Filters
         </Button>
       </div>
     </>

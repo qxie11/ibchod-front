@@ -44,7 +44,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </p>
         </div>
         <div className="flex items-center justify-between mt-4">
-          <p className="text-xl font-bold">{product.price} Kč</p>
+          <p className="text-xl font-bold">${product.price}</p>
           <AddToCartButton product={product} />
         </div>
       </CardContent>

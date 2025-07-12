@@ -42,8 +42,8 @@ export const cartSlice = createSlice({
         state.items.push({ ...product, quantity: 1 });
       }
       toast({
-        title: 'Přidáno do košíku',
-        description: `${product.name} je nyní ve vašem košíku.`,
+        title: 'Added to cart',
+        description: `${product.name} is now in your cart.`,
       });
       localStorage.setItem('cart', JSON.stringify(state.items));
     },
@@ -51,9 +51,9 @@ export const cartSlice = createSlice({
       const productId = action.payload;
       state.items = state.items.filter((item) => item.id !== productId);
       toast({
-        title: 'Odebráno z košíku',
+        title: 'Removed from cart',
         variant: 'destructive',
-        description: `Položka byla odebrána z vašeho košíku.`,
+        description: `Item was removed from your cart.`,
       });
       localStorage.setItem('cart', JSON.stringify(state.items));
     },
@@ -65,9 +65,9 @@ export const cartSlice = createSlice({
       if (quantity <= 0) {
         state.items = state.items.filter((item) => item.id !== productId);
         toast({
-          title: 'Odebráno z košíku',
+          title: 'Removed from cart',
           variant: 'destructive',
-          description: `Položka byla odebrána z vašeho košíku.`,
+          description: `Item was removed from your cart.`,
         });
       } else {
         const item = state.items.find((item) => item.id === productId);

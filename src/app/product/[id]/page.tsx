@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { mockProducts } from '@/entities/product/model/mock';
+import { mockProducts } from '@/entities/product';
 import { Header } from '@/widgets/header';
 import { AddToCartButton } from '@/features/add-to-cart';
 import Image from 'next/image';
@@ -11,9 +11,7 @@ import Link from 'next/link';
 import { Button } from '@/shared/ui/button';
 
 export default function ProductDetailPage() {
-  const params = useParams<{
-    id?: string;
-  }>();
+  const params = useParams<{ id?: string }>();
   const id = params?.id;
 
   const product = mockProducts.find((p) => p.id === id);
@@ -23,9 +21,9 @@ export default function ProductDetailPage() {
       <>
         <Header />
         <div className="container mx-auto text-center py-20">
-          <h1 className="text-2xl font-bold">Produkt nenalezen</h1>
+          <h1 className="text-2xl font-bold">Product not found</h1>
           <Button asChild className="mt-4">
-            <Link href="/">Zpět na hlavní stranu</Link>
+            <Link href="/">Back to Shop</Link>
           </Button>
         </div>
       </>
@@ -40,7 +38,7 @@ export default function ProductDetailPage() {
           <Button variant="outline" asChild>
             <Link href="/" className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
-              Zpět na všechny produkty
+              Back to all products
             </Link>
           </Button>
         </div>
@@ -65,7 +63,7 @@ export default function ProductDetailPage() {
               <Badge variant="secondary">{product.color}</Badge>
             </div>
             <p className="text-3xl font-bold my-4">
-              {product.price.toLocaleString()} Kč
+              ${product.price.toLocaleString()}
             </p>
             <p className="text-muted-foreground leading-relaxed">
               {product.description} Lorem ipsum dolor sit amet, consectetur

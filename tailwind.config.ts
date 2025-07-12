@@ -14,8 +14,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['"Readex Pro"', 'sans-serif'],
-        headline: ['"Readex Pro"', 'sans-serif'],
+        sans: ['var(--font-inter)', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
+        headline: ['Inter', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

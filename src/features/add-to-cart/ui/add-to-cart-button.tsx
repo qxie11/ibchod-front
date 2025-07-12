@@ -32,7 +32,7 @@ export const AddToCartButton = ({
       className={className}
       onClick={handleAddToCart}
     >
-      Přidat do košíku
+      Add to Cart
     </Button>
   );
 };

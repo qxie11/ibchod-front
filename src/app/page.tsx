@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { mockProducts } from '@/entities/product/model/mock';
-import type { Product } from '@/entities/product/model/types';
+import { mockProducts } from '@/entities/product';
+import type { Product } from '@/entities/product';
 import { Header } from '@/widgets/header';
 import { ProductCard } from '@/entities/product';
 import { ProductFilters } from '@/features/filter-products';
 import Link from 'next/link';
-import { LiquidGlass } from '@/shared/ui/liquid-glass';
 
 const models = Array.from(new Set(mockProducts.map((p) => p.model)));
 const storages = Array.from(new Set(mockProducts.map((p) => p.storage))).sort(
@@ -83,10 +82,7 @@ export default function HomePage() {
       <Header />
       <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <LiquidGlass
-            as="aside"
-            className="md:col-span-1 p-6 rounded-lg shadow-sm h-fit sticky top-24"
-          >
+          <aside className="md:col-span-1 p-6 rounded-lg shadow-sm h-fit sticky top-24 bg-card">
             <ProductFilters
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -104,7 +100,7 @@ export default function HomePage() {
               colors={colors}
               resetFilters={resetFilters}
             />
-          </LiquidGlass>
+          </aside>
           <div className="md:col-span-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
               {products.map((product) => (
@@ -116,10 +112,10 @@ export default function HomePage() {
             {products.length === 0 && (
               <div className="text-center py-20 col-span-full">
                 <h2 className="text-2xl font-semibold text-foreground">
-                  Nebyly nalezeny žádné produkty
+                  No products found
                 </h2>
                 <p className="text-muted-foreground mt-2">
-                  Zkuste upravit podmínky vyhledávání.
+                  Try adjusting your search filters.
                 </p>
               </div>
             )}
