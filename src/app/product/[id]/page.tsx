@@ -1,14 +1,17 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-import { mockProducts } from '@/entities/product';
-import { Header } from '@/widgets/header';
-import { AddToCartButton } from '@/features/add-to-cart';
-import Image from 'next/image';
-import { Badge } from '@/shared/ui/badge';
 import { ArrowLeft } from 'lucide-react';
+
+import Image from 'next/image';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
+
+import { mockProducts } from '@/entities/product';
+import { AddToCartButton } from '@/features/add-to-cart';
+import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
+import Container from '@/shared/ui/container';
+import { Header } from '@/widgets/header';
 
 export default function ProductDetailPage() {
   const params = useParams<{ id?: string }>();
@@ -20,12 +23,12 @@ export default function ProductDetailPage() {
     return (
       <>
         <Header />
-        <div className="container mx-auto text-center py-20">
+        <Container className="text-center py-20">
           <h1 className="text-2xl font-bold">Product not found</h1>
-          <Button asChild className="mt-4">
+          <Button   className="mt-4">
             <Link href="/">Back to Shop</Link>
           </Button>
-        </div>
+        </Container>
       </>
     );
   }
@@ -33,9 +36,9 @@ export default function ProductDetailPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <Container className="py-8">
         <div className="mb-6">
-          <Button variant="outline" asChild>
+          <Button  >
             <Link href="/" className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               Back to all products
@@ -55,27 +58,21 @@ export default function ProductDetailPage() {
             </div>
           </div>
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">
-              {product.name}
-            </h1>
+            <h1 className="text-4xl font-bold tracking-tight">{product.name}</h1>
             <div className="mt-2 flex items-center gap-2">
               <Badge variant="secondary">{product.storage}</Badge>
               <Badge variant="secondary">{product.color}</Badge>
             </div>
-            <p className="text-3xl font-bold my-4">
-              ${product.price.toLocaleString()}
-            </p>
+            <p className="text-3xl font-bold my-4">${product.price.toLocaleString()}</p>
             <p className="text-muted-foreground leading-relaxed">
-              {product.description} Lorem ipsum dolor sit amet, consectetur
-              adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-              exercitation ullamco laboris nisi ut aliquip ex ea commodo
-              consequat.
+              {product.description} Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
             </p>
-            <AddToCartButton product={product} size="lg" className="mt-6" />
+            <AddToCartButton product={product} className="mt-6" />
           </div>
         </div>
-      </main>
+      </Container>
     </div>
   );
 }

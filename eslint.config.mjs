@@ -1,17 +1,16 @@
 import js from '@eslint/js';
 import nextPlugin from '@next/eslint-plugin-next';
+import prettierConfig from 'eslint-config-prettier';
 import prettierPlugin from 'eslint-plugin-prettier';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
-import prettierConfig from 'eslint-config-prettier';
 
 export default tseslint.config(
   {
     ignores: [
       'node_modules/**',
-      'slices/**',
       '.next/**',
       'build/**',
       'dist/**',
@@ -22,7 +21,6 @@ export default tseslint.config(
       'next.config.ts',
       'tailwind.config.js',
       'postcss.config.js',
-      'src/shared/**',
     ],
   },
   {
@@ -70,6 +68,14 @@ export default tseslint.config(
       'prettier/prettier': 'error',
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
+      'no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {

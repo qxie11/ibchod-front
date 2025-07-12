@@ -1,27 +1,24 @@
 'use client';
 
-import { ShoppingCart, Trash2, Plus, Minus } from 'lucide-react';
-import { Button } from '@/shared/ui/button';
+import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
+
 import Image from 'next/image';
-import { Header } from '@/widgets/header';
 import Link from 'next/link';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '@/shared/ui/card';
-import { useAppDispatch, useAppSelector } from '@/shared/lib/hooks';
+
 import {
   removeFromCart,
-  updateQuantity,
-  selectCartItems,
   selectCartCount,
+  selectCartItems,
   selectCartTotal,
+  updateQuantity,
 } from '@/entities/cart';
 import type { CartItem } from '@/entities/product';
+import { useAppDispatch, useAppSelector } from '@/shared/lib/hooks';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
+import Container from '@/shared/ui/container';
 import { Separator } from '@/shared/ui/separator';
+import { Header } from '@/widgets/header';
 
 export default function CartPage() {
   const dispatch = useAppDispatch();
@@ -32,7 +29,7 @@ export default function CartPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <Container className="flex-1 py-8">
         <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
         {cartItems.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -53,14 +50,11 @@ export default function CartPage() {
                     <p className="text-sm text-muted-foreground">
                       {item.storage} - {item.color}
                     </p>
-                    <p className="font-medium mt-2">
-                      ${item.price.toLocaleString()}
-                    </p>
+                    <p className="font-medium mt-2">${item.price.toLocaleString()}</p>
                   </div>
                   <div className="flex items-center gap-2 mx-4">
                     <Button
-                      variant="outline"
-                      size="icon"
+
                       className="h-8 w-8"
                       onClick={() =>
                         dispatch(
@@ -73,12 +67,9 @@ export default function CartPage() {
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
-                    <span className="w-8 text-center font-medium">
-                      {item.quantity}
-                    </span>
+                    <span className="w-8 text-center font-medium">{item.quantity}</span>
                     <Button
-                      variant="outline"
-                      size="icon"
+                      
                       className="h-8 w-8"
                       onClick={() =>
                         dispatch(
@@ -97,7 +88,7 @@ export default function CartPage() {
                   </div>
                   <Button
                     variant="ghost"
-                    size="icon"
+                    
                     className="ml-4"
                     onClick={() => dispatch(removeFromCart(item.id))}
                   >
@@ -127,7 +118,7 @@ export default function CartPage() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full" size="lg">
+                  <Button className="w-full" >
                     Proceed to Checkout
                   </Button>
                 </CardFooter>
@@ -138,15 +129,13 @@ export default function CartPage() {
           <div className="flex flex-1 flex-col items-center justify-center text-center border-2 border-dashed rounded-lg py-20">
             <ShoppingCart className="h-16 w-16 text-muted-foreground/50" />
             <h3 className="mt-4 text-xl font-semibold">Your cart is empty</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Add some iPhones to get started.
-            </p>
-            <Button asChild>
+            <p className="text-sm text-muted-foreground mb-4">Add some iPhones to get started.</p>
+            <Button>
               <Link href="/">Back to Shop</Link>
             </Button>
           </div>
         )}
-      </main>
+      </Container>
     </div>
   );
 }

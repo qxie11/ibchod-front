@@ -1,9 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { Card, CardContent, CardHeader } from '@/shared/ui/card';
-import type { Product } from '../model/types';
+
 import { AddToCartButton } from '@/features/add-to-cart';
+import { Card, CardContent, CardHeader } from '@/shared/ui/card';
+
+import type { Product } from '../model/types';
 
 interface ProductCardProps {
   product: Product;
@@ -39,13 +41,11 @@ export function ProductCard({ product }: ProductCardProps) {
           <p className="text-sm text-muted-foreground mt-1">
             {product.storage} - {product.color}
           </p>
-          <p className="text-sm text-muted-foreground mt-1 h-10">
-            {product.description}
-          </p>
+          <p className="text-sm text-muted-foreground mt-1 h-10">{product.description}</p>
         </div>
         <div className="flex items-center justify-between mt-4">
           <p className="text-xl font-bold">${product.price}</p>
-          <AddToCartButton product={product} />
+          <AddToCartButton size="small" product={product} />
         </div>
       </CardContent>
     </Card>

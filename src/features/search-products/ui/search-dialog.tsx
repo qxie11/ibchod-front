@@ -1,31 +1,38 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { Search } from 'lucide-react';
+import { isMacOs, isWindows } from 'react-device-detect';
+
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
+import { mockProducts } from '@/entities/product';
+import type { Product } from '@/entities/product';
+import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/button';
 import {
   CommandDialog,
   CommandEmpty,
-  CommandInput,
-  CommandList,
-  CommandItem,
   CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
 } from '@/shared/ui/command';
-import { Button } from '@/shared/ui/button';
-import { Search } from 'lucide-react';
-import { mockProducts } from '@/entities/product';
-import type { Product } from '@/entities/product';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 
 export function SearchDialog() {
   const [open, setOpen] = useState(false);
+  const [showHotkey, setShowHotkey] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    setShowHotkey(true);
+  }, []);
+
+  useLayoutEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (
-        (e.key === 'k' || e.key === 'K') &&
-        (e.metaKey || e.ctrlKey)
-      ) {
+      if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen((open) => !open);
       }
@@ -39,17 +46,26 @@ export function SearchDialog() {
     setOpen(false);
   };
 
+  console.log({ isMacOs });
+
   return (
     <>
       <Button
-        variant="outline"
-        className="text-muted-foreground w-full justify-start md:w-auto"
+        variant="ghost"
+        className="text-muted-foreground hover:text-muted-foreground hover:shadow-2xl w-full md:w-auto flex justify-center items-center bg-input hover:bg-input py-3"
         onClick={() => setOpen(true)}
       >
         <Search className="h-4 w-4 mr-2" />
         Search...
-        <kbd className="pointer-events-none ml-4 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 md:flex">
-          <span className="text-xs">⌘</span>K
+        <kbd
+          className={cn(
+            'pointer-events-none ml-4 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 md:flex',
+            {
+              hidden: !showHotkey,
+            }
+          )}
+        >
+          <span className="text-xs">{isWindows ? 'Ctrl' : '⌘'}</span>K
         </kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>

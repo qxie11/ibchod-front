@@ -1,29 +1,25 @@
 'use client';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/ui/select';
-import { Slider } from '@/shared/ui/slider';
-import { Input } from '@/shared/ui/input';
+
 import { Button } from '@/shared/ui/button';
+import FormField from '@/shared/ui/form-field';
+import { Input } from '@/shared/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { Slider } from '@/shared/ui/slider';
 
 interface ProductFiltersProps {
   searchQuery: string;
-  setSearchQuery: (query: string) => void;
+  setSearchQuery: (_query: string) => void;
   priceRange: number[];
-  setPriceRange: (range: number[]) => void;
+  setPriceRange: (_range: number[]) => void;
   maxPrice: number;
   selectedModel: string;
-  setSelectedModel: (model: string) => void;
+  setSelectedModel: (_model: string) => void;
   models: string[];
   selectedStorage: string;
-  setSelectedStorage: (storage: string) => void;
+  setSelectedStorage: (_storage: string) => void;
   storages: string[];
   selectedColor: string;
-  setSelectedColor: (color: string) => void;
+  setSelectedColor: (_color: string) => void;
   colors: string[];
   resetFilters: () => void;
 }
@@ -50,12 +46,17 @@ export function ProductFilters({
       <h2 className="text-xl font-semibold mb-4">Filters</h2>
       <div className="space-y-6">
         <div>
-          <label className="text-sm font-medium">Search</label>
-          <Input
-            placeholder="Search iPhones..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          <FormField
+            className="mb-4"
+            label="🍏 Search"
+          >
+            <Input
+              className='py-2'
+              placeholder="IPhone 16 Pro Max..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </FormField>
         </div>
         <div>
           <label htmlFor="price" className="text-sm font-medium">
@@ -123,7 +124,7 @@ export function ProductFilters({
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={resetFilters} variant="outline" className="w-full">
+        <Button onClick={resetFilters} className="w-full">
           Reset Filters
         </Button>
       </div>

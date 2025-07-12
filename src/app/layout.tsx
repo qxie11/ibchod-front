@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
-import './globals.css';
-import { Toaster } from '@/shared/ui/toaster';
-import { StoreProvider } from '@/app/StoreProvider';
-import { Inter } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+import { Readex_Pro } from 'next/font/google';
+
+import { StoreProvider } from '@/app/StoreProvider';
+import { Toaster } from '@/shared/ui/toaster';
+
+import './globals.css';
+
+const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex' });
 
 export const metadata: Metadata = {
   title: 'iStore Minimal',
@@ -17,20 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="font-sans antialiased">
+    <html lang="en" className={readex.variable}>
+      <body className="font-sans">
         <StoreProvider>
           {children}
           <Toaster />

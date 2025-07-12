@@ -1,9 +1,10 @@
 'use client';
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from '@/shared/lib/store';
-import type { Product, CartItem } from '@/entities/product/model/types';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+
+import type { CartItem, Product } from '@/entities/product/model/types';
 import { toast } from '@/shared/hooks/use-toast';
+import type { RootState } from '@/shared/lib/store';
 
 interface CartState {
   items: CartItem[];
@@ -57,10 +58,7 @@ export const cartSlice = createSlice({
       });
       localStorage.setItem('cart', JSON.stringify(state.items));
     },
-    updateQuantity: (
-      state,
-      action: PayloadAction<{ productId: string; quantity: number }>
-    ) => {
+    updateQuantity: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
       const { productId, quantity } = action.payload;
       if (quantity <= 0) {
         state.items = state.items.filter((item) => item.id !== productId);
@@ -84,16 +82,12 @@ export const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart } =
-  cartSlice.actions;
+export const { addToCart, removeFromCart, updateQuantity, clearCart } = cartSlice.actions;
 
 export const selectCartItems = (state: RootState) => state.cart.items;
 export const selectCartCount = (state: RootState) =>
   state.cart.items.reduce((count, item) => count + item.quantity, 0);
 export const selectCartTotal = (state: RootState) =>
-  state.cart.items.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  state.cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
 
 export default cartSlice.reducer;

@@ -1,20 +1,24 @@
 'use client';
 
-import { Button } from '@/shared/ui/button';
-import { useAppDispatch } from '@/shared/lib/hooks';
+import { HTMLAttributes } from 'react';
+
 import { addToCart } from '@/entities/cart/model/slice';
 import type { Product } from '@/entities/product';
+import { useAppDispatch } from '@/shared/lib/hooks';
+import { Button, ButtonSize, ButtonVariant } from '@/shared/ui/button';
 
-interface AddToCartButtonProps {
+interface AddToCartButtonProps extends HTMLAttributes<HTMLButtonElement> {
   product: Product;
   className?: string;
-  size?: 'default' | 'sm' | 'lg' | 'icon' | null | undefined;
+  size?: ButtonSize;
+  variant?: ButtonVariant;
 }
 
 export const AddToCartButton = ({
   product,
   className,
-  size = 'default',
+  size = 'medium',
+  ...rest
 }: AddToCartButtonProps) => {
   const dispatch = useAppDispatch();
 
@@ -27,11 +31,7 @@ export const AddToCartButton = ({
   };
 
   return (
-    <Button
-      size={size || 'default'}
-      className={className}
-      onClick={handleAddToCart}
-    >
+    <Button size={size} className={className} onClick={handleAddToCart} {...rest}>
       Add to Cart
     </Button>
   );

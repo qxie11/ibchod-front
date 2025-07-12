@@ -1,11 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { ShoppingCart } from 'lucide-react';
-import { Button } from '@/shared/ui/button';
-import { useAppSelector } from '@/shared/lib/hooks';
-import { selectCartCount } from '@/entities/cart/model/slice';
+
+import { useEffect, useState } from 'react';
+
 import Link from 'next/link';
+
+import { selectCartCount } from '@/entities/cart/model/slice';
+import { useAppSelector } from '@/shared/lib/hooks';
+import { Button } from '@/shared/ui/button';
 
 export function CartButton() {
   const cartCount = useAppSelector(selectCartCount);
@@ -16,12 +19,12 @@ export function CartButton() {
   }, []);
 
   return (
-    <Button variant="outline" size="icon" className="relative" asChild>
+    <Button size="medium" className="relative">
       <Link href="/cart">
         <ShoppingCart className="h-5 w-5" />
         <span className="sr-only">Otevřít košík</span>
         {isClient && cartCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+          <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-primary-foreground">
             {cartCount}
           </span>
         )}
