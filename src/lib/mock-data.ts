@@ -1,0 +1,58 @@
+import type { Product } from '@/types';
+
+export const mockProducts: Product[] = [
+  {
+    id: '1',
+    name: 'iPhone 15 Pro',
+    description: 'The ultimate iPhone.',
+    price: 999,
+    image: 'https://placehold.co/600x600',
+    storage: '256GB',
+    color: 'Natural Titanium',
+  },
+  {
+    id: '2',
+    name: 'iPhone 15',
+    description: 'A total powerhouse.',
+    price: 799,
+    image: 'https://placehold.co/600x600',
+    storage: '128GB',
+    color: 'Blue',
+  },
+  {
+    id: '3',
+    name: 'iPhone 14',
+    description: 'As amazing as ever.',
+    price: 699,
+    image: 'https://placehold.co/600x600',
+    storage: '128GB',
+    color: 'Purple',
+  },
+  {
+    id: '4',
+    name: 'iPhone SE',
+    description: 'Serious power. Serious value.',
+    price: 429,
+    image: 'https://placehold.co/600x600',
+    storage: '64GB',
+    color: 'Midnight',
+  },
+  {
+    id: '5',
+    name: 'iPhone 15 Pro Max',
+    description: 'The ultimate iPhone, but bigger.',
+    price: 1199,
+    image: 'https://placehold.co/600x600',
+    storage: '512GB',
+    color: 'White Titanium',
+  },
+    {
+    id: '6',
+    name: 'iPhone 15 Plus',
+    description: 'A total powerhouse, but bigger.',
+    price: 899,
+    image: 'https://placehold.co/600x600',
+    storage: '256GB',
+    color: 'Green',
+  },
+];
