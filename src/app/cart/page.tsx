@@ -5,7 +5,13 @@ import { Button } from '@/shared/ui/button';
 import Image from 'next/image';
 import { Header } from '@/widgets/header';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from '@/shared/ui/card';
 import { useAppDispatch, useAppSelector } from '@/shared/lib/hooks';
 import {
   removeFromCart,
@@ -56,23 +62,39 @@ export default function CartPage() {
                       variant="outline"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => dispatch(updateQuantity({ productId: item.id, quantity: item.quantity - 1 }))}
+                      onClick={() =>
+                        dispatch(
+                          updateQuantity({
+                            productId: item.id,
+                            quantity: item.quantity - 1,
+                          })
+                        )
+                      }
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
-                    <span className="w-8 text-center font-medium">{item.quantity}</span>
+                    <span className="w-8 text-center font-medium">
+                      {item.quantity}
+                    </span>
                     <Button
                       variant="outline"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => dispatch(updateQuantity({ productId: item.id, quantity: item.quantity + 1 }))}
+                      onClick={() =>
+                        dispatch(
+                          updateQuantity({
+                            productId: item.id,
+                            quantity: item.quantity + 1,
+                          })
+                        )
+                      }
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
-                   <div className="font-bold w-24 text-right">
-                      {(item.price * item.quantity).toLocaleString()} Kč
-                   </div>
+                  <div className="font-bold w-24 text-right">
+                    {(item.price * item.quantity).toLocaleString()} Kč
+                  </div>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -94,7 +116,7 @@ export default function CartPage() {
                     <span>Mezisoučet ({cartCount} položek)</span>
                     <span>{cartTotal.toLocaleString()} Kč</span>
                   </div>
-                   <div className="flex justify-between">
+                  <div className="flex justify-between">
                     <span>Doprava</span>
                     <span>Zdarma</span>
                   </div>
@@ -120,7 +142,7 @@ export default function CartPage() {
               Přidejte si nějaké iPhony, abyste mohli začít.
             </p>
             <Button asChild>
-                <Link href="/">Zpět do obchodu</Link>
+              <Link href="/">Zpět do obchodu</Link>
             </Button>
           </div>
         )}

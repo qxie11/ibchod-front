@@ -7,11 +7,12 @@ import {
   CommandInput,
   CommandList,
   CommandItem,
-  CommandGroup
+  CommandGroup,
 } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
-import { mockProducts } from '@/lib/mock-data';
+import { mockProducts } from '@/entities/product';
+import type { Product } from '@/entities/product';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
@@ -21,7 +22,10 @@ export default function SearchDialog() {
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if ((e.key === 'k' || e.key === 'K' || e.key === 'л' || e.key === 'Л') && (e.metaKey || e.ctrlKey)) {
+      if (
+        (e.key === 'k' || e.key === 'K' || e.key === 'л' || e.key === 'Л') &&
+        (e.metaKey || e.ctrlKey)
+      ) {
         e.preventDefault();
         setOpen((open) => !open);
       }
@@ -29,11 +33,11 @@ export default function SearchDialog() {
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
   }, []);
-  
+
   const handleSelect = (productId: string) => {
     router.push(`/product/${productId}`);
     setOpen(false);
-  }
+  };
 
   return (
     <>
@@ -53,18 +57,24 @@ export default function SearchDialog() {
         <CommandList>
           <CommandEmpty>Nebyly nalezeny žádné výsledky.</CommandEmpty>
           <CommandGroup heading="Produkty">
-            {mockProducts.map((product) => (
-                <CommandItem key={product.id} onSelect={() => handleSelect(product.id)} value={product.name}>
-                    <div className="relative h-8 w-8 mr-4 flex-shrink-0 overflow-hidden rounded-md border">
-                       <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        style={{ objectFit: 'cover' }}
-                       />
-                    </div>
-                    <span>{product.name} - {product.storage} - {product.color}</span>
-                </CommandItem>
+            {mockProducts.map((product: Product) => (
+              <CommandItem
+                key={product.id}
+                onSelect={() => handleSelect(product.id)}
+                value={product.name}
+              >
+                <div className="relative h-8 w-8 mr-4 flex-shrink-0 overflow-hidden rounded-md border">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                </div>
+                <span>
+                  {product.name} - {product.storage} - {product.color}
+                </span>
+              </CommandItem>
             ))}
           </CommandGroup>
         </CommandList>

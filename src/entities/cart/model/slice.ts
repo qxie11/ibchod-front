@@ -19,14 +19,13 @@ const getInitialState = (): CartState => {
           return { items: parsedCart };
         }
       } catch (error) {
-        console.error("Failed to parse cart from localStorage", error);
+        console.error('Failed to parse cart from localStorage', error);
         return { items: [] };
       }
     }
   }
   return { items: [] };
 };
-
 
 const initialState: CartState = getInitialState();
 
@@ -43,7 +42,7 @@ export const cartSlice = createSlice({
         state.items.push({ ...product, quantity: 1 });
       }
       toast({
-        title: "Přidáno do košíku",
+        title: 'Přidáno do košíku',
         description: `${product.name} je nyní ve vašem košíku.`,
       });
       localStorage.setItem('cart', JSON.stringify(state.items));
@@ -52,19 +51,22 @@ export const cartSlice = createSlice({
       const productId = action.payload;
       state.items = state.items.filter((item) => item.id !== productId);
       toast({
-        title: "Odebráno z košíku",
-        variant: "destructive",
+        title: 'Odebráno z košíku',
+        variant: 'destructive',
         description: `Položka byla odebrána z vašeho košíku.`,
       });
       localStorage.setItem('cart', JSON.stringify(state.items));
     },
-    updateQuantity: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
+    updateQuantity: (
+      state,
+      action: PayloadAction<{ productId: string; quantity: number }>
+    ) => {
       const { productId, quantity } = action.payload;
       if (quantity <= 0) {
         state.items = state.items.filter((item) => item.id !== productId);
         toast({
-          title: "Odebráno z košíku",
-          variant: "destructive",
+          title: 'Odebráno z košíku',
+          variant: 'destructive',
           description: `Položka byla odebrána z vašeho košíku.`,
         });
       } else {
@@ -82,12 +84,16 @@ export const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateQuantity, clearCart } =
+  cartSlice.actions;
 
 export const selectCartItems = (state: RootState) => state.cart.items;
 export const selectCartCount = (state: RootState) =>
   state.cart.items.reduce((count, item) => count + item.quantity, 0);
 export const selectCartTotal = (state: RootState) =>
-  state.cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
+  state.cart.items.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
 export default cartSlice.reducer;

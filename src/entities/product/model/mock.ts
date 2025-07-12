@@ -9,7 +9,7 @@ export const mockProducts: Product[] = [
     image: 'https://placehold.co/600x600.png',
     storage: '256GB',
     color: 'Přírodní titan',
-    model: 'iPhone 15 Pro'
+    model: 'iPhone 15 Pro',
   },
   {
     id: '2',
@@ -19,7 +19,7 @@ export const mockProducts: Product[] = [
     image: 'https://placehold.co/600x600.png',
     storage: '128GB',
     color: 'Modrá',
-    model: 'iPhone 15'
+    model: 'iPhone 15',
   },
   {
     id: '3',
@@ -29,7 +29,7 @@ export const mockProducts: Product[] = [
     image: 'https://placehold.co/600x600.png',
     storage: '128GB',
     color: 'Fialová',
-    model: 'iPhone 14'
+    model: 'iPhone 14',
   },
   {
     id: '4',
@@ -39,7 +39,7 @@ export const mockProducts: Product[] = [
     image: 'https://placehold.co/600x600.png',
     storage: '64GB',
     color: 'Půlnoční',
-    model: 'iPhone SE'
+    model: 'iPhone SE',
   },
   {
     id: '5',
@@ -49,9 +49,9 @@ export const mockProducts: Product[] = [
     image: 'https://placehold.co/600x600.png',
     storage: '512GB',
     color: 'Bílý titan',
-    model: 'iPhone 15 Pro Max'
+    model: 'iPhone 15 Pro Max',
   },
-    {
+  {
     id: '6',
     name: 'iPhone 15 Plus',
     description: 'Absolutní síla, jen větší.',
@@ -59,6 +59,6 @@ export const mockProducts: Product[] = [
     image: 'https://placehold.co/600x600.png',
     storage: '256GB',
     color: 'Zelená',
-    model: 'iPhone 15 Plus'
+    model: 'iPhone 15 Plus',
   },
 ];

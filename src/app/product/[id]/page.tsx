@@ -11,7 +11,11 @@ import Link from 'next/link';
 import { Button } from '@/shared/ui/button';
 
 export default function ProductDetailPage() {
-  const { id } = useParams();
+  const params = useParams<{
+    id?: string;
+  }>();
+  const id = params?.id;
+
   const product = mockProducts.find((p) => p.id === id);
 
   if (!product) {
@@ -53,14 +57,22 @@ export default function ProductDetailPage() {
             </div>
           </div>
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">{product.name}</h1>
+            <h1 className="text-4xl font-bold tracking-tight">
+              {product.name}
+            </h1>
             <div className="mt-2 flex items-center gap-2">
-                <Badge variant="secondary">{product.storage}</Badge>
-                <Badge variant="secondary">{product.color}</Badge>
+              <Badge variant="secondary">{product.storage}</Badge>
+              <Badge variant="secondary">{product.color}</Badge>
             </div>
-            <p className="text-3xl font-bold my-4">{product.price.toLocaleString()} Kč</p>
+            <p className="text-3xl font-bold my-4">
+              {product.price.toLocaleString()} Kč
+            </p>
             <p className="text-muted-foreground leading-relaxed">
-              {product.description} Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              {product.description} Lorem ipsum dolor sit amet, consectetur
+              adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+              exercitation ullamco laboris nisi ut aliquip ex ea commodo
+              consequat.
             </p>
             <AddToCartButton product={product} size="lg" className="mt-6" />
           </div>

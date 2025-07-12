@@ -18,9 +18,9 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card 
-        onClick={handleCardClick} 
-        className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 h-full cursor-pointer"
+    <Card
+      onClick={handleCardClick}
+      className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 h-full cursor-pointer"
     >
       <CardHeader className="p-0 border-b">
         <div className="aspect-square relative">
@@ -39,7 +39,9 @@ export function ProductCard({ product }: ProductCardProps) {
           <p className="text-sm text-muted-foreground mt-1">
             {product.storage} - {product.color}
           </p>
-          <p className="text-sm text-muted-foreground mt-1 h-10">{product.description}</p>
+          <p className="text-sm text-muted-foreground mt-1 h-10">
+            {product.description}
+          </p>
         </div>
         <div className="flex items-center justify-between mt-4">
           <p className="text-xl font-bold">{product.price} Kč</p>

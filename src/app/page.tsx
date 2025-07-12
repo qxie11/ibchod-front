@@ -9,10 +9,12 @@ import { ProductFilters } from '@/features/filter-products';
 import Link from 'next/link';
 import { LiquidGlass } from '@/shared/ui/liquid-glass';
 
-const models = Array.from(new Set(mockProducts.map(p => p.model)));
-const storages = Array.from(new Set(mockProducts.map(p => p.storage))).sort((a, b) => parseInt(a) - parseInt(b));
-const colors = Array.from(new Set(mockProducts.map(p => p.color)));
-const maxPrice = Math.max(...mockProducts.map(p => p.price));
+const models = Array.from(new Set(mockProducts.map((p) => p.model)));
+const storages = Array.from(new Set(mockProducts.map((p) => p.storage))).sort(
+  (a, b) => parseInt(a) - parseInt(b)
+);
+const colors = Array.from(new Set(mockProducts.map((p) => p.color)));
+const maxPrice = Math.max(...mockProducts.map((p) => p.price));
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>(mockProducts);
@@ -35,34 +37,36 @@ export default function HomePage() {
             product.description.toLowerCase().includes(lowercasedQuery)
         );
       }
-      
+
       // Filter by price
-      filtered = filtered.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
-      
+      filtered = filtered.filter(
+        (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
+      );
+
       // Filter by model
       if (selectedModel !== 'all') {
-        filtered = filtered.filter(p => p.model === selectedModel);
+        filtered = filtered.filter((p) => p.model === selectedModel);
       }
 
       // Filter by storage
       if (selectedStorage !== 'all') {
-        filtered = filtered.filter(p => p.storage === selectedStorage);
+        filtered = filtered.filter((p) => p.storage === selectedStorage);
       }
-      
+
       // Filter by color
       if (selectedColor !== 'all') {
-        filtered = filtered.filter(p => p.color === selectedColor);
+        filtered = filtered.filter((p) => p.color === selectedColor);
       }
 
       setProducts(filtered);
     };
 
     const handler = setTimeout(() => {
-        filterProducts();
+      filterProducts();
     }, 300);
 
     return () => {
-        clearTimeout(handler);
+      clearTimeout(handler);
     };
   }, [searchQuery, priceRange, selectedModel, selectedStorage, selectedColor]);
 
@@ -83,26 +87,26 @@ export default function HomePage() {
             as="aside"
             className="md:col-span-1 p-6 rounded-lg shadow-sm h-fit sticky top-24"
           >
-             <ProductFilters 
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                priceRange={priceRange}
-                setPriceRange={setPriceRange}
-                maxPrice={maxPrice}
-                selectedModel={selectedModel}
-                setSelectedModel={setSelectedModel}
-                models={models}
-                selectedStorage={selectedStorage}
-                setSelectedStorage={setSelectedStorage}
-                storages={storages}
-                selectedColor={selectedColor}
-                setSelectedColor={setSelectedColor}
-                colors={colors}
-                resetFilters={resetFilters}
+            <ProductFilters
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              maxPrice={maxPrice}
+              selectedModel={selectedModel}
+              setSelectedModel={setSelectedModel}
+              models={models}
+              selectedStorage={selectedStorage}
+              setSelectedStorage={setSelectedStorage}
+              storages={storages}
+              selectedColor={selectedColor}
+              setSelectedColor={setSelectedColor}
+              colors={colors}
+              resetFilters={resetFilters}
             />
           </LiquidGlass>
           <div className="md:col-span-3">
-             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
               {products.map((product) => (
                 <Link key={product.id} href={`/product/${product.id}`} passHref>
                   <ProductCard product={product} />
@@ -110,10 +114,14 @@ export default function HomePage() {
               ))}
             </div>
             {products.length === 0 && (
-               <div className="text-center py-20 col-span-full">
-                 <h2 className="text-2xl font-semibold text-foreground">Nebyly nalezeny žádné produkty</h2>
-                 <p className="text-muted-foreground mt-2">Zkuste upravit podmínky vyhledávání.</p>
-               </div>
+              <div className="text-center py-20 col-span-full">
+                <h2 className="text-2xl font-semibold text-foreground">
+                  Nebyly nalezeny žádné produkty
+                </h2>
+                <p className="text-muted-foreground mt-2">
+                  Zkuste upravit podmínky vyhledávání.
+                </p>
+              </div>
             )}
           </div>
         </div>
