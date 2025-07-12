@@ -18,22 +18,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async rewrites() {
-    return [
-      {
-        source: '/',
-        destination: '/pages/home',
-      },
-      {
-        source: '/product/:id',
-        destination: '/pages/product-details',
-      },
-      {
-        source: '/cart',
-        destination: '/pages/cart',
-      },
-    ]
-  },
 };
 
 export default nextConfig;
