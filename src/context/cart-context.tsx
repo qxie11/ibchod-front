@@ -42,30 +42,35 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return [...prevItems, { ...product, quantity: 1 }];
     });
     toast({
-      title: "Added to Cart",
-      description: `${product.name} is now in your cart.`,
+      title: "Přidáno do košíku",
+      description: `${product.name} je nyní ve vašem košíku.`,
     })
   }, [toast]);
 
   const removeFromCart = useCallback((productId: string) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== productId));
     toast({
-      title: "Removed from Cart",
+      title: "Odebráno z košíku",
       variant: "destructive",
-      description: `Item has been removed from your cart.`,
+      description: `Položka byla odebrána z vašeho košíku.`,
     })
   }, [toast]);
 
   const updateQuantity = useCallback((productId: string, quantity: number) => {
     setCartItems((prevItems) => {
       if (quantity <= 0) {
+        toast({
+          title: "Odebráno z košíku",
+          variant: "destructive",
+          description: `Položka byla odebrána z vašeho košíku.`,
+        })
         return prevItems.filter((item) => item.id !== productId);
       }
       return prevItems.map((item) =>
         item.id === productId ? { ...item, quantity } : item
       );
     });
-  }, []);
+  }, [toast]);
 
   const clearCart = useCallback(() => {
     setCartItems([]);
