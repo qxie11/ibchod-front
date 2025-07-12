@@ -1,7 +1,7 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import './globals.css';
-import { CartProvider } from '@/context/cart-context';
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/shared/ui/toaster";
+import { StoreProvider } from '@/app/StoreProvider';
 
 export const metadata: Metadata = {
   title: 'iObchod Minimal',
@@ -21,10 +21,10 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <CartProvider>
+        <StoreProvider>
           {children}
           <Toaster />
-        </CartProvider>
+        </StoreProvider>
       </body>
     </html>
   );
