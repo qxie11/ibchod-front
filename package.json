@@ -9,7 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "fix": "next lint --fix",
+    "lint:fix": "next lint --fix",
     "typecheck": "tsc --noEmit",
     "slicemachine": "start-slicemachine",
     "format": "prettier . --write",

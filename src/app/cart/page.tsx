@@ -15,6 +15,7 @@ import {
   selectCartCount,
   selectCartTotal,
 } from '@/entities/cart/model/slice';
+import type { CartItem } from '@/entities/product';
 
 export default function CartPage() {
   const dispatch = useAppDispatch();
@@ -30,7 +31,7 @@ export default function CartPage() {
         {cartItems.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-4">
-              {cartItems.map((item) => (
+              {cartItems.map((item: CartItem) => (
                 <Card key={item.id} className="flex items-center p-4">
                   <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border">
                     <Image

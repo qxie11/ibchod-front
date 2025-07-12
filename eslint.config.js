@@ -22,6 +22,7 @@ export default tseslint.config(
       'next.config.ts',
       'tailwind.config.js',
       'postcss.config.js',
+      'src/shared/**',
     ],
   },
   {
@@ -78,5 +79,5 @@ export default tseslint.config(
         },
       ],
     },
-  }
+  },
 );
