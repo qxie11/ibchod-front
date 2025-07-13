@@ -1,6 +1,6 @@
 import React, { ElementType, HTMLAttributes, Ref, forwardRef } from 'react';
 
-import { cn } from '../lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 interface Props<T extends ElementType = 'p'> extends HTMLAttributes<React.ElementRef<T>> {
   className?: string;

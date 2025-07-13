@@ -23,7 +23,8 @@ import {
   setSelectedModel,
   setSelectedStorage,
 } from '@/features/filter-products';
-import { useAppDispatch, useAppSelector } from '@/shared/lib/hooks';
+import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector';
 import { Button } from '@/shared/ui/button';
 import Container from '@/shared/ui/container';
 import { LiquidGlass } from '@/shared/ui/liquid-glass';

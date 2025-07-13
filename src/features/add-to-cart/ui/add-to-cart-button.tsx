@@ -6,7 +6,7 @@ import React, { HTMLAttributes } from 'react';
 
 import { addToCart } from '@/entities/cart/model/slice';
 import type { Product } from '@/entities/product';
-import { useAppDispatch } from '@/shared/lib/hooks';
+import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch';
 import { Button, ButtonSize, ButtonVariant } from '@/shared/ui/button';
 
 interface AddToCartButtonProps extends HTMLAttributes<HTMLButtonElement> {

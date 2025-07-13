@@ -6,7 +6,7 @@ import * as React from 'react';
 
 import { cn } from '@/shared/lib/utils';
 
-const Breadcrumb = React.forwardRef<HTMLNavElement, React.ComponentPropsWithoutRef<'nav'>>(
+const Breadcrumb = React.forwardRef<HTMLElement, React.ComponentPropsWithoutRef<'nav'>>(
   ({ className, ...props }, ref) => (
     <nav ref={ref} aria-label="Breadcrumb" className={cn('flex', className)} {...props} />
   )

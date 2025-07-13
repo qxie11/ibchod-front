@@ -2,7 +2,7 @@
 
 import React, { forwardRef } from 'react';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;

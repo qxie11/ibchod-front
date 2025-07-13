@@ -5,7 +5,8 @@ import { ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 
 import { selectCartCount } from '@/entities/cart/model/slice';
-import { useAppSelector, useIsClient } from '@/shared/lib/hooks';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector';
+import { useIsClient } from '@/shared/lib/hooks/useIsClient';
 import { Button } from '@/shared/ui/button';
 
 export function CartButton() {

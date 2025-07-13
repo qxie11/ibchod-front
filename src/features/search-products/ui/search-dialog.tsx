@@ -1,7 +1,7 @@
 'use client';
 
 import { Search } from 'lucide-react';
-import { isMacOs, isWindows } from 'react-device-detect';
+import { isWindows } from 'react-device-detect';
 
 import React, { useLayoutEffect, useState } from 'react';
 
@@ -10,8 +10,8 @@ import { useRouter } from 'next/navigation';
 
 import { mockProducts } from '@/entities/product';
 import type { Product } from '@/entities/product';
-import { cn } from '@/lib/utils';
-import { useIsClient } from '@/shared/lib/hooks';
+import { useIsClient } from '@/shared/lib/hooks/useIsClient';
+import { cn } from '@/shared/lib/utils/cn';
 import { Button } from '@/shared/ui/button';
 import {
   CommandDialog,
@@ -42,8 +42,6 @@ export function SearchDialog() {
     router.push(`/product/${productId}`);
     setOpen(false);
   };
-
-  console.log({ isMacOs });
 
   return (
     <>
