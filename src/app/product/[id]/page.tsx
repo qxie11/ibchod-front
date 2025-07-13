@@ -162,45 +162,6 @@ export default function ProductDetailPage() {
           </div>
         </LiquidGlass>
 
-        <LiquidGlass className="mt-12">
-          <div className="p-6">
-            <Title variant="h2" className="mb-6 text-center">
-              Často kladené dotazy
-            </Title>
-            <Accordion type="single" collapsible className="w-full max-w-2xl mx-auto">
-              <AccordionItem value="q1">
-                <AccordionTrigger>Jak funguje záruka?</AccordionTrigger>
-                <AccordionContent>
-                  Na všechny naše iPhony poskytujeme 12 měsíců oficiální záruky. Pokud se v tomto
-                  období objeví jakýkoli problém, zdarma jej opravíme nebo vyměníme zařízení.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="q2">
-                <AccordionTrigger>Mohu zboží vrátit?</AccordionTrigger>
-                <AccordionContent>
-                  Ano, zboží můžete vrátit do 14 dnů bez udání důvodu. Stačí nás kontaktovat a my
-                  vám zašleme instrukce k vrácení.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="q3">
-                <AccordionTrigger>Jak rychle probíhá doručení?</AccordionTrigger>
-                <AccordionContent>
-                  Objednávky odesíláme do 24 hodin od potvrzení. Doručení obvykle trvá 1–2 pracovní
-                  dny po celé ČR.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="q4">
-                <AccordionTrigger>Je možné využít trade-in?</AccordionTrigger>
-                <AccordionContent>
-                  Ano, nabízíme možnost výkupu vašeho starého zařízení na protiúčet. Kontaktujte nás
-                  pro individuální nabídku.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-        </LiquidGlass>
-
-        {/* Detailed Description */}
         <div className="mt-12">
           <LiquidGlass>
             <div className="p-6">
@@ -520,7 +481,6 @@ export default function ProductDetailPage() {
           </div>
         </LiquidGlass>
       </Container>
-      <Footer />
     </>
   );
 }
