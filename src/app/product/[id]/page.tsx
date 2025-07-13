@@ -1,11 +1,12 @@
 'use client';
 
 import { ArrowLeft } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { Navigation } from 'swiper/modules';
+import { Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import Image from 'next/image';
@@ -92,7 +93,7 @@ export default function ProductDetailPage() {
           </BreadcrumbList>
         </Breadcrumb>
         <div className="mb-6">
-          <Button className="inline-block" href="/">
+          <Button size="small" className="inline-block" href="/">
             <span className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               Back to all products
@@ -103,7 +104,43 @@ export default function ProductDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-4">
             <div className="space-y-4">
               <div className="aspect-square relative overflow-hidden rounded-lg">
-                <Image src={product.image} alt={product.name} fill className="object-cover" />
+                <Swiper
+                  modules={[Navigation, Pagination]}
+                  navigation={{
+                    nextEl: '.product-swiper-next',
+                    prevEl: '.product-swiper-prev',
+                  }}
+                  pagination={{ clickable: true }}
+                  className="h-full w-full"
+                >
+                  {(product.gallery && product.gallery.length > 0
+                    ? product.gallery
+                    : [product.image]
+                  ).map((img, idx) => (
+                    <SwiperSlide key={img + idx}>
+                      <Image
+                        src={img}
+                        alt={product.name + ' photo ' + (idx + 1)}
+                        fill
+                        className="object-cover"
+                      />
+                    </SwiperSlide>
+                  ))}
+                  <button
+                    className="product-swiper-prev absolute top-1/2 left-2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-accent border border-accent hover:bg-accent hover:text-white transition"
+                    aria-label="Předchozí obrázek"
+                    type="button"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    className="product-swiper-next absolute top-1/2 right-2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-accent border border-accent hover:bg-accent hover:text-white transition"
+                    aria-label="Další obrázek"
+                    type="button"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </Swiper>
               </div>
             </div>
             <div>
@@ -357,7 +394,7 @@ export default function ProductDetailPage() {
                   Compare with Other Models
                 </Title>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full min-w-[600px] text-sm">
                     <thead>
                       <tr className="border-b">
                         <th className="text-left p-3 font-medium">Feature</th>

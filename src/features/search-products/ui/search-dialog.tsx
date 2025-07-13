@@ -47,7 +47,7 @@ export function SearchDialog() {
     <>
       <Button
         variant="ghost"
-        className="text-muted-foreground hover:text-muted-foreground hover:shadow-2xl w-full md:w-auto flex justify-center items-center bg-input hover:bg-input py-3"
+        className="text-muted-foreground hover:text-muted-foreground hover:shadow-2xl w-full md:w-auto flex justify-center items-center bg-input hover:bg-input py-2 px-4"
         onClick={() => setOpen(true)}
       >
         <Search className="h-4 w-4 mr-2" />

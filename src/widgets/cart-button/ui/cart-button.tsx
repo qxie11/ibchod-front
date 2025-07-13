@@ -14,7 +14,7 @@ export function CartButton() {
   const isClient = useIsClient();
 
   return (
-    <Button size="medium" className="relative">
+    <Button size="medium" className="relative py-3 px-4">
       <Link className="absolute inset-0" href="/cart"></Link>
       <ShoppingCart className="h-5 w-5" />
       <span className="sr-only">Otevřít košík</span>
