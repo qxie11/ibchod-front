@@ -30,6 +30,7 @@
     --chart-4: #f7b731;
     --chart-5: #fd9644;
   }
+
   .dark {
     --background: #23272f;
     --foreground: #fafafa;
@@ -37,7 +38,7 @@
     --card-foreground: #fafafa;
     --popover: #1a1a1a;
     --popover-foreground: #fafafa;
-    --primary: #2563eb;
+    --primary: #f7d7d2;
     --primary-foreground: #fff;
     --secondary: #23272f;
     --secondary-foreground: #fafafa;
@@ -62,7 +63,56 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
+/* 
+body {
+  background: radial-gradient(100% 100% at var(--g6-1-x-position) var(--g6-1-y-position), #fff700 -34%, transparent), radial-gradient(100% 100% at var(--g6-2-x-position) var(--g6-2-y-position), #f179e7 -28%, transparent), radial-gradient(100% 100% at 52% 47%, #00fbff 13%, transparent), #ffffff;
+  animation-name: g-6;
+  animation-iteration-count: infinite;
+  animation-duration: 15s;
+  transition-timing-function: ease-in;
+}
+
+@property --g6-1-x-position {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 89.7265625%;
+}
+
+@property --g6-1-y-position {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 10.468750000000004%;
+}
+
+@property --g6-2-x-position {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 15.546875000000004%;
+}
+
+@property --g6-2-y-position {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 85.234375%;
+}
+
+:root {
+  --g6-1-x-position: 89.7265625%;
+  --g6-1-y-position: 10.468750000000004%;
+  --g6-2-x-position: 15.546875000000004%;
+  --g6-2-y-position: 85.234375%;
+}
+
+@keyframes g-6 {
+  50% {
+    --g6-1-x-position: 16.718750000000004%;
+    --g6-1-y-position: 83.1640625%;
+    --g6-2-x-position: 86.2890625%;
+    --g6-2-y-position: 14.882812499999998%;
+  }
+} */

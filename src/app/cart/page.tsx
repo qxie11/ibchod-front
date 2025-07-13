@@ -14,10 +14,20 @@ import {
 } from '@/entities/cart';
 import type { CartItem } from '@/entities/product';
 import { useAppDispatch, useAppSelector } from '@/shared/lib/hooks';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/shared/ui/breadcrumb';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import Container from '@/shared/ui/container';
 import { Separator } from '@/shared/ui/separator';
+import Text from '@/shared/ui/text';
+import { Title } from '@/shared/ui/title';
 import { Header } from '@/widgets/header';
 
 export default function CartPage() {
@@ -27,10 +37,23 @@ export default function CartPage() {
   const cartTotal = useAppSelector(selectCartTotal);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <>
       <Header />
       <Container className="flex-1 py-8">
-        <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Cart</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <Title variant="h1" className="text-3xl font-bold mb-6">
+          Your Cart
+        </Title>
         {cartItems.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-4">
@@ -46,15 +69,23 @@ export default function CartPage() {
                     />
                   </div>
                   <div className="flex-1 ml-4">
-                    <h4 className="font-semibold">{item.name}</h4>
-                    <p className="text-sm text-muted-foreground">
+                    <Title variant="h4" className="font-semibold">
+                      {item.name}
+                    </Title>
+                    <Text className="text-sm text-muted-foreground">
                       {item.storage} - {item.color}
-                    </p>
-                    <p className="font-medium mt-2">${item.price.toLocaleString()}</p>
+                    </Text>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Text className="font-medium text-green-600">
+                        ${item.price?.toLocaleString()}
+                      </Text>
+                      <Text className="text-sm text-muted-foreground line-through">
+                        ${item.originalPrice?.toLocaleString()}
+                      </Text>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2 mx-4">
                     <Button
-
                       className="h-8 w-8"
                       onClick={() =>
                         dispatch(
@@ -69,7 +100,6 @@ export default function CartPage() {
                     </Button>
                     <span className="w-8 text-center font-medium">{item.quantity}</span>
                     <Button
-                      
                       className="h-8 w-8"
                       onClick={() =>
                         dispatch(
@@ -84,11 +114,10 @@ export default function CartPage() {
                     </Button>
                   </div>
                   <div className="font-bold w-24 text-right">
-                    ${(item.price * item.quantity).toLocaleString()}
+                    ${(item.price * item.quantity)?.toLocaleString()}
                   </div>
                   <Button
                     variant="ghost"
-                    
                     className="ml-4"
                     onClick={() => dispatch(removeFromCart(item.id))}
                   >
@@ -105,7 +134,7 @@ export default function CartPage() {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between">
                     <span>Subtotal ({cartCount} items)</span>
-                    <span>${cartTotal.toLocaleString()}</span>
+                    <span>${cartTotal?.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Shipping</span>
@@ -114,13 +143,11 @@ export default function CartPage() {
                   <Separator />
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span>${cartTotal.toLocaleString()}</span>
+                    <span>${cartTotal?.toLocaleString()}</span>
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full" >
-                    Proceed to Checkout
-                  </Button>
+                  <Button className="w-full">Proceed to Checkout</Button>
                 </CardFooter>
               </Card>
             </div>
@@ -128,14 +155,18 @@ export default function CartPage() {
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center text-center border-2 border-dashed rounded-lg py-20">
             <ShoppingCart className="h-16 w-16 text-muted-foreground/50" />
-            <h3 className="mt-4 text-xl font-semibold">Your cart is empty</h3>
-            <p className="text-sm text-muted-foreground mb-4">Add some iPhones to get started.</p>
+            <Title variant="h3" className="mb-4 text-xl font-semibold">
+              Your cart is empty
+            </Title>
+            <Text className="text-muted-foreground mb-2">
+              Add some products to your cart to get started.
+            </Text>
             <Button>
               <Link href="/">Back to Shop</Link>
             </Button>
           </div>
         )}
       </Container>
-    </div>
+    </>
   );
 }

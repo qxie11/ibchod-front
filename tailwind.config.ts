@@ -31,7 +31,7 @@ export default {
           foreground: '#23272f',
         },
         primary: {
-          DEFAULT: '#120a8f',
+          DEFAULT: '#2563eb',
           foreground: '#fff',
         },
         secondary: {

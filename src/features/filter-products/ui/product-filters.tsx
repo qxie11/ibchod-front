@@ -1,10 +1,15 @@
 'use client';
 
+import { useDebounce } from 'react-use';
+
+import { useState } from 'react';
+
 import { Button } from '@/shared/ui/button';
 import FormField from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Slider } from '@/shared/ui/slider';
+import { Title } from '@/shared/ui/title';
 
 interface ProductFiltersProps {
   searchQuery: string;
@@ -41,17 +46,27 @@ export function ProductFilters({
   colors,
   resetFilters,
 }: ProductFiltersProps) {
+  const [localPriceRange, setLocalPriceRange] = useState(priceRange);
+
+  useDebounce(
+    () => {
+      setPriceRange(localPriceRange);
+    },
+    300,
+    [localPriceRange]
+  );
+
   return (
-    <>
-      <h2 className="text-xl font-semibold mb-4">Filters</h2>
-      <div className="space-y-6">
+    <div className="p-4">
+      <Title variant="h2" size="small" className="mb-3">
+        Filters
+      </Title>
+
+      <div className="space-y-4">
         <div>
-          <FormField
-            className="mb-4"
-            label="🍏 Search"
-          >
+          <FormField className="mb-3" label="🍏 Search">
             <Input
-              className='py-2'
+              className="py-1.5 text-sm"
               placeholder="IPhone 16 Pro Max..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -59,75 +74,77 @@ export function ProductFilters({
           </FormField>
         </div>
         <div>
-          <label htmlFor="price" className="text-sm font-medium">
-            Price
-          </label>
-          <Slider
-            id="price"
-            min={0}
-            max={maxPrice}
-            step={10}
-            value={priceRange}
-            onValueChange={setPriceRange}
-            className="mt-2"
-          />
-          <div className="flex justify-between text-sm text-muted-foreground mt-1">
+          <FormField className="mb-3" label="💵 Price">
+            <Slider
+              id="price"
+              min={0}
+              max={maxPrice}
+              step={10}
+              value={localPriceRange}
+              onValueChange={setLocalPriceRange}
+              className="mb-2"
+            />
+          </FormField>
+          <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>${priceRange[0]}</span>
             <span>${priceRange[1]}</span>
           </div>
         </div>
         <div>
-          <label className="text-sm font-medium">Model</label>
-          <Select value={selectedModel} onValueChange={setSelectedModel}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Models</SelectItem>
-              {models.map((m) => (
-                <SelectItem key={m} value={m}>
-                  {m}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <FormField className="mb-3" label="📱 Model">
+            <Select value={selectedModel} onValueChange={setSelectedModel}>
+              <SelectTrigger className="py-1.5 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Models</SelectItem>
+                {models.map((m) => (
+                  <SelectItem key={m} value={m}>
+                    📱 {m}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormField>
         </div>
         <div>
-          <label className="text-sm font-medium">Storage</label>
-          <Select value={selectedStorage} onValueChange={setSelectedStorage}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Storages</SelectItem>
-              {storages.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <FormField className="mb-3" label="💾 Storage">
+            <Select value={selectedStorage} onValueChange={setSelectedStorage}>
+              <SelectTrigger className="py-1.5 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Storages</SelectItem>
+                {storages.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    💾 {s}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormField>
         </div>
         <div>
-          <label className="text-sm font-medium">Color</label>
-          <Select value={selectedColor} onValueChange={setSelectedColor}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Colors</SelectItem>
-              {colors.map((c) => (
-                <SelectItem key={c} value={c}>
-                  {c}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <FormField className="mb-3" label="🎨 Color">
+            <Select value={selectedColor} onValueChange={setSelectedColor}>
+              <SelectTrigger className="py-1.5 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Colors</SelectItem>
+                {colors.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    🎨 {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormField>
         </div>
-        <Button onClick={resetFilters} className="w-full">
+        <Button onClick={resetFilters} className="w-full" size="small">
           Reset Filters
         </Button>
       </div>
-    </>
+    </div>
   );
 }

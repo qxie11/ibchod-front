@@ -2,8 +2,10 @@
 
 import Image from 'next/image';
 
-import { AddToCartButton } from '@/features/add-to-cart';
 import { Card, CardContent, CardHeader } from '@/shared/ui/card';
+import { LiquidGlass } from '@/shared/ui/liquid-glass';
+import Text from '@/shared/ui/text';
+import { Title } from '@/shared/ui/title';
 
 import type { Product } from '../model/types';
 
@@ -12,42 +14,41 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Prevent event propagation for AddToCartButton inside the card
-    if ((e.target as HTMLElement).closest('button')) {
-      e.preventDefault();
-    }
-  };
-
   return (
-    <Card
-      onClick={handleCardClick}
-      className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 h-full cursor-pointer"
+    <LiquidGlass
+      as={Card}
+      className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 h-full cursor-pointer group"
     >
-      <CardHeader className="p-0 border-b">
+      <CardHeader className="p-0 border-b overflow-hidden">
         <div className="aspect-square relative">
           <Image
             src={product.image}
             alt={product.name}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
             data-ai-hint="iphone side"
           />
         </div>
       </CardHeader>
       <CardContent className="p-4 flex flex-col flex-grow">
         <div className="flex-grow">
-          <h3 className="text-lg font-semibold">{product.name}</h3>
-          <p className="text-sm text-muted-foreground mt-1">
+          <Title className="mb-1" variant="h3" size="small">
+            {product.name}
+          </Title>
+          <Text className="text-sm text-muted-foreground mb-1">
             {product.storage} - {product.color}
-          </p>
-          <p className="text-sm text-muted-foreground mt-1 h-10">{product.description}</p>
+          </Text>
+          <Text className="text-sm text-muted-foreground mb-3">{product.description}</Text>
         </div>
-        <div className="flex items-center justify-between mt-4">
-          <p className="text-xl font-bold">${product.price}</p>
-          <AddToCartButton size="small" product={product} />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Text className="text-lg font-bold text-green-600">${product.price}</Text>
+            <Text className="text-sm text-muted-foreground line-through">
+              ${product.originalPrice}
+            </Text>
+          </div>
         </div>
       </CardContent>
-    </Card>
+    </LiquidGlass>
   );
 }

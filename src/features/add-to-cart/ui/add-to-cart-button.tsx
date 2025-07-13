@@ -1,6 +1,8 @@
 'use client';
 
-import { HTMLAttributes } from 'react';
+import { ShoppingCart } from 'lucide-react';
+
+import React, { HTMLAttributes } from 'react';
 
 import { addToCart } from '@/entities/cart/model/slice';
 import type { Product } from '@/entities/product';
@@ -12,12 +14,14 @@ interface AddToCartButtonProps extends HTMLAttributes<HTMLButtonElement> {
   className?: string;
   size?: ButtonSize;
   variant?: ButtonVariant;
+  children?: React.ReactNode;
 }
 
 export const AddToCartButton = ({
   product,
   className,
   size = 'medium',
+  children,
   ...rest
 }: AddToCartButtonProps) => {
   const dispatch = useAppDispatch();
@@ -32,7 +36,7 @@ export const AddToCartButton = ({
 
   return (
     <Button size={size} className={className} onClick={handleAddToCart} {...rest}>
-      Add to Cart
+      {children || <ShoppingCart size={17} />}
     </Button>
   );
 };

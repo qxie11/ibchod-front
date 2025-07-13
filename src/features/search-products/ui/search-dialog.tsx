@@ -3,7 +3,7 @@
 import { Search } from 'lucide-react';
 import { isMacOs, isWindows } from 'react-device-detect';
 
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { mockProducts } from '@/entities/product';
 import type { Product } from '@/entities/product';
 import { cn } from '@/lib/utils';
+import { useIsClient } from '@/shared/lib/hooks';
 import { Button } from '@/shared/ui/button';
 import {
   CommandDialog,
@@ -23,12 +24,8 @@ import {
 
 export function SearchDialog() {
   const [open, setOpen] = useState(false);
-  const [showHotkey, setShowHotkey] = useState(false);
+  const isClient = useIsClient();
   const router = useRouter();
-
-  useEffect(() => {
-    setShowHotkey(true);
-  }, []);
 
   useLayoutEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -61,7 +58,7 @@ export function SearchDialog() {
           className={cn(
             'pointer-events-none ml-4 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 md:flex',
             {
-              hidden: !showHotkey,
+              hidden: !isClient,
             }
           )}
         >
