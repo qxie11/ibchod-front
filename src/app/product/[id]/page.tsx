@@ -32,6 +32,7 @@ import {
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader } from '@/shared/ui/card';
 import Container from '@/shared/ui/container';
+import { Footer } from '@/shared/ui/footer';
 import { LiquidGlass } from '@/shared/ui/liquid-glass';
 import Text from '@/shared/ui/text';
 import { Title } from '@/shared/ui/title';
@@ -58,6 +59,7 @@ export default function ProductDetailPage() {
             </Text>
           </div>
         </Container>
+        <Footer />
       </>
     );
   }
@@ -518,6 +520,7 @@ export default function ProductDetailPage() {
           </div>
         </LiquidGlass>
       </Container>
+      <Footer />
     </>
   );
 }

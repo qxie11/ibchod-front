@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { Readex_Pro } from 'next/font/google';
 
 import { StoreProvider } from '@/app/StoreProvider';
+import { Footer } from '@/shared/ui/footer';
 import { Toaster } from '@/shared/ui/toaster';
 
 import './globals.css';
@@ -23,9 +24,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={readex.variable}>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#2563eb" />
+        <link rel="icon" href="/icons/icon-192x192.png" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      </head>
       <body className="font-sans">
         <NextTopLoader
-          color="#000"
+          color="#2563eb"
           initialPosition={0.08}
           crawlSpeed={200}
           height={3}
@@ -38,6 +47,7 @@ export default function RootLayout({
           <StoreProvider>
             {children}
             <Toaster />
+            <Footer />
           </StoreProvider>
         </div>
       </body>
