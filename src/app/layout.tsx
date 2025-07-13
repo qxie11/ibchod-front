@@ -15,6 +15,7 @@ const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex' });
 export const metadata: Metadata = {
   title: 'iStore Minimal',
   description: 'An elegant iPhone store built with Next.js',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
@@ -25,9 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={readex.variable}>
       <head>
-        <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#2563eb" />
-        <link rel="icon" href="/icons/icon-192x192.png" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
