@@ -8,8 +8,6 @@ import React, { useLayoutEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { mockProducts } from '@/entities/product';
-import type { Product } from '@/entities/product';
 import { useIsClient } from '@/shared/lib/hooks/useIsClient';
 import { cn } from '@/shared/lib/utils/cn';
 import { Button } from '@/shared/ui/button';
@@ -51,7 +49,7 @@ export function SearchDialog() {
         onClick={() => setOpen(true)}
       >
         <Search className="h-4 w-4 mr-2" />
-        Search...
+        Hledat...
         <kbd
           className={cn(
             'pointer-events-none ml-4 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 md:flex',
@@ -64,11 +62,11 @@ export function SearchDialog() {
         </kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a product name..." />
+        <CommandInput placeholder="Zadejte název produktu..." />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Products">
-            {mockProducts.map((product: Product) => (
+          <CommandEmpty>Nebyly nalezeny žádné výsledky.</CommandEmpty>
+          <CommandGroup heading="Produkty">
+            {[].map((product: any) => (
               <CommandItem
                 key={product.id}
                 onSelect={() => handleSelect(product.id)}

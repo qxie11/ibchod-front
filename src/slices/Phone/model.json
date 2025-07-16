@@ -12,22 +12,46 @@
       "description": "Default",
       "imageUrl": "",
       "primary": {
-        "phone_image": {
-          "type": "Image",
+        "imagegallery": {
+          "type": "Group",
           "config": {
-            "label": "Phone image",
-            "constraint": {
-              "width": 600,
-              "height": 600
-            },
-            "thumbnails": []
-          }
-        },
-        "title": {
-          "type": "Text",
-          "config": {
-            "label": "Title",
-            "placeholder": "Title"
+            "label": "Image Gallery",
+            "repeat": true,
+            "fields": {
+              "image1": {
+                "type": "Image",
+                "config": {
+                  "label": "Image1",
+                  "constraint": {
+                    "width": 600,
+                    "height": 600
+                  },
+                  "thumbnails": []
+                }
+              },
+              "image2": {
+                "type": "Image",
+                "config": {
+                  "label": "Image2",
+                  "constraint": {
+                    "width": 600,
+                    "height": 600
+                  },
+                  "thumbnails": []
+                }
+              },
+              "image3": {
+                "type": "Image",
+                "config": {
+                  "label": "Image3",
+                  "constraint": {
+                    "width": 600,
+                    "height": 600
+                  },
+                  "thumbnails": []
+                }
+              }
+            }
           }
         },
         "small_desc": {
@@ -44,27 +68,6 @@
             "placeholder": "Large desc",
             "allowTargetBlank": true,
             "multi": "paragraph,preformatted,heading1,heading2,heading3,heading4,heading5,heading6,strong,em,hyperlink,image,embed,list-item,o-list-item,rtl"
-          }
-        },
-        "price": {
-          "type": "Text",
-          "config": {
-            "label": "Price",
-            "placeholder": "Price"
-          }
-        },
-        "color": {
-          "type": "Text",
-          "config": {
-            "label": "Color",
-            "placeholder": "Color"
-          }
-        },
-        "capacity": {
-          "type": "Text",
-          "config": {
-            "label": "Capacity",
-            "placeholder": "Capacity"
           }
         }
       },

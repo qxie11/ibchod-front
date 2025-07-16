@@ -1,10 +1,14 @@
 'use client';
 
+import { Content } from '@prismicio/client';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-import type { CartItem, Product } from '@/entities/product/model/types';
 import { toast } from '@/shared/hooks/use-toast';
 import type { RootState } from '@/shared/lib/store';
+
+interface CartItem extends Content.PhoneDocument {
+  quantity: number;
+}
 
 interface CartState {
   items: CartItem[];
@@ -34,7 +38,7 @@ export const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addToCart: (state, action: PayloadAction<Product>) => {
+    addToCart: (state, action: PayloadAction<Content.PhoneDocument>) => {
       const product = action.payload;
       const existingItem = state.items.find((item) => item.id === product.id);
       if (existingItem) {
@@ -44,8 +48,10 @@ export const cartSlice = createSlice({
       }
       toast({
         title: 'Added to cart',
-        description: `${product.name} is now in your cart.`,
+        description: `${product.data.name} is now in your cart.`,
       });
+
+      console.log(state.items);
       localStorage.setItem('cart', JSON.stringify(state.items));
     },
     removeFromCart: (state, action: PayloadAction<string>) => {
@@ -73,6 +79,7 @@ export const cartSlice = createSlice({
           item.quantity = quantity;
         }
       }
+
       localStorage.setItem('cart', JSON.stringify(state.items));
     },
     clearCart: (state) => {
@@ -88,6 +95,6 @@ export const selectCartItems = (state: RootState) => state.cart.items;
 export const selectCartCount = (state: RootState) =>
   state.cart.items.reduce((count, item) => count + item.quantity, 0);
 export const selectCartTotal = (state: RootState) =>
-  state.cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
+  state.cart.items.reduce((total, item) => total + (item.data.price ?? 0) * item.quantity, 0);
 
 export default cartSlice.reducer;

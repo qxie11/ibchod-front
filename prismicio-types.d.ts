@@ -24,14 +24,16 @@ type PickContentRelationshipFieldData<
       TSubRelationship['customtypes'],
       TLang
     >;
-  } & { // Group
+  } & {
+    // Group
     [TGroup in Extract<
       TRelationship['fields'][number],
       prismic.CustomTypeModelFetchGroupLevel1 | prismic.CustomTypeModelFetchGroupLevel2
     > as TGroup['id']]: TData[TGroup['id']] extends prismic.GroupField<infer TGroupData>
       ? prismic.GroupField<PickContentRelationshipFieldData<TGroup, TGroupData, TLang>>
       : never;
-  } & { // Other fields
+  } & {
+    // Other fields
     [TFieldKey in Extract<TRelationship['fields'][number], string>]: TFieldKey extends keyof TData
       ? TData[TFieldKey]
       : never;
@@ -54,22 +56,121 @@ type ContentRelationshipFieldWithData<
   >;
 }[Exclude<TCustomType[number], string>['id']];
 
-type PhoneDocumentDataSlicesSlice = PhoneSlice;
+/**
+ * Item in *Phone → Gallery*
+ */
+export interface PhoneDocumentDataGalleryItem {
+  /**
+   * image1 field in *Phone → Gallery*
+   *
+   * - **Field Type**: Image
+   * - **Placeholder**: *None*
+   * - **API ID Path**: phone.gallery[].image1
+   * - **Documentation**: https://prismic.io/docs/fields/image
+   */
+  image1: prismic.ImageField<never>;
+
+  /**
+   * image2 field in *Phone → Gallery*
+   *
+   * - **Field Type**: Image
+   * - **Placeholder**: *None*
+   * - **API ID Path**: phone.gallery[].image2
+   * - **Documentation**: https://prismic.io/docs/fields/image
+   */
+  image2: prismic.ImageField<never>;
+
+  /**
+   * image3 field in *Phone → Gallery*
+   *
+   * - **Field Type**: Image
+   * - **Placeholder**: *None*
+   * - **API ID Path**: phone.gallery[].image3
+   * - **Documentation**: https://prismic.io/docs/fields/image
+   */
+  image3: prismic.ImageField<never>;
+}
 
 /**
  * Content for Phone documents
  */
 interface PhoneDocumentData {
   /**
-   * Slice Zone field in *Phone*
+   * price field in *Phone*
    *
-   * - **Field Type**: Slice Zone
+   * - **Field Type**: Number
    * - **Placeholder**: *None*
-   * - **API ID Path**: phone.slices[]
+   * - **API ID Path**: phone.price
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/slices
+   * - **Documentation**: https://prismic.io/docs/fields/number
    */
-  slices: prismic.SliceZone<PhoneDocumentDataSlicesSlice>;
+  price: prismic.NumberField;
+
+  /**
+   * Name field in *Phone*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: phone.name
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  name: prismic.KeyTextField;
+
+  /**
+   * Capacity field in *Phone*
+   *
+   * - **Field Type**: Number
+   * - **Placeholder**: *None*
+   * - **API ID Path**: phone.capacity
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/number
+   */
+  capacity: prismic.NumberField;
+
+  /**
+   * Color field in *Phone*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: phone.color
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  color: prismic.KeyTextField;
+
+  /**
+   * Gallery field in *Phone*
+   *
+   * - **Field Type**: Group
+   * - **Placeholder**: *None*
+   * - **API ID Path**: phone.gallery[]
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/repeatable-group
+   */
+  gallery: prismic.GroupField<Simplify<PhoneDocumentDataGalleryItem>>;
+
+  /**
+   * small_desc field in *Phone*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: phone.small_desc
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  small_desc: prismic.KeyTextField;
+
+  /**
+   * large_desc field in *Phone*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: phone.large_desc
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  large_desc: prismic.RichTextField;
 }
 
 /**
@@ -90,28 +191,53 @@ export type PhoneDocument<Lang extends string = string> = prismic.PrismicDocumen
 export type AllDocumentTypes = PhoneDocument;
 
 /**
+ * Item in *Phone → Default → Primary → Image Gallery*
+ */
+export interface PhoneSliceDefaultPrimaryImagegalleryItem {
+  /**
+   * Image1 field in *Phone → Default → Primary → Image Gallery*
+   *
+   * - **Field Type**: Image
+   * - **Placeholder**: *None*
+   * - **API ID Path**: phone.default.primary.imagegallery[].image1
+   * - **Documentation**: https://prismic.io/docs/fields/image
+   */
+  image1: prismic.ImageField<never>;
+
+  /**
+   * Image2 field in *Phone → Default → Primary → Image Gallery*
+   *
+   * - **Field Type**: Image
+   * - **Placeholder**: *None*
+   * - **API ID Path**: phone.default.primary.imagegallery[].image2
+   * - **Documentation**: https://prismic.io/docs/fields/image
+   */
+  image2: prismic.ImageField<never>;
+
+  /**
+   * Image3 field in *Phone → Default → Primary → Image Gallery*
+   *
+   * - **Field Type**: Image
+   * - **Placeholder**: *None*
+   * - **API ID Path**: phone.default.primary.imagegallery[].image3
+   * - **Documentation**: https://prismic.io/docs/fields/image
+   */
+  image3: prismic.ImageField<never>;
+}
+
+/**
  * Primary content in *Phone → Default → Primary*
  */
 export interface PhoneSliceDefaultPrimary {
   /**
-   * Phone image field in *Phone → Default → Primary*
+   * Image Gallery field in *Phone → Default → Primary*
    *
-   * - **Field Type**: Image
+   * - **Field Type**: Group
    * - **Placeholder**: *None*
-   * - **API ID Path**: phone.default.primary.phone_image
-   * - **Documentation**: https://prismic.io/docs/fields/image
+   * - **API ID Path**: phone.default.primary.imagegallery[]
+   * - **Documentation**: https://prismic.io/docs/fields/repeatable-group
    */
-  phone_image: prismic.ImageField<never>;
-
-  /**
-   * Title field in *Phone → Default → Primary*
-   *
-   * - **Field Type**: Text
-   * - **Placeholder**: Title
-   * - **API ID Path**: phone.default.primary.title
-   * - **Documentation**: https://prismic.io/docs/fields/text
-   */
-  title: prismic.KeyTextField;
+  imagegallery: prismic.GroupField<Simplify<PhoneSliceDefaultPrimaryImagegalleryItem>>;
 
   /**
    * Small Desc field in *Phone → Default → Primary*
@@ -132,36 +258,6 @@ export interface PhoneSliceDefaultPrimary {
    * - **Documentation**: https://prismic.io/docs/fields/rich-text
    */
   large_desc: prismic.RichTextField;
-
-  /**
-   * Price field in *Phone → Default → Primary*
-   *
-   * - **Field Type**: Text
-   * - **Placeholder**: Price
-   * - **API ID Path**: phone.default.primary.price
-   * - **Documentation**: https://prismic.io/docs/fields/text
-   */
-  price: prismic.KeyTextField;
-
-  /**
-   * Color field in *Phone → Default → Primary*
-   *
-   * - **Field Type**: Text
-   * - **Placeholder**: Color
-   * - **API ID Path**: phone.default.primary.color
-   * - **Documentation**: https://prismic.io/docs/fields/text
-   */
-  color: prismic.KeyTextField;
-
-  /**
-   * Capacity field in *Phone → Default → Primary*
-   *
-   * - **Field Type**: Text
-   * - **Placeholder**: Capacity
-   * - **API ID Path**: phone.default.primary.capacity
-   * - **Documentation**: https://prismic.io/docs/fields/text
-   */
-  capacity: prismic.KeyTextField;
 }
 
 /**
@@ -214,9 +310,10 @@ declare module '@prismicio/client' {
     export type {
       PhoneDocument,
       PhoneDocumentData,
-      PhoneDocumentDataSlicesSlice,
+      PhoneDocumentDataGalleryItem,
       AllDocumentTypes,
       PhoneSlice,
+      PhoneSliceDefaultPrimaryImagegalleryItem,
       PhoneSliceDefaultPrimary,
       PhoneSliceVariation,
       PhoneSliceDefault,
