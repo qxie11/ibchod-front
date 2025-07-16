@@ -47,8 +47,6 @@ interface ProductDetailPageProps {
 export default function ProductDetailPage({ product, similarProducts }: ProductDetailPageProps) {
   const dispatch = useDispatch();
 
-  console.log({ product });
-
   if (!product) {
     return (
       <>
@@ -154,9 +152,14 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                   {Math.round(+(product?.data?.price ?? 0) * 1.3)} Kč
                 </Text>
               </div>
-              <Text className=" text-muted-foreground mb-6">
-                <PrismicRichText field={product.data.large_desc} />
-              </Text>
+              <PrismicRichText
+                field={product.data.large_desc}
+                components={{
+                  paragraph: ({ children }) => (
+                    <Text className="text-muted-foreground mb-6">{children}</Text>
+                  ),
+                }}
+              />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div className="flex items-center gap-3">
                   <span className="text-green-600 text-2xl">✔</span>
@@ -270,8 +273,8 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                 >
                   {Array(5)
                     .fill(similarProducts[0])
-                    .map((similarProduct) => (
-                      <SwiperSlide key={similarProduct.id}>
+                    .map((similarProduct, i) => (
+                      <SwiperSlide key={similarProduct.id + i}>
                         <Card className="relative flex flex-row items-center bg-white rounded-xl border border-gray-200 transition-all h-full min-h-[120px]">
                           <Link className="absolute inset-0 z-10" href={similarProduct.uid}></Link>
                           <div className="w-20 h-20 flex-shrink-0 relative m-3 overflow-hidden rounded-xl shadow-2xl">
