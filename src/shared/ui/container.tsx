@@ -9,7 +9,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Container = forwardRef<HTMLDivElement, Props>(({ children, className, ...rest }, ref) => (
-  <div className={cn('max-w-[1250px] px-6 mx-auto', className)} {...rest} ref={ref}>
+  <div className={cn('max-w-[1250px] px-4 mx-auto', className)} {...rest} ref={ref}>
     {children}
   </div>
 ));

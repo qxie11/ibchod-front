@@ -20,7 +20,7 @@ export function Header() {
             iStore
           </Title>
         </Link>
-        <div className="flex flex-1 items-center justify-end space-x-4">
+        <div className="flex flex-1 items-center justify-end ml-2 space-x-2 md:space-x-4">
           <SearchDialog />
           <CartButton />
         </div>
