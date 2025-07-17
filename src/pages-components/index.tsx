@@ -100,7 +100,7 @@ export default function HomePage({
           12měsíční zárukou.
         </Text>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6 mb-8">
           <Card className="p-4 md:p-6 flex items-center gap-4 bg-card/70 backdrop-blur-sm">
             <ShieldCheck className="w-8 h-8 md:w-10 md:h-10 text-primary flex-shrink-0" />
             <div>
