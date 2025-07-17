@@ -101,31 +101,31 @@ export default function HomePage({
         </Text>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="p-6 flex items-center gap-4 bg-card/70 backdrop-blur-sm">
-            <ShieldCheck className="w-10 h-10 text-primary flex-shrink-0" />
+          <Card className="p-4 md:p-6 flex items-center gap-4 bg-card/70 backdrop-blur-sm">
+            <ShieldCheck className="w-8 h-8 md:w-10 md:h-10 text-primary flex-shrink-0" />
             <div>
-              <Title variant="h3" size="small" className="mb-1">
+              <Title variant="h3" size="extra-small" className="md:text-lg mb-1">
                 Záruka kvality
               </Title>
-              <Text className="text-sm">12 měsíců záruka na každý iPhone.</Text>
+              <Text className="text-xs md:text-sm">12 měsíců záruka na každý iPhone.</Text>
             </div>
           </Card>
-          <Card className="p-6 flex items-center gap-4 bg-card/70 backdrop-blur-sm">
-            <Truck className="w-10 h-10 text-primary flex-shrink-0" />
+          <Card className="p-4 md:p-6 flex items-center gap-4 bg-card/70 backdrop-blur-sm">
+            <Truck className="w-8 h-8 md:w-10 md:h-10 text-primary flex-shrink-0" />
             <div>
-              <Title variant="h3" size="small" className="mb-1">
+              <Title variant="h3" size="extra-small" className="md:text-lg mb-1">
                 Rychlé doručení
               </Title>
-              <Text className="text-sm">Doručení do 2 pracovních dnů.</Text>
+              <Text className="text-xs md:text-sm">Doručení do 2 pracovních dnů.</Text>
             </div>
           </Card>
-          <Card className="p-6 flex items-center gap-4 bg-card/70 backdrop-blur-sm">
-            <Recycle className="w-10 h-10 text-primary flex-shrink-0" />
+          <Card className="p-4 md:p-6 flex items-center gap-4 bg-card/70 backdrop-blur-sm">
+            <Recycle className="w-8 h-8 md:w-10 md:h-10 text-primary flex-shrink-0" />
             <div>
-              <Title variant="h3" size="small" className="mb-1">
+              <Title variant="h3" size="extra-small" className="md:text-lg mb-1">
                 Udržitelnost
               </Title>
-              <Text className="text-sm">Šetříte planetu i peněženku.</Text>
+              <Text className="text-xs md:text-sm">Šetříte planetu i peněženku.</Text>
             </div>
           </Card>
         </div>
