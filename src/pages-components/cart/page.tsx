@@ -116,11 +116,12 @@ export default function CartPage() {
                         {((item.data.price ?? 0) * item.quantity).toLocaleString()} Kč
                       </div>
                       <Button
+                        size="small"
                         variant="ghost"
-                        className="ml-4"
+                        className="ml-4 group"
                         onClick={() => dispatch(removeFromCart(item.id))}
                       >
-                        <Trash2 className="h-5 w-5 text-muted-foreground hover:text-destructive" />
+                        <Trash2 className="group-hover:text-white h-3 w-3 text-muted-foreground hover:text-destructive" />
                       </Button>
                     </Card>
                   ))}

@@ -1,13 +1,12 @@
 'use client';
 
-import { Apple } from 'lucide-react';
-
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { SearchDialog } from '@/features/search-products';
+import Logo from '@/shared/assets/icons/logo.svg';
 import Container from '@/shared/ui/container';
 import { LiquidGlass } from '@/shared/ui/liquid-glass';
-import { Title } from '@/shared/ui/title';
 import { CartButton } from '@/widgets/cart-button';
 
 export function Header() {
@@ -15,10 +14,7 @@ export function Header() {
     <LiquidGlass as="header" className="sticky top-0 z-50 w-full border-b border-border/40">
       <Container className="flex py-4 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Apple className="h-6 w-6" />
-          <Title variant="h1" className="text-xl font-semibold tracking-tight">
-            iStore
-          </Title>
+          <Image src={Logo} width={68} height={61} alt="IObchod" />
         </Link>
         <div className="flex flex-1 items-center justify-end ml-2 space-x-2 md:space-x-4">
           <SearchDialog />

@@ -37,6 +37,7 @@ export function ProductCard({ product }: ProductCardProps) {
             fill
             className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
             data-ai-hint="iphone side"
+            priority
           />
         </div>
       </CardHeader>

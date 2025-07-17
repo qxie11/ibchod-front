@@ -26,6 +26,7 @@ import { useAppSelector } from '@/shared/lib/hooks/useAppSelector';
 import { createClient } from '@/shared/lib/utils/prismic-client';
 import Container from '@/shared/ui/container';
 import { LiquidGlass } from '@/shared/ui/liquid-glass';
+import Loader from '@/shared/ui/loader';
 import Text from '@/shared/ui/text';
 import { Title } from '@/shared/ui/title';
 import { Header } from '@/widgets/header';
@@ -35,15 +36,6 @@ interface HomePageProps {
   uniqueBrands: string[];
   uniqueCapacities: number[];
   uniqueColors: string[];
-}
-
-// Лоадер в стиле сайта
-function Loader() {
-  return (
-    <div className="flex justify-center items-center py-16">
-      <span className="inline-block w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></span>
-    </div>
-  );
 }
 
 export default function HomePage({
@@ -72,13 +64,7 @@ export default function HomePage({
             ? [prismic.filter.fulltext('my.phone.name', selectedModel)]
             : []),
           ...(selectedStorage !== 'all'
-            ? [
-                prismic.filter.numberInRange(
-                  'my.phone.capacity',
-                  +selectedStorage,
-                  +selectedStorage
-                ),
-              ]
+            ? [prismic.filter.at('my.phone.capacity', +selectedStorage)]
             : []),
           ...(selectedColor !== 'all'
             ? [prismic.filter.fulltext('my.phone.color', selectedColor)]
@@ -134,21 +120,22 @@ export default function HomePage({
             />
           </LiquidGlass>
           <div className="md:col-span-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
-              {isLoading ? (
-                <Loader />
-              ) : (
-                phoneListState.map((product) => (
-                  <div key={product.id} className="relative group">
-                    <Link href={`/product/${product.uid}`} className="block">
-                      <ProductCard product={product} />
-                    </Link>
-                    <div className="absolute bottom-4 right-4 z-10">
-                      <AddToCartButton size="small" product={product} />
-                    </div>
-                  </div>
-                ))
+            <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
+              {isLoading && (
+                <div className="absolute z-20 inset-0 bg-white bg-opacity-50">
+                  <Loader className="absolute left-1/2 top-20" />
+                </div>
               )}
+              {phoneListState.map((product) => (
+                <div key={product.id} className="relative group">
+                  <Link href={`/product/${product.uid}`} className="block">
+                    <ProductCard product={product} />
+                  </Link>
+                  <div className="absolute bottom-4 right-4 z-10">
+                    <AddToCartButton size="small" product={product} />
+                  </div>
+                </div>
+              ))}
             </div>
             {phoneListState.length === 0 && !isLoading && (
               <div className="text-center py-20 col-span-3">

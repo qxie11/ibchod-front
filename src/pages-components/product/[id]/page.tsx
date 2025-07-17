@@ -115,6 +115,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                               alt={product.data.name + ' photo ' + (idx + 1)}
                               fill
                               className="object-cover"
+                              priority={idx === 1}
                             />
                           </SwiperSlide>
                         ))
@@ -255,7 +256,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                 <Swiper
                   modules={[Navigation]}
                   spaceBetween={24}
-                  slidesPerView={1}
+                  slidesPerView={1.2}
                   navigation={{
                     nextEl: '.swiper-next',
                     prevEl: '.swiper-prev',
