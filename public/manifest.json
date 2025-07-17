@@ -4,9 +4,9 @@
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
-  "name": "iStore Minimal",
-  "short_name": "iStore",
-  "description": "An elegant iPhone store built with Next.js",
+  "name": "ibchod",
+  "short_name": "ibchod",
+  "description": "Moderní obchod s iPhony s novou firemní identitou a logem.",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
