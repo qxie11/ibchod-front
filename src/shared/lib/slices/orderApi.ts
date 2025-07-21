@@ -1,3 +1,5 @@
+import { Order } from '@/entities/order/model/types';
+
 import { baseApi } from './baseApi';
 
 interface OrderItem {
@@ -21,8 +23,11 @@ export const orderApi = baseApi.injectEndpoints({
         body,
       }),
     }),
+    getOrders: build.query<Order[], void>({
+      query: () => 'orders',
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useCreateOrderMutation } = orderApi;
+export const { useCreateOrderMutation, useGetOrdersQuery } = orderApi;
