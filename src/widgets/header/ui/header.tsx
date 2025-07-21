@@ -1,7 +1,5 @@
 'use client';
 
-import { Shield } from 'lucide-react';
-
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -19,10 +17,6 @@ export function Header() {
           <Image src={Logo} width={68} height={61} alt="IObchod" />
         </Link>
         <div className="flex flex-1 items-center justify-end ml-2 space-x-2 md:space-x-4">
-          <Link href="/admin">
-            <Shield className="h-6 w-6 text-muted-foreground hover:text-primary transition-colors" />
-            <span className="sr-only">Admin Panel</span>
-          </Link>
           <SearchDialog />
           <CartButton />
         </div>

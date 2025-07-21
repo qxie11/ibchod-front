@@ -6,12 +6,14 @@ import Link from 'next/link';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetOrdersQuery } from '@/shared/lib/slices/orderApi';
-import { useAdminGetProductsQuery } from '@/shared/lib/slices/productApi';
+import { useGetProductsQuery } from '@/shared/lib/slices/productApi';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Title } from '@/shared/ui/title';
 
 export default function AdminDashboardPage() {
-  const { data: productsData, isLoading: productsLoading } = useAdminGetProductsQuery();
+  const { data: productsData, isLoading: productsLoading } = useGetProductsQuery({
+    take: 10,
+  });
   const { data: ordersData, isLoading: ordersLoading } = useGetOrdersQuery();
 
   const productCount = productsData?.items?.length ?? 0;

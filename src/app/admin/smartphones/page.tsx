@@ -11,14 +11,16 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Smartphone } from '@/entities/product/model/types';
-import { useAdminGetProductsQuery } from '@/shared/lib/slices/productApi';
+import { useGetProductsQuery } from '@/shared/lib/slices/productApi';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import Loader from '@/shared/ui/loader';
 
 export default function AdminSmartphonesPage() {
-  const { data, error, isLoading } = useAdminGetProductsQuery();
+  const { data, error, isLoading } = useGetProductsQuery({
+    take: 10,
+  });
 
   if (isLoading) {
     return <Loader />;

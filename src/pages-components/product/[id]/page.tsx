@@ -1,6 +1,5 @@
 'use client';
 
-import { Content } from '@prismicio/client';
 import { ArrowLeft } from 'lucide-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDispatch } from 'react-redux';
@@ -41,7 +40,7 @@ import { Header } from '@/widgets/header';
 
 interface ProductDetailPageProps {
   product: Smartphone;
-  similarProducts: Content.PhoneDocument[];
+  similarProducts: Smartphone[];
 }
 
 export default function ProductDetailPage({ product, similarProducts }: ProductDetailPageProps) {

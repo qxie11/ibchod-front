@@ -27,11 +27,8 @@ export const productApi = baseApi.injectEndpoints({
         return `smartphones?${params.toString()}`;
       },
     }),
-    adminGetProducts: build.query<any, void>({
-      query: () => 'smartphones/all',
-    }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetProductsQuery, useAdminGetProductsQuery } = productApi;
+export const { useGetProductsQuery } = productApi;

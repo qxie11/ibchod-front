@@ -1,10 +1,8 @@
-import { Smartphone } from '@/entities/product/model/types';
+import type { Smartphone } from '@/entities/product/model/types';
 
 export interface OrderItem {
-  id: number;
-  quantity: number;
-  price: number;
   smartphone: Smartphone;
+  quantity: number;
 }
 
 export interface Order {
@@ -12,7 +10,6 @@ export interface Order {
   name: string;
   email: string;
   phone: string;
-  total: number;
   createdAt: string;
-  orderItems: OrderItem[];
+  items: OrderItem[];
 }
