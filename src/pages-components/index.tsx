@@ -4,11 +4,8 @@ import { Recycle, ShieldCheck, Truck } from 'lucide-react';
 
 import { useEffect } from 'react';
 
-import Link from 'next/link';
-
 import { ProductCard } from '@/entities/product';
 import { Smartphone } from '@/entities/product/model/types';
-import { AddToCartButton } from '@/features/add-to-cart';
 import {
   selectPriceRange,
   selectSelectedColor,
@@ -152,12 +149,7 @@ export default function HomePage({
               )}
               {phoneListState.items.map((product: Smartphone) => (
                 <div key={product.id} className="relative group">
-                  <Link href={`/product/${product.slug}`} className="block">
-                    <ProductCard product={product} />
-                  </Link>
-                  <div className="absolute bottom-4 right-4 z-10">
-                    <AddToCartButton size="small" product={product} />
-                  </div>
+                  <ProductCard product={product} />
                 </div>
               ))}
             </div>

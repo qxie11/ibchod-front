@@ -265,13 +265,13 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                     .map((similarProduct, i) => (
                       <SwiperSlide key={similarProduct.id + i}>
                         <Card className="relative flex flex-row items-center bg-white rounded-xl border border-gray-200 transition-all h-full min-h-[120px]">
-                          <Link className="absolute inset-0 z-10" href={similarProduct.uid}></Link>
+                          <Link className="absolute inset-0 z-10" href={similarProduct.slug}></Link>
                           <div className="w-20 h-20 flex-shrink-0 relative m-3 overflow-hidden rounded-xl shadow-2xl">
                             <Image
-                              src={similarProduct.gallery[0]?.image1?.url as unknown as string}
-                              alt={similarProduct.gallery[0]?.image1?.alt as unknown as string}
+                              src={similarProduct.gallery[0] as unknown as string}
+                              alt={similarProduct.gallery[0] as unknown as string}
                               fill
-                              className="object-contain"
+                              className="object-cover"
                             />
                           </div>
                           <div className="flex flex-col flex-1 px-2 py-3">

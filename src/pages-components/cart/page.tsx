@@ -35,7 +35,7 @@ export default function CartPage() {
   const cartItems = useAppSelector(selectCartItems);
   const cartCount = useAppSelector(selectCartCount);
   const cartTotal = useAppSelector(selectCartTotal);
-  console.log({ cartItems });
+
   return (
     <>
       <Header />

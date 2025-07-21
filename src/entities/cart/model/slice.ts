@@ -51,7 +51,6 @@ export const cartSlice = createSlice({
         description: `${product.name} is now in your cart.`,
       });
 
-      console.log(state.items);
       localStorage.setItem('cart', JSON.stringify(state.items));
     },
     removeFromCart: (state, action: PayloadAction<string>) => {

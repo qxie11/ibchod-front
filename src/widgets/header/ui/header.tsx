@@ -11,8 +11,11 @@ import { CartButton } from '@/widgets/cart-button';
 
 export function Header() {
   return (
-    <LiquidGlass as="header" className="sticky top-0 z-50 w-full border-b border-border/40">
-      <Container className="flex py-4 items-center justify-between">
+    <LiquidGlass
+      as="header"
+      className="max-w-[1220px] sticky top-0 z-50 w-full border-b border-border/40"
+    >
+      <Container className="flex py-2 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image src={Logo} width={68} height={61} alt="IObchod" />
         </Link>
