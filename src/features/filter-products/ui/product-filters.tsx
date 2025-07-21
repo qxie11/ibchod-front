@@ -14,6 +14,7 @@ interface ProductFiltersProps {
   priceRange: number[];
   setPriceRange: (_range: number[]) => void;
   maxPrice: number;
+  minPrice: number;
   selectedModel: string;
   setSelectedModel: (_model: string) => void;
   models: string[];
@@ -30,6 +31,7 @@ export function ProductFilters({
   priceRange,
   setPriceRange,
   maxPrice,
+  minPrice,
   selectedModel,
   setSelectedModel,
   models,
@@ -41,7 +43,7 @@ export function ProductFilters({
   colors,
   resetFilters,
 }: ProductFiltersProps) {
-  const [localPriceRange, setLocalPriceRange] = useState(priceRange);
+  const [localPriceRange, setLocalPriceRange] = useState([minPrice, maxPrice]);
 
   useDebounce(
     () => {
@@ -60,15 +62,17 @@ export function ProductFilters({
       <div className="space-y-4">
         <div>
           <FormField className="mb-3" label="💵 Cena">
-            <Slider
-              id="price"
-              min={0}
-              max={maxPrice}
-              step={10}
-              value={localPriceRange}
-              onValueChange={setLocalPriceRange}
-              className="mb-2"
-            />
+            {maxPrice !== 0 && (
+              <Slider
+                id="price"
+                min={minPrice}
+                max={maxPrice}
+                step={10}
+                value={localPriceRange}
+                onValueChange={setLocalPriceRange}
+                className="mb-2"
+              />
+            )}
           </FormField>
           <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>{priceRange[0]} Kč</span>

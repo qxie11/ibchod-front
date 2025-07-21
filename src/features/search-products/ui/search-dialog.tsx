@@ -1,19 +1,18 @@
 'use client';
 
-import { Content } from '@prismicio/client';
-import * as prismic from '@prismicio/client';
+import { DialogTitle } from '@radix-ui/react-dialog';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Search } from 'lucide-react';
 import { isWindows } from 'react-device-detect';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { useDebounce } from 'react-use';
 
 import React, { useState } from 'react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { createClient } from '@/prismicio';
 import { useIsClient } from '@/shared/lib/hooks/useIsClient';
+import { useGetProductsQuery } from '@/shared/lib/slices/productApi';
 import { cn } from '@/shared/lib/utils/cn';
 import { Button } from '@/shared/ui/button';
 import {
@@ -28,8 +27,6 @@ import {
 export function SearchDialog() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Content.PhoneDocument[]>([]);
-  const [loading, setLoading] = useState(false);
   const isClient = useIsClient();
   const router = useRouter();
 
@@ -42,28 +39,11 @@ export function SearchDialog() {
     { enableOnFormTags: true },
     [setOpen]
   );
-
-  useDebounce(
-    () => {
-      if (!open || query.length < 2) {
-        setResults([]);
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      const fetchData = async () => {
-        const client = createClient();
-        const docs = await client.getAllByType('phone', {
-          pageSize: 10,
-          filters: query ? [prismic.filter.fulltext('my.phone.name', query)] : [],
-        });
-        setResults(docs);
-        setLoading(false);
-      };
-      fetchData();
-    },
-    300,
-    [query, open]
+  const { data: { items: results } = [], isLoading } = useGetProductsQuery(
+    { search: query, take: 10 },
+    {
+      skip: !open || query.length <= 2,
+    }
   );
 
   const handleSelect = (productId: string) => {
@@ -92,34 +72,37 @@ export function SearchDialog() {
         </kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
+        <VisuallyHidden>
+          <DialogTitle>Vyhledávání produktů</DialogTitle>
+        </VisuallyHidden>
         <CommandInput
           placeholder="Zadejte název produktu..."
           value={query}
           onValueChange={setQuery}
         />
         <CommandList>
-          {query.length < 2 ? null : loading ? (
+          {query.length < 2 ? null : isLoading ? (
             <div className="p-4 text-center text-muted-foreground text-sm">Načítání…</div>
-          ) : results.length === 0 ? (
+          ) : results?.length === 0 ? (
             <CommandEmpty>Nebyly nalezeny žádné výsledky.</CommandEmpty>
           ) : (
             <CommandGroup heading="Produkty">
-              {results.map((product) => (
+              {results?.map((product: any) => (
                 <CommandItem
                   key={product.id}
-                  onSelect={() => handleSelect(product.uid)}
-                  value={product.data.name || product.uid}
+                  onSelect={() => handleSelect(product.slug)}
+                  value={product.name || product.slug}
                 >
                   <div className="relative h-8 w-8 mr-4 flex-shrink-0 overflow-hidden rounded-md border">
                     <Image
-                      src={(product.data.gallery?.[0]?.image1?.url as string) || ''}
-                      alt={product.data.name ?? 'iPhone'}
+                      src={product.gallery?.[0] || ''}
+                      alt={product.name ?? 'iPhone'}
                       fill
                       style={{ objectFit: 'cover' }}
                     />
                   </div>
                   <span>
-                    {product.data.name} - {product.data.capacity}GB - {product.data.color}
+                    {product.name} - {product.capacity}GB - {product.color}
                   </span>
                 </CommandItem>
               ))}

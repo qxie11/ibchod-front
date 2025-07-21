@@ -1,18 +1,14 @@
 'use client';
 
-import type { Content } from '@prismicio/client';
-import * as prismic from '@prismicio/client';
 import { Recycle, ShieldCheck, Truck } from 'lucide-react';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import Link from 'next/link';
 
 import { ProductCard } from '@/entities/product';
 import { AddToCartButton } from '@/features/add-to-cart';
-import { ProductFilters } from '@/features/filter-products';
 import {
-  resetFilters,
   selectPriceRange,
   selectSelectedColor,
   selectSelectedModel,
@@ -22,9 +18,10 @@ import {
   setSelectedModel,
   setSelectedStorage,
 } from '@/features/filter-products';
+import { ProductFilters } from '@/features/filter-products';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector';
-import { createClient } from '@/shared/lib/utils/prismic-client';
+import { useGetProductsQuery } from '@/shared/lib/slices/productApi';
 import { Card } from '@/shared/ui/card';
 import Container from '@/shared/ui/container';
 import { LiquidGlass } from '@/shared/ui/liquid-glass';
@@ -34,58 +31,51 @@ import { Title } from '@/shared/ui/title';
 import { Header } from '@/widgets/header';
 
 interface HomePageProps {
-  phoneList: Content.PhoneDocument[];
+  phoneListInit: any;
   uniqueBrands: string[];
   uniqueCapacities: number[];
   uniqueColors: string[];
+  maxPrice: number;
+  minPrice: number;
 }
 
 export default function HomePage({
-  phoneList,
+  phoneListInit,
   uniqueBrands,
   uniqueCapacities,
   uniqueColors,
+  maxPrice,
+  minPrice,
 }: HomePageProps) {
-  const [phoneListState, setPhoneListState] = useState(phoneList);
-
   const dispatch = useAppDispatch();
   const priceRange = useAppSelector(selectPriceRange);
   const selectedModel = useAppSelector(selectSelectedModel);
   const selectedStorage = useAppSelector(selectSelectedStorage);
   const selectedColor = useAppSelector(selectSelectedColor);
 
-  const [isLoading, setIsloading] = useState(false);
+  const { data: phoneListState = phoneListInit, isFetching: isLoading } = useGetProductsQuery(
+    {
+      take: 10,
+      name: selectedModel !== 'all' ? selectedModel : undefined,
+      minPrice: priceRange[0],
+      maxPrice: priceRange[1],
+      color: selectedColor !== 'all' ? selectedColor : undefined,
+      capacity: selectedStorage !== 'all' ? selectedStorage : undefined,
+    },
+    {
+      skip: priceRange[1] === 0,
+    }
+  );
 
   useEffect(() => {
-    setIsloading(true);
-    const client = createClient();
-    (async () => {
-      const response = await client.getAllByType('phone', {
-        filters: [
-          ...(selectedModel !== 'all'
-            ? [prismic.filter.fulltext('my.phone.name', selectedModel)]
-            : []),
-          ...(selectedStorage !== 'all'
-            ? [prismic.filter.at('my.phone.capacity', +selectedStorage)]
-            : []),
-          ...(selectedColor !== 'all'
-            ? [prismic.filter.fulltext('my.phone.color', selectedColor)]
-            : []),
-          prismic.filter.numberInRange('my.phone.price', ...(priceRange as [number, number])),
-        ],
-      });
-
-      setPhoneListState(response);
-      setIsloading(false);
-    })();
-  }, [priceRange, selectedModel, selectedStorage, selectedColor]);
+    dispatch(setPriceRange([minPrice, maxPrice]));
+  }, [dispatch, maxPrice, minPrice]);
 
   const resetFil = () => {
-    dispatch(setPriceRange([0, 40000]));
+    dispatch(setPriceRange([minPrice, maxPrice]));
     dispatch(setSelectedModel('all'));
     dispatch(setSelectedStorage('all'));
     dispatch(setSelectedColor('all'));
-    dispatch(resetFilters());
   };
 
   return (
@@ -133,12 +123,13 @@ export default function HomePage({
         <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
           <LiquidGlass
             as="aside"
-            className="md:col-span-2 rounded-lg shadow-sm h-fit sticky top-24 w-full"
+            className="md:col-span-2 rounded-lg shadow-sm h-fit md:sticky md:top-24 w-full"
           >
             <ProductFilters
               priceRange={priceRange}
               setPriceRange={(v) => dispatch(setPriceRange(v))}
-              maxPrice={40000}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
               selectedModel={selectedModel}
               setSelectedModel={(v) => dispatch(setSelectedModel(v))}
               models={uniqueBrands}
@@ -158,9 +149,9 @@ export default function HomePage({
                   <Loader className="absolute left-1/2 top-20" />
                 </div>
               )}
-              {phoneListState.map((product) => (
+              {phoneListState.items.map((product: any) => (
                 <div key={product.id} className="relative group">
-                  <Link href={`/product/${product.uid}`} className="block">
+                  <Link href={`/product/${product.slug}`} className="block">
                     <ProductCard product={product} />
                   </Link>
                   <div className="absolute bottom-4 right-4 z-10">
@@ -169,7 +160,7 @@ export default function HomePage({
                 </div>
               ))}
             </div>
-            {phoneListState.length === 0 && !isLoading && (
+            {phoneListState.items.length === 0 && !isLoading && (
               <div className="text-center py-20 col-span-3">
                 <Title variant="h2" className="text-2xl font-semibold text-foreground mb-2">
                   No products found

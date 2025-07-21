@@ -9,10 +9,8 @@ interface FilterState {
   selectedColor: string;
 }
 
-const maxPrice = 40000;
-
 const initialState: FilterState = {
-  priceRange: [0, maxPrice],
+  priceRange: [0, 0],
   selectedModel: 'all',
   selectedStorage: 'all',
   selectedColor: 'all',
@@ -36,7 +34,7 @@ export const filterSlice = createSlice({
     },
 
     resetFilters(state) {
-      state.priceRange = [0, maxPrice];
+      state.priceRange = [0, 0];
       state.selectedModel = 'all';
       state.selectedStorage = 'all';
       state.selectedColor = 'all';

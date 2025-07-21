@@ -40,7 +40,7 @@ import { Title } from '@/shared/ui/title';
 import { Header } from '@/widgets/header';
 
 interface ProductDetailPageProps {
-  product: Content.PhoneDocument;
+  product: any;
   similarProducts: Content.PhoneDocument[];
 }
 
@@ -80,7 +80,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{product.data.name}</BreadcrumbPage>
+              <BreadcrumbPage>{product.name}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -105,21 +105,17 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                   pagination={{ clickable: true }}
                   className="h-full w-full"
                 >
-                  {product.data.gallery?.[0]
-                    ? Object.values(product.data.gallery[0])
-                        .filter((img: any) => img?.url)
-                        .map(({ url }: any, idx: number) => (
-                          <SwiperSlide key={url + idx}>
-                            <Image
-                              src={url ?? ''}
-                              alt={product.data.name + ' photo ' + (idx + 1)}
-                              fill
-                              className="object-cover"
-                              priority={idx === 1}
-                            />
-                          </SwiperSlide>
-                        ))
-                    : null}
+                  {product.gallery.map((url: string, idx: number) => (
+                    <SwiperSlide key={url + idx}>
+                      <Image
+                        src={url ?? ''}
+                        alt={product.name + ' photo ' + (idx + 1)}
+                        fill
+                        className="object-cover"
+                        priority={idx === 1}
+                      />
+                    </SwiperSlide>
+                  ))}
                   <button
                     className="product-swiper-prev absolute top-1/2 left-2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-accent border border-accent hover:bg-accent hover:text-white transition"
                     aria-label="Předchozí obrázek"
@@ -139,22 +135,20 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
             </div>
             <div>
               <Title className="mb-3" size="medium" variant="h1">
-                Apple {product.data.name}
+                Apple {product.name}
               </Title>
               <div className="mb-5 flex items-center gap-2">
-                <Badge variant="secondary">{product.data.capacity}</Badge>
-                <Badge variant="secondary">{product.data.color}</Badge>
+                <Badge variant="secondary">{product.capacity}</Badge>
+                <Badge variant="secondary">{product.color}</Badge>
               </div>
               <div className="flex items-center gap-3 mb-6">
-                <Text className="text-3xl font-bold text-green-600">
-                  {product.data.price ?? 0} Kč
-                </Text>
+                <Text className="text-3xl font-bold text-green-600">{product.price ?? 0} Kč</Text>
                 <Text className="text-lg text-muted-foreground line-through">
-                  {Math.round(+(product?.data?.price ?? 0) * 1.3)} Kč
+                  {Math.round(+(product?.price ?? 0) * 1.3)} Kč
                 </Text>
               </div>
               <PrismicRichText
-                field={product.data.large_desc}
+                field={product.large_desc}
                 components={{
                   paragraph: ({ children }) => (
                     <Text className="text-muted-foreground mb-6">{children}</Text>
@@ -229,11 +223,11 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                     </div>
                     <div className="flex justify-between">
                       <span>Storage:</span>
-                      <span>{product.data.capacity}</span>
+                      <span>{product.capacity}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Color:</span>
-                      <span>{product.data.color}</span>
+                      <span>{product.color}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Battery:</span>
@@ -255,8 +249,8 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                 </Title>
                 <Swiper
                   modules={[Navigation]}
-                  spaceBetween={24}
-                  slidesPerView={1.2}
+                  spaceBetween={8}
+                  slidesPerView={1.1}
                   navigation={{
                     nextEl: '.swiper-next',
                     prevEl: '.swiper-prev',
@@ -265,9 +259,11 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                   breakpoints={{
                     640: {
                       slidesPerView: 2,
+                      spaceBetween: 24,
                     },
                     1024: {
                       slidesPerView: 3,
+                      spaceBetween: 24,
                     },
                   }}
                   className="pb-12"
@@ -280,23 +276,23 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                           <Link className="absolute inset-0 z-10" href={similarProduct.uid}></Link>
                           <div className="w-20 h-20 flex-shrink-0 relative m-3 overflow-hidden rounded-xl shadow-2xl">
                             <Image
-                              src={similarProduct.data.gallery[0]?.image1?.url as unknown as string}
-                              alt={similarProduct.data.gallery[0]?.image1?.alt as unknown as string}
+                              src={similarProduct.gallery[0]?.image1?.url as unknown as string}
+                              alt={similarProduct.gallery[0]?.image1?.alt as unknown as string}
                               fill
                               className="object-contain"
                             />
                           </div>
                           <div className="flex flex-col flex-1 px-2 py-3">
                             <h3 className="font-bold text-base mb-1">
-                              {similarProduct.data.name} {similarProduct.data.capacity}GB
+                              {similarProduct.name} {similarProduct.capacity}GB
                             </h3>
 
                             <div className="flex items-center gap-2">
                               <Text className="text-base font-bold text-green-600">
-                                {product.data.price ?? 0} Kč
+                                {product.price ?? 0} Kč
                               </Text>
                               <Text className="text-sm text-muted-foreground line-through">
-                                {Math.round(+(product?.data?.price ?? 0) * 1.3)} Kč
+                                {Math.round(+(product?.price ?? 0) * 1.3)} Kč
                               </Text>
                             </div>
                           </div>

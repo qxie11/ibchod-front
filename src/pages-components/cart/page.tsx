@@ -63,8 +63,8 @@ export default function CartPage() {
                     <Card key={item.id} className="flex items-center p-4">
                       <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border">
                         <Image
-                          src={item.data.gallery?.[0]?.image1?.url ?? ''}
-                          alt={item.data.name ?? 'iPhone'}
+                          src={item.gallery?.[0] ?? ''}
+                          alt={item.name ?? 'iPhone'}
                           fill
                           style={{ objectFit: 'cover' }}
                           data-ai-hint="iphone side"
@@ -72,14 +72,14 @@ export default function CartPage() {
                       </div>
                       <div className="flex-1 ml-4">
                         <Title variant="h4" className="!text-lg font-semibold">
-                          {item.data.name}
+                          {item.name}
                         </Title>
                         <Text className="text-sm text-muted-foreground">
-                          {item.data.capacity}GB - {item.data.color}
+                          {item.capacity}GB - {item.color}
                         </Text>
                         <div className="flex items-center gap-2 mb-2">
                           <Text className="font-medium text-green-600">
-                            {(item.data.price ?? 0).toLocaleString()} Kč
+                            {(item.price ?? 0).toLocaleString()} Kč
                           </Text>
                         </div>
                       </div>
@@ -113,7 +113,7 @@ export default function CartPage() {
                         </Button>
                       </div>
                       <div className="font-bold w-24 text-right">
-                        {((item.data.price ?? 0) * item.quantity).toLocaleString()} Kč
+                        {((item.price ?? 0) * item.quantity).toLocaleString()} Kč
                       </div>
                       <Button
                         size="small"
@@ -147,7 +147,9 @@ export default function CartPage() {
                       </div>
                     </CardContent>
                     <CardFooter>
-                      <Button className="w-full">Proceed to Checkout</Button>
+                      <Button href="/checkout" className="w-full">
+                        Proceed to Checkout
+                      </Button>
                     </CardFooter>
                   </Card>
                 </div>
