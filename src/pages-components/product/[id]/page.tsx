@@ -1,7 +1,6 @@
 'use client';
 
 import { Content } from '@prismicio/client';
-import { PrismicRichText } from '@prismicio/react';
 import { ArrowLeft } from 'lucide-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDispatch } from 'react-redux';
@@ -21,6 +20,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { addToCart } from '@/entities/cart';
+import { Smartphone } from '@/entities/product/model/types';
 import { AddToCartButton } from '@/features/add-to-cart';
 import { Badge } from '@/shared/ui/badge';
 import {
@@ -40,7 +40,7 @@ import { Title } from '@/shared/ui/title';
 import { Header } from '@/widgets/header';
 
 interface ProductDetailPageProps {
-  product: any;
+  product: Smartphone;
   similarProducts: Content.PhoneDocument[];
 }
 
@@ -147,14 +147,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                   {Math.round(+(product?.price ?? 0) * 1.3)} Kč
                 </Text>
               </div>
-              <PrismicRichText
-                field={product.large_desc}
-                components={{
-                  paragraph: ({ children }) => (
-                    <Text className="text-muted-foreground mb-6">{children}</Text>
-                  ),
-                }}
-              />
+              <Text className="text-muted-foreground mb-6">{product.large_desc}</Text>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div className="flex items-center gap-3">
                   <span className="text-green-600 text-2xl">✔</span>

@@ -7,8 +7,10 @@ import { LiquidGlass } from '@/shared/ui/liquid-glass';
 import Text from '@/shared/ui/text';
 import { Title } from '@/shared/ui/title';
 
+import type { Smartphone } from '../model/types';
+
 interface ProductCardProps {
-  product: any;
+  product: Smartphone;
 }
 
 export function ProductCard({ product }: ProductCardProps) {

@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 
 import { ProductCard } from '@/entities/product';
+import { Smartphone } from '@/entities/product/model/types';
 import { AddToCartButton } from '@/features/add-to-cart';
 import {
   selectPriceRange,
@@ -31,7 +32,7 @@ import { Title } from '@/shared/ui/title';
 import { Header } from '@/widgets/header';
 
 interface HomePageProps {
-  phoneListInit: any;
+  phoneListInit: Smartphone;
   uniqueBrands: string[];
   uniqueCapacities: number[];
   uniqueColors: string[];
@@ -149,7 +150,7 @@ export default function HomePage({
                   <Loader className="absolute left-1/2 top-20" />
                 </div>
               )}
-              {phoneListState.items.map((product: any) => (
+              {phoneListState.items.map((product: Smartphone) => (
                 <div key={product.id} className="relative group">
                   <Link href={`/product/${product.slug}`} className="block">
                     <ProductCard product={product} />

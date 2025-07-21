@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import type { Smartphone } from '@/entities/product/model/types';
 import { useIsClient } from '@/shared/lib/hooks/useIsClient';
 import { useGetProductsQuery } from '@/shared/lib/slices/productApi';
 import { cn } from '@/shared/lib/utils/cn';
@@ -87,7 +88,7 @@ export function SearchDialog() {
             <CommandEmpty>Nebyly nalezeny žádné výsledky.</CommandEmpty>
           ) : (
             <CommandGroup heading="Produkty">
-              {results?.map((product: any) => (
+              {results?.map((product: Smartphone) => (
                 <CommandItem
                   key={product.id}
                   onSelect={() => handleSelect(product.slug)}

@@ -2,15 +2,16 @@
 
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
+import { Smartphone } from '@/entities/product/model/types';
 import { toast } from '@/shared/hooks/use-toast';
 import type { RootState } from '@/shared/lib/store';
 
-// interface CartItem extends Content.PhoneDocument {
-//   quantity: number;
-// }
+interface CartItem extends Smartphone {
+  quantity: number;
+}
 
 interface CartState {
-  items: any[];
+  items: CartItem[];
 }
 
 const getInitialState = (): CartState => {
@@ -55,7 +56,7 @@ export const cartSlice = createSlice({
     },
     removeFromCart: (state, action: PayloadAction<string>) => {
       const productId = action.payload;
-      state.items = state.items.filter((item) => item.id !== productId);
+      state.items = state.items.filter((item) => item.id !== +productId);
       toast({
         title: 'Removed from cart',
         variant: 'destructive',
@@ -66,14 +67,14 @@ export const cartSlice = createSlice({
     updateQuantity: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
       const { productId, quantity } = action.payload;
       if (quantity <= 0) {
-        state.items = state.items.filter((item) => item.id !== productId);
+        state.items = state.items.filter((item) => item.id !== +productId);
         toast({
           title: 'Removed from cart',
           variant: 'destructive',
           description: `Item was removed from your cart.`,
         });
       } else {
-        const item = state.items.find((item) => item.id === productId);
+        const item = state.items.find((item) => item.id === +productId);
         if (item) {
           item.quantity = quantity;
         }

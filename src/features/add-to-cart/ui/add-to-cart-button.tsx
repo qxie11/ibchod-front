@@ -1,16 +1,16 @@
 'use client';
 
-import { Content } from '@prismicio/client';
 import { ShoppingCart } from 'lucide-react';
 
 import React, { HTMLAttributes } from 'react';
 
 import { addToCart } from '@/entities/cart/model/slice';
+import type { Smartphone } from '@/entities/product/model/types';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch';
 import { Button, ButtonSize, ButtonVariant } from '@/shared/ui/button';
 
 interface AddToCartButtonProps extends HTMLAttributes<HTMLButtonElement> {
-  product: Content.PhoneDocument;
+  product: Smartphone;
   className?: string;
   size?: ButtonSize;
   variant?: ButtonVariant;
