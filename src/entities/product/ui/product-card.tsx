@@ -36,7 +36,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </CardHeader>
         <CardContent className="p-4 pb-0 flex flex-col flex-grow">
           <div className="flex-grow">
-            <Title className="mb-1 !text-base" variant="h3" size="small">
+            <Title className="mb-1 !text-base" variant="h3" size="extra-small">
               {product.name} {product.capacity}GB - {product.color}
             </Title>
             <Text className="text-sm text-muted-foreground mb-3">{product.small_desc}</Text>

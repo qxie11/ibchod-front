@@ -47,30 +47,30 @@ export const cartSlice = createSlice({
         state.items.push({ ...product, quantity: 1 });
       }
       toast({
-        title: 'Added to cart',
-        description: `${product.name} is now in your cart.`,
+        title: 'Přidáno do košíku',
+        description: `${product.name} byl přidán do vašeho košíku.`,
       });
 
       localStorage.setItem('cart', JSON.stringify(state.items));
     },
-    removeFromCart: (state, action: PayloadAction<string>) => {
+    removeFromCart: (state, action: PayloadAction<number>) => {
       const productId = action.payload;
       state.items = state.items.filter((item) => item.id !== +productId);
       toast({
-        title: 'Removed from cart',
+        title: 'Odebráno z košíku',
         variant: 'destructive',
-        description: `Item was removed from your cart.`,
+        description: `Položka byla odebrána z vašeho košíku.`,
       });
       localStorage.setItem('cart', JSON.stringify(state.items));
     },
-    updateQuantity: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
+    updateQuantity: (state, action: PayloadAction<{ productId: number; quantity: number }>) => {
       const { productId, quantity } = action.payload;
       if (quantity <= 0) {
         state.items = state.items.filter((item) => item.id !== +productId);
         toast({
-          title: 'Removed from cart',
+          title: 'Odebráno z košíku',
           variant: 'destructive',
-          description: `Item was removed from your cart.`,
+          description: `Položka byla odebrána z vašeho košíku.`,
         });
       } else {
         const item = state.items.find((item) => item.id === +productId);

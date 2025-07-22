@@ -101,11 +101,11 @@ export default function CheckoutPage() {
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              <BreadcrumbLink href="/">Domů</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Checkout</BreadcrumbPage>
+              <BreadcrumbPage>Pokladna</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -124,7 +124,7 @@ export default function CheckoutPage() {
               <FormField label="Jméno" error={errors.name?.message}>
                 <Input {...register('name')} placeholder="Vaše jméno" error={!!errors.name} />
               </FormField>
-              <FormField label="Email" error={errors.email?.message}>
+              <FormField label="E-mail" error={errors.email?.message}>
                 <Input
                   {...register('email')}
                   placeholder="vas@email.cz"
@@ -141,7 +141,7 @@ export default function CheckoutPage() {
                 />
               </FormField>
               <Button type="submit" className="w-full" disabled={isSubmitting || isOrderLoading}>
-                {isOrderLoading ? 'Odesílání...' : 'Odeslat objednávku'}
+                {isOrderLoading ? 'Odesílání…' : 'Odeslat objednávku'}
               </Button>
               {isSuccess && (
                 <p className="text-green-600 text-center mt-2">Objednávka byla úspěšně odeslána!</p>

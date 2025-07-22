@@ -54,7 +54,7 @@ export default function CartPage() {
         <LiquidGlass>
           <div className="p-6">
             <Title variant="h1" className="text-3xl font-bold mb-6">
-              Your Cart
+              Váš košík
             </Title>
             {cartItems.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -129,26 +129,26 @@ export default function CartPage() {
                 <div className="lg:col-span-1">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Order Summary</CardTitle>
+                      <CardTitle>Shrnutí objednávky</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="flex justify-between">
-                        <span>Subtotal ({cartCount} items)</span>
+                        <span>Mezisoučet ({cartCount} položek)</span>
                         <span>{cartTotal?.toLocaleString()} Kč</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Shipping</span>
-                        <span>Free</span>
+                        <span>Doprava</span>
+                        <span>Zdarma</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between font-bold text-lg">
-                        <span>Total</span>
+                        <span>Celkem</span>
                         <span>{cartTotal?.toLocaleString()} Kč</span>
                       </div>
                     </CardContent>
                     <CardFooter>
                       <Button href="/checkout" className="w-full">
-                        Proceed to Checkout
+                        Pokračovat k pokladně
                       </Button>
                     </CardFooter>
                   </Card>
@@ -158,13 +158,13 @@ export default function CartPage() {
               <div className="flex flex-1 flex-col items-center justify-center text-center border-2 border-dashed rounded-lg py-20">
                 <ShoppingCart className="h-16 w-16 text-muted-foreground/50" />
                 <Title variant="h3" className="mb-4 text-xl font-semibold">
-                  Your cart is empty
+                  Váš košík je prázdný
                 </Title>
                 <Text className="text-muted-foreground mb-2">
-                  Add some products to your cart to get started.
+                  Přidejte si produkty do košíku a začněte nakupovat.
                 </Text>
                 <Button size="small" href="/">
-                  Back to Shop
+                  Zpět do obchodu
                 </Button>
               </div>
             )}

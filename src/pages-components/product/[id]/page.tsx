@@ -166,12 +166,12 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                 </div>
               </div>
               <div className="flex gap-2 flex-col">
-                <AddToCartButton size="large" product={product} className="mb-1 font-black">
+                <AddToCartButton size="medium" product={product} className="mb-1 font-black">
                   Do kosicu
                 </AddToCartButton>
                 <Button
                   onClick={() => dispatch(addToCart(product))}
-                  size="large"
+                  size="medium"
                   variant="ghost"
                   href="/cart"
                   className="font-black"
