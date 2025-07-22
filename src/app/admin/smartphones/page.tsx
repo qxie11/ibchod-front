@@ -2,20 +2,13 @@
 
 import Image from 'next/image';
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Smartphone } from '@/entities/product/model/types';
 import { useGetProductsQuery } from '@/shared/lib/slices/productApi';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import Loader from '@/shared/ui/loader';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 
 export default function AdminSmartphonesPage() {
   const { data, error, isLoading } = useGetProductsQuery({

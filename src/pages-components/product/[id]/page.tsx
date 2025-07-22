@@ -12,15 +12,15 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { addToCart } from '@/entities/cart';
+import { Smartphone } from '@/entities/product/model/types';
+import { AddToCartButton } from '@/features/add-to-cart';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
-import { addToCart } from '@/entities/cart';
-import { Smartphone } from '@/entities/product/model/types';
-import { AddToCartButton } from '@/features/add-to-cart';
+} from '@/shared/ui/accordion';
 import { Badge } from '@/shared/ui/badge';
 import {
   Breadcrumb,

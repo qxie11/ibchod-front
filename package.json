@@ -11,10 +11,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
-    "slicemachine": "start-slicemachine",
     "format": "prettier . --write",
     "prepare": "husky",
-    "generate": "npx swagger-typescript-api generate --path  https://iobchod-server.vercel.app/api-json --name generated.ts --output src/generated"
+    "generate": "npx swagger-typescript-api generate --path  https://iobchod-server.vercel.app/api-json --name generated.ts --output src/generated",
+    "lint-staged": "npx lint-staged"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.13.0",

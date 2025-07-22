@@ -4,10 +4,10 @@ import { ListOrdered, Package } from 'lucide-react';
 
 import Link from 'next/link';
 
-import { Skeleton } from '@/components/ui/skeleton';
 import { useGetOrdersQuery } from '@/shared/lib/slices/orderApi';
 import { useGetProductsQuery } from '@/shared/lib/slices/productApi';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Skeleton } from '@/shared/ui/skeleton';
 import { Title } from '@/shared/ui/title';
 
 export default function AdminDashboardPage() {

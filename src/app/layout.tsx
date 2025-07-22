@@ -5,8 +5,8 @@ import type { Metadata } from 'next';
 import { Readex_Pro } from 'next/font/google';
 
 import { StoreProvider } from '@/app/StoreProvider';
-import { Footer } from '@/shared/ui/footer';
 import { Toaster } from '@/shared/ui/toaster';
+import { Footer } from '@/widgets/footer/ui/footer';
 
 import './globals.css';
 

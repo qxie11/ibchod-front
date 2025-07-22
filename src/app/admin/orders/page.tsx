@@ -8,19 +8,12 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Order } from '@/entities/order/model/types';
 import { useGetOrdersQuery } from '@/shared/lib/slices/orderApi';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle } from '@/shared/ui/dialog';
 import Loader from '@/shared/ui/loader';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import Text from '@/shared/ui/text';
 import { Title } from '@/shared/ui/title';
 
