@@ -22,9 +22,17 @@ export const orderApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
     getOrders: build.query<Order[], void>({
       query: () => 'orders',
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: 'Orders' as const, id })),
+              { type: 'Orders', id: 'LIST' },
+            ]
+          : [{ type: 'Orders', id: 'LIST' }],
     }),
   }),
   overrideExisting: false,

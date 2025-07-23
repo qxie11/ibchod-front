@@ -1,3 +1,5 @@
+import { Smartphone } from '@/entities/product/model/types';
+
 import { baseApi } from './baseApi';
 
 interface GetProductsParams {
@@ -10,6 +12,9 @@ interface GetProductsParams {
   capacity?: string;
   search?: string;
 }
+
+export type CreateSmartphoneDto = Omit<Smartphone, 'id' | 'slug'>;
+export type UpdateSmartphoneDto = Partial<CreateSmartphoneDto>;
 
 export const productApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -26,9 +31,52 @@ export const productApi = baseApi.injectEndpoints({
         if (search !== undefined) params.set('search', search);
         return `smartphones?${params.toString()}`;
       },
+      providesTags: (result) =>
+        result && result.items
+          ? [
+              ...result.items.map(({ id }: { id: number }) => ({
+                type: 'Smartphones' as const,
+                id,
+              })),
+              { type: 'Smartphones', id: 'LIST' },
+            ]
+          : [{ type: 'Smartphones', id: 'LIST' }],
+    }),
+    createSmartphone: build.mutation<Smartphone, CreateSmartphoneDto>({
+      query: (body) => ({
+        url: 'smartphones',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: [{ type: 'Smartphones', id: 'LIST' }],
+    }),
+    updateSmartphone: build.mutation<Smartphone, { id: number; body: UpdateSmartphoneDto }>({
+      query: ({ id, body }) => ({
+        url: `smartphones/${id}`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Smartphones', id }],
+    }),
+    deleteSmartphone: build.mutation<{ success: boolean; id: number }, number>({
+      query(id) {
+        return {
+          url: `smartphones/${id}`,
+          method: 'DELETE',
+        };
+      },
+      invalidatesTags: (result, error, id) => [
+        { type: 'Smartphones', id },
+        { type: 'Smartphones', id: 'LIST' },
+      ],
     }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetProductsQuery } = productApi;
+export const {
+  useGetProductsQuery,
+  useCreateSmartphoneMutation,
+  useUpdateSmartphoneMutation,
+  useDeleteSmartphoneMutation,
+} = productApi;
