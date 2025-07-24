@@ -16,13 +16,27 @@ export interface CreateSmartphoneDto {
   color: string;
   capacity: number;
   price: number;
-  gallery: object;
+  gallery?: object;
+  large_desc?: string;
+  small_desc?: string;
+  active?: boolean;
+  id?: number;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
 }
 
 export interface CreateOrderDto {
   email: string;
   phone: string;
   name: string;
+  id?: number;
+  checked?: boolean;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
   message: string;
   items: string[];
 }
@@ -330,6 +344,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     smartphoneControllerGetBySlug: (slug: string, params: RequestParams = {}) =>
       this.request<void, any>({
         path: `/smartphones/slug/${slug}`,
+        method: 'GET',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Smartphone
+     * @name SmartphoneControllerGetRelatedSmartphones
+     * @request GET:/smartphones/related-smartphones/{slug}
+     */
+    smartphoneControllerGetRelatedSmartphones: (slug: string, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/smartphones/related-smartphones/${slug}`,
         method: 'GET',
         ...params,
       }),
