@@ -13,12 +13,17 @@ interface GetProductsParams {
   search?: string;
 }
 
+export interface GetProductsResponse {
+  items: Smartphone[];
+  total: number;
+}
+
 export type CreateSmartphoneDto = Omit<Smartphone, 'id' | 'slug'>;
 export type UpdateSmartphoneDto = Partial<CreateSmartphoneDto>;
 
 export const productApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    getProducts: build.query<any, GetProductsParams>({
+    getProducts: build.query<GetProductsResponse, GetProductsParams>({
       query: ({ take = 10, skip = 0, maxPrice, minPrice, name, color, capacity, search }) => {
         const params = new URLSearchParams();
         params.set('take', String(take));

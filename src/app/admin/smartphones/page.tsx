@@ -7,6 +7,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import { Smartphone } from '@/entities/product/model/types';
+import { usePagination } from '@/hooks/use-pagination';
 import { useDeleteSmartphoneMutation, useGetProductsQuery } from '@/shared/lib/slices/productApi';
 import {
   AlertDialog,
@@ -29,14 +30,18 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import Loader from '@/shared/ui/loader';
+import { Pagination } from '@/shared/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 
 import { SmartphoneFormDialog } from './smartphone-form-dialog';
 
+const ITEMS_PER_PAGE = 10;
 export default function AdminSmartphonesPage() {
+  const { currentPage, onPageChange, skip } = usePagination();
   const { data, error, isLoading } = useGetProductsQuery({
-    take: 100,
+    take: ITEMS_PER_PAGE,
+    skip,
   });
   const [deleteSmartphone] = useDeleteSmartphoneMutation();
 
@@ -53,6 +58,7 @@ export default function AdminSmartphonesPage() {
     return <div>Error loading products</div>;
   }
   const products = data?.items ?? [];
+  const totalProducts = data?.total ?? 0;
   const activeProducts = products.filter((product: Smartphone) => product.active);
   const inactiveProducts = products.filter((product: Smartphone) => !product.active);
 
@@ -181,6 +187,14 @@ export default function AdminSmartphonesPage() {
             </TabsContent>
           </Tabs>
         </CardContent>
+        <div className="flex justify-center p-4">
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalProducts}
+            itemsPerPage={ITEMS_PER_PAGE}
+            onPageChange={onPageChange}
+          />
+        </div>
       </Card>
       <SmartphoneFormDialog
         open={isFormOpen}
