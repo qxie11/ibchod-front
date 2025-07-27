@@ -55,25 +55,31 @@ export const cartSlice = createSlice({
     },
     removeFromCart: (state, action: PayloadAction<number>) => {
       const productId = action.payload;
+      const existingItem = state.items.find((item) => item.id === +productId);
       state.items = state.items.filter((item) => item.id !== +productId);
-      toast({
-        title: 'Odebráno z košíku',
-        variant: 'destructive',
-        description: `Položka byla odebrána z vašeho košíku.`,
-      });
+      if (existingItem) {
+        toast({
+          title: 'Odebráno z košíku',
+          variant: 'destructive',
+          description: `${existingItem.name} byl odebrán z vašeho košíku.`,
+        });
+      }
       localStorage.setItem('cart', JSON.stringify(state.items));
     },
     updateQuantity: (state, action: PayloadAction<{ productId: number; quantity: number }>) => {
       const { productId, quantity } = action.payload;
+      const item = state.items.find((item) => item.id === +productId);
+
       if (quantity <= 0) {
         state.items = state.items.filter((item) => item.id !== +productId);
-        toast({
-          title: 'Odebráno z košíku',
-          variant: 'destructive',
-          description: `Položka byla odebrána z vašeho košíku.`,
-        });
+        if (item) {
+          toast({
+            title: 'Odebráno z košíku',
+            variant: 'destructive',
+            description: `Položka ${item.name} byla odebrána z vašeho košíku.`,
+          });
+        }
       } else {
-        const item = state.items.find((item) => item.id === +productId);
         if (item) {
           item.quantity = quantity;
         }

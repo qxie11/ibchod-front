@@ -3,6 +3,7 @@
 import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 import {
   removeFromCart,
@@ -60,19 +61,40 @@ export default function CartPage() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-4">
                   {cartItems.map((item) => (
-                    <Card key={item.id} className="flex items-center p-4">
-                      <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border">
-                        <Image
-                          src={item.gallery?.[0] ?? ''}
-                          alt={item.name ?? 'iPhone'}
-                          fill
-                          style={{ objectFit: 'cover' }}
-                          data-ai-hint="iphone side"
-                        />
+                    <Card
+                      key={`${item.id}-${item.color}`}
+                      className="flex flex-col md:flex-row items-start md:items-center p-4"
+                    >
+                      <div className="flex items-center w-full md:w-auto">
+                        <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border">
+                          <Image
+                            src={item.gallery?.[0] ?? ''}
+                            alt={item.name ?? 'iPhone'}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                            data-ai-hint="iphone side"
+                          />
+                        </div>
+                        <div className="flex-1 ml-4 md:hidden">
+                          <Title variant="h4" className="!text-lg font-semibold">
+                            <Link href={`/product/${item.slug}`} className="hover:underline">
+                              {item.name}
+                            </Link>
+                          </Title>
+                          <Text className="text-sm text-muted-foreground">
+                            {item.capacity}GB - {item.color}
+                          </Text>
+                          <Text className="font-medium text-green-600 mt-1">
+                            {(item.price ?? 0).toLocaleString()} Kč
+                          </Text>
+                        </div>
                       </div>
-                      <div className="flex-1 ml-4">
+
+                      <div className="hidden md:block flex-1 ml-4">
                         <Title variant="h4" className="!text-lg font-semibold">
-                          {item.name}
+                          <Link href={`/product/${item.slug}`} className="hover:underline">
+                            {item.name}
+                          </Link>
                         </Title>
                         <Text className="text-sm text-muted-foreground">
                           {item.capacity}GB - {item.color}
@@ -83,46 +105,49 @@ export default function CartPage() {
                           </Text>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 mx-4">
+
+                      <div className="flex justify-between items-center w-full mt-4 md:mt-0 md:w-auto md:justify-start">
+                        <div className="flex items-center gap-2 md:mx-4">
+                          <Button
+                            size="small"
+                            onClick={() =>
+                              dispatch(
+                                updateQuantity({
+                                  productId: item.id,
+                                  quantity: item.quantity - 1,
+                                })
+                              )
+                            }
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="w-8 text-center font-medium">{item.quantity}</span>
+                          <Button
+                            size="small"
+                            onClick={() =>
+                              dispatch(
+                                updateQuantity({
+                                  productId: item.id,
+                                  quantity: item.quantity + 1,
+                                })
+                              )
+                            }
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="font-bold w-24 text-right">
+                          {((item.price ?? 0) * item.quantity).toLocaleString()} Kč
+                        </div>
                         <Button
                           size="small"
-                          onClick={() =>
-                            dispatch(
-                              updateQuantity({
-                                productId: item.id,
-                                quantity: item.quantity - 1,
-                              })
-                            )
-                          }
+                          variant="ghost"
+                          className="ml-4 group"
+                          onClick={() => dispatch(removeFromCart(item.id))}
                         >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="w-8 text-center font-medium">{item.quantity}</span>
-                        <Button
-                          size="small"
-                          onClick={() =>
-                            dispatch(
-                              updateQuantity({
-                                productId: item.id,
-                                quantity: item.quantity + 1,
-                              })
-                            )
-                          }
-                        >
-                          <Plus className="h-4 w-4" />
+                          <Trash2 className="group-hover:text-white h-4 w-4 text-muted-foreground hover:text-destructive" />
                         </Button>
                       </div>
-                      <div className="font-bold w-24 text-right">
-                        {((item.price ?? 0) * item.quantity).toLocaleString()} Kč
-                      </div>
-                      <Button
-                        size="small"
-                        variant="ghost"
-                        className="ml-4 group"
-                        onClick={() => dispatch(removeFromCart(item.id))}
-                      >
-                        <Trash2 className="group-hover:text-white h-3 w-3 text-muted-foreground hover:text-destructive" />
-                      </Button>
                     </Card>
                   ))}
                 </div>

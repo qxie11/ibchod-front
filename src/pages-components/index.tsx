@@ -5,7 +5,7 @@ import { Recycle, ShieldCheck, Truck } from 'lucide-react';
 import { useEffect } from 'react';
 
 import { ProductCard } from '@/entities/product';
-import { Smartphone } from '@/entities/product/model/types';
+import type { GetProductsResponse, Smartphone } from '@/entities/product/model/types';
 import {
   selectPriceRange,
   selectSelectedColor,
@@ -17,6 +17,7 @@ import {
   setSelectedStorage,
 } from '@/features/filter-products';
 import { ProductFilters } from '@/features/filter-products';
+import { usePagination } from '@/hooks/use-pagination';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector';
 import { useGetProductsQuery } from '@/shared/lib/slices/productApi';
@@ -24,18 +25,21 @@ import { Card } from '@/shared/ui/card';
 import Container from '@/shared/ui/container';
 import { LiquidGlass } from '@/shared/ui/liquid-glass';
 import Loader from '@/shared/ui/loader';
+import { Pagination } from '@/shared/ui/pagination';
 import Text from '@/shared/ui/text';
 import { Title } from '@/shared/ui/title';
 import { Header } from '@/widgets/header';
 
 interface HomePageProps {
-  phoneListInit: Smartphone;
+  phoneListInit: GetProductsResponse;
   uniqueBrands: string[];
   uniqueCapacities: number[];
   uniqueColors: string[];
   maxPrice: number;
   minPrice: number;
 }
+
+const ITEMS_PER_PAGE = 10;
 
 export default function HomePage({
   phoneListInit,
@@ -46,6 +50,8 @@ export default function HomePage({
   minPrice,
 }: HomePageProps) {
   const dispatch = useAppDispatch();
+  const { currentPage, onPageChange, skip } = usePagination();
+
   const priceRange = useAppSelector(selectPriceRange);
   const selectedModel = useAppSelector(selectSelectedModel);
   const selectedStorage = useAppSelector(selectSelectedStorage);
@@ -53,7 +59,8 @@ export default function HomePage({
 
   const { data: phoneListState = phoneListInit, isFetching: isLoading } = useGetProductsQuery(
     {
-      take: 10,
+      take: ITEMS_PER_PAGE,
+      skip,
       name: selectedModel !== 'all' ? selectedModel : undefined,
       minPrice: priceRange[0],
       maxPrice: priceRange[1],
@@ -74,7 +81,11 @@ export default function HomePage({
     dispatch(setSelectedModel('all'));
     dispatch(setSelectedStorage('all'));
     dispatch(setSelectedColor('all'));
+    onPageChange(1);
   };
+
+  const products = phoneListState?.items ?? [];
+  const totalProducts = phoneListState?.total ?? 0;
 
   return (
     <main>
@@ -147,13 +158,13 @@ export default function HomePage({
                   <Loader className="absolute left-1/2 top-20" />
                 </div>
               )}
-              {phoneListState.items.map((product: Smartphone) => (
+              {products.map((product: Smartphone) => (
                 <div key={product.id} className="relative group">
                   <ProductCard product={product} />
                 </div>
               ))}
             </div>
-            {phoneListState.items.length === 0 && !isLoading && (
+            {products.length === 0 && !isLoading && (
               <div className="text-center py-20 col-span-3">
                 <Title variant="h2" className="text-2xl font-semibold text-foreground mb-2">
                   No products found
@@ -161,6 +172,14 @@ export default function HomePage({
                 <Text className="text-muted-foreground">Try adjusting your search filters.</Text>
               </div>
             )}
+            <div className="flex justify-center mt-8">
+              <Pagination
+                currentPage={currentPage}
+                totalItems={totalProducts}
+                itemsPerPage={ITEMS_PER_PAGE}
+                onPageChange={onPageChange}
+              />
+            </div>
           </div>
         </div>
       </Container>
