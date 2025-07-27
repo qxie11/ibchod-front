@@ -30,6 +30,7 @@ import {
 } from '@/shared/ui/dropdown-menu';
 import Loader from '@/shared/ui/loader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 
 import { SmartphoneFormDialog } from './smartphone-form-dialog';
 
@@ -52,6 +53,8 @@ export default function AdminSmartphonesPage() {
     return <div>Error loading products</div>;
   }
   const products = data?.items ?? [];
+  const activeProducts = products.filter((product: Smartphone) => product.active);
+  const inactiveProducts = products.filter((product: Smartphone) => !product.active);
 
   const handleEdit = (product: Smartphone) => {
     setSelectedSmartphone(product);
@@ -81,6 +84,65 @@ export default function AdminSmartphonesPage() {
     setSelectedSmartphone(undefined);
   };
 
+  const ProductTable = ({ products }: { products: Smartphone[] }) => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="hidden w-[100px] sm:table-cell">Image</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Price</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>
+            <span className="sr-only">Actions</span>
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {products.map((product: Smartphone) => (
+          <TableRow key={product.id}>
+            <TableCell className="hidden sm:table-cell">
+              <Image
+                alt={product.name}
+                className="aspect-square rounded-md object-cover"
+                height="64"
+                src={product.gallery?.[0] ?? 'https://placehold.co/64x64.png'}
+                width="64"
+                data-ai-hint="iphone"
+              />
+            </TableCell>
+            <TableCell className="font-medium">{product.name}</TableCell>
+            <TableCell>{product.price.toLocaleString()} Kč</TableCell>
+            <TableCell>
+              <Badge variant={product.active ? 'default' : 'destructive'}>
+                {product.active ? 'Active' : 'Inactive'}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button aria-haspopup="true" className="px-2 py-1" size="small" variant="ghost">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Toggle menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuItem onSelect={() => handleEdit(product)}>Edit</DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => handleDeleteClick(product)}
+                    className="text-red-600"
+                  >
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+
   return (
     <>
       <Card>
@@ -96,64 +158,28 @@ export default function AdminSmartphonesPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="hidden w-[100px] sm:table-cell">Image</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((product: Smartphone) => (
-                <TableRow key={product.id}>
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt={product.name}
-                      className="aspect-square rounded-md object-cover"
-                      height="64"
-                      src={product.gallery?.[0] ?? 'https://placehold.co/64x64.png'}
-                      width="64"
-                      data-ai-hint="iphone"
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>{product.price.toLocaleString()} Kč</TableCell>
-                  <TableCell>
-                    <Badge variant={product.active ? 'default' : 'destructive'}>
-                      {product.active ? 'Active' : 'Inactive'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="small" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onSelect={() => handleEdit(product)}>
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => handleDeleteClick(product)}
-                          className="text-red-600"
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <Tabs defaultValue="active" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger
+                value="active"
+                className="data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+              >
+                Active ({activeProducts.length})
+              </TabsTrigger>
+              <TabsTrigger
+                value="inactive"
+                className="data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+              >
+                Inactive ({inactiveProducts.length})
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="active">
+              <ProductTable products={activeProducts} />
+            </TabsContent>
+            <TabsContent value="inactive">
+              <ProductTable products={inactiveProducts} />
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
       <SmartphoneFormDialog
