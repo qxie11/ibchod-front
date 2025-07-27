@@ -43,7 +43,7 @@ export function SearchDialog() {
   const { data: { items: results } = [], isLoading } = useGetProductsQuery(
     { search: query, take: 10 },
     {
-      skip: !open || query.length <= 2,
+      skip: !open || query.length <= 1,
     }
   );
 
@@ -88,11 +88,11 @@ export function SearchDialog() {
             <CommandEmpty>Nebyly nalezeny žádné výsledky.</CommandEmpty>
           ) : (
             <CommandGroup heading="Produkty">
-              {results?.map((product: Smartphone) => (
+              {results?.map((product: Smartphone, i: number) => (
                 <CommandItem
-                  key={product.id}
+                  key={`${product.id}-${i}`}
                   onSelect={() => handleSelect(product.slug)}
-                  value={product.name || product.slug}
+                  value={product.slug}
                 >
                   <div className="relative h-8 w-8 mr-4 flex-shrink-0 overflow-hidden rounded-md border">
                     <Image

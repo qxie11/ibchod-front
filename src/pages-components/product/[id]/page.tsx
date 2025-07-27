@@ -183,7 +183,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
           </div>
         </LiquidGlass>
 
-        <div className="mt-12">
+        <div className="mt-4 md:mt-8">
           <LiquidGlass>
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -233,7 +233,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
         </div>
 
         {similarProducts.length > 0 && (
-          <div className="mt-12">
+          <div className="mt-4 md:mt-8">
             <LiquidGlass>
               <div className="p-6">
                 <Title variant="h2" className="mb-6">
@@ -260,37 +260,38 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                   }}
                   className="pb-12"
                 >
-                  {Array(5)
-                    .fill(similarProducts[0])
-                    .map((similarProduct, i) => (
-                      <SwiperSlide key={similarProduct.id + i}>
-                        <Card className="relative flex flex-row items-center bg-white rounded-xl border border-gray-200 transition-all h-full min-h-[120px]">
-                          <Link className="absolute inset-0 z-10" href={similarProduct.slug}></Link>
-                          <div className="w-20 h-20 flex-shrink-0 relative m-3 overflow-hidden rounded-xl shadow-2xl">
-                            <Image
-                              src={similarProduct.gallery[0] as unknown as string}
-                              alt={similarProduct.gallery[0] as unknown as string}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                          <div className="flex flex-col flex-1 px-2 py-3">
-                            <h3 className="font-bold text-base mb-1">
-                              {similarProduct.name} {similarProduct.capacity}GB
-                            </h3>
+                  {similarProducts.map((similarProduct, i) => (
+                    <SwiperSlide key={`${similarProduct.slug}-${i}`}>
+                      <Card className="relative flex flex-row items-center bg-white rounded-xl border border-gray-200 transition-all h-full min-h-[120px]">
+                        <Link className="absolute inset-0 z-10" href={similarProduct.slug}></Link>
+                        <div className="w-20 h-20 flex-shrink-0 relative m-3 overflow-hidden rounded-xl shadow-2xl">
+                          <Image
+                            src={similarProduct.gallery[0] as unknown as string}
+                            alt={similarProduct.gallery[0] as unknown as string}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-col flex-1 px-2 py-3">
+                          <h3 className="font-bold text-base mb-1">
+                            {similarProduct.name} {similarProduct.capacity}GB
+                          </h3>
+                          <Text className="text-sm text-muted-foreground">
+                            {similarProduct.small_desc}
+                          </Text>
 
-                            <div className="flex items-center gap-2">
-                              <Text className="text-base font-bold text-green-600">
-                                {product.price ?? 0} Kč
-                              </Text>
-                              <Text className="text-sm text-muted-foreground line-through">
-                                {Math.round(+(product?.price ?? 0) * 1.3)} Kč
-                              </Text>
-                            </div>
+                          <div className="flex items-center gap-2">
+                            <Text className="text-base font-bold text-green-600">
+                              {product.price ?? 0} Kč
+                            </Text>
+                            <Text className="text-sm text-muted-foreground line-through">
+                              {Math.round(+(product?.price ?? 0) * 1.3)} Kč
+                            </Text>
                           </div>
-                        </Card>
-                      </SwiperSlide>
-                    ))}
+                        </div>
+                      </Card>
+                    </SwiperSlide>
+                  ))}
                 </Swiper>
                 <div className="flex justify-center gap-4 mt-4">
                   <div className="swiper-prev">
@@ -326,7 +327,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
             </LiquidGlass>
           </div>
         )}
-        <LiquidGlass className="mt-12">
+        <LiquidGlass className="mt-4 md:mt-8">
           <div className="p-6">
             <Title variant="h2" className="mb-6 text-center">
               Často kladené dotazy

@@ -42,19 +42,28 @@ export const productApi = baseApi.injectEndpoints({
             ]
           : [{ type: 'Smartphones', id: 'LIST' }],
     }),
-    createSmartphone: build.mutation<Smartphone, CreateSmartphoneDto>({
+    createSmartphone: build.mutation<Smartphone, CreateSmartphoneDto | FormData>({
       query: (body) => ({
         url: 'smartphones',
         method: 'POST',
         body,
+        ...(body instanceof FormData && {
+          headers: {},
+        }),
       }),
       invalidatesTags: [{ type: 'Smartphones', id: 'LIST' }],
     }),
-    updateSmartphone: build.mutation<Smartphone, { id: number; body: UpdateSmartphoneDto }>({
+    updateSmartphone: build.mutation<
+      Smartphone,
+      { id: number; body: UpdateSmartphoneDto | FormData }
+    >({
       query: ({ id, body }) => ({
         url: `smartphones/${id}`,
-        method: 'PATCH',
+        method: 'PUT',
         body,
+        ...(body instanceof FormData && {
+          headers: {},
+        }),
       }),
       invalidatesTags: (result, error, { id }) => [{ type: 'Smartphones', id }],
     }),

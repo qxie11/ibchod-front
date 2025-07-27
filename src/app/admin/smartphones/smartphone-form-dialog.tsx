@@ -1,8 +1,8 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import * as yup from 'yup';
 
 import { useEffect, useState } from 'react';
 
@@ -29,38 +29,43 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/shared/ui/switch';
 import { Textarea } from '@/shared/ui/textarea';
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: 'Name must be at least 2 characters.',
-  }),
-  price: z.coerce.number().positive(),
-  capacity: z.coerce.number().positive(),
-  color: z.string().min(2),
-  small_desc: z.string().optional(),
-  large_desc: z.string().min(10),
-  gallery: z
-    .any()
-    .refine((files) => files?.length > 0, 'At least one image is required.')
-    .refine(
-      (files) => Array.from(files).every((file: any) => file.size <= MAX_FILE_SIZE),
-      `Max file size is 5MB.`
-    )
-    .refine(
-      (files) => Array.from(files).every((file: any) => ACCEPTED_IMAGE_TYPES.includes(file.type)),
-      '.jpg, .jpeg, .png and .webp files are accepted.'
-    ),
-  active: z.boolean(),
+const formSchema = yup.object({
+  name: yup.string().min(2).required(),
+  slug: yup
+    .string()
+    .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug must be in format: word-word-word')
+    .required(),
+  price: yup.number().positive().required(),
+  capacity: yup.number().positive().required(),
+  color: yup.string().min(2).required(),
+  small_desc: yup.string().optional(),
+  large_desc: yup.string().min(10).required(),
+  gallery: yup
+    .mixed()
+    .test('required', 'At least one image is required.', (files) => {
+      return files && (files as FileList).length > 0;
+    })
+    .test('fileSize', 'Max file size is 5MB.', (files) => {
+      if (!files) return false;
+      const fileList = files as FileList;
+      return Array.from(fileList).every((file) => file.size <= MAX_FILE_SIZE);
+    })
+    .test('fileType', '.jpg, .jpeg, .png and .webp files are accepted.', (files) => {
+      if (!files) return false;
+      const fileList = files as FileList;
+      return Array.from(fileList).every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type));
+    }),
+  active: yup.boolean().required(),
 });
 
-// Create a separate schema for updates where gallery is optional
-const updateFormSchema = formSchema.extend({
-  gallery: z.any().optional(),
+const updateFormSchema = formSchema.clone().shape({
+  gallery: yup.mixed().optional(),
 });
 
-type SmartphoneFormData = z.infer<typeof formSchema>;
+type SmartphoneFormData = yup.InferType<typeof formSchema>;
 
 interface SmartphoneFormDialogProps {
   open: boolean;
@@ -117,9 +122,10 @@ export function SmartphoneFormDialog({
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   const form = useForm<SmartphoneFormData>({
-    resolver: zodResolver(smartphone ? updateFormSchema : formSchema),
+    resolver: yupResolver(smartphone ? updateFormSchema : formSchema),
     defaultValues: {
       name: '',
+      slug: '',
       price: 0,
       capacity: 64,
       color: '',
@@ -134,27 +140,18 @@ export function SmartphoneFormDialog({
     if (smartphone) {
       form.reset({
         name: smartphone.name,
+        slug: smartphone.slug || '',
         price: smartphone.price,
         capacity: smartphone.capacity,
         color: smartphone.color,
         small_desc: smartphone.small_desc,
         large_desc: smartphone.large_desc,
-        gallery: undefined, // We don't pre-fill file inputs
+        gallery: undefined,
         active: smartphone.active,
       });
-      // Set existing gallery images for preview
       setImagePreviews(smartphone.gallery || []);
     } else {
-      form.reset({
-        name: '',
-        price: 0,
-        capacity: 64,
-        color: '',
-        small_desc: '',
-        large_desc: '',
-        gallery: undefined,
-        active: true,
-      });
+      form.reset();
       setImagePreviews([]);
     }
   }, [smartphone, form, open]);
@@ -170,50 +167,38 @@ export function SmartphoneFormDialog({
 
   async function onSubmit(values: SmartphoneFormData) {
     try {
-      // NOTE: This is a placeholder. In a real app, you would upload files to a
-      // cloud storage service (like Firebase Storage, Cloudinary, etc.)
-      // and get back URLs. Then you would save those URLs.
-      // Since we don't have a file upload service configured,
-      // we will just use the existing gallery for updates if no new files are uploaded,
-      // or an empty array for creates.
-      let galleryUrls: string[] = [];
+      const isUpdate = Boolean(smartphone);
+      const hasFiles = values.gallery && (values.gallery as FileList).length > 0;
 
-      if (smartphone) {
-        // If updating
-        // If new files are selected, they would be uploaded here.
-        // If not, we keep the existing gallery.
-        if (values.gallery && values.gallery.length > 0) {
-          // Placeholder for upload logic
-          console.log('New files selected for upload:', values.gallery);
-          // galleryUrls = await uploadFiles(values.gallery);
-          toast({
-            title: 'Info',
-            description: 'File upload logic not implemented. Using placeholder URLs.',
-          });
-          galleryUrls = imagePreviews; // Using blob urls as placeholder
+      if (hasFiles) {
+        const body = new FormData();
+        const fields: (keyof SmartphoneFormData)[] = [
+          'name',
+          'slug',
+          'price',
+          'capacity',
+          'color',
+          'small_desc',
+          'large_desc',
+          'active',
+        ];
+        fields.forEach((field) => {
+          const value = values[field];
+          body.append(field, typeof value === 'boolean' ? String(value) : String(value ?? ''));
+        });
+
+        Array.from(values.gallery as FileList).forEach((file) => {
+          body.append('gallery', file);
+        });
+
+        if (isUpdate) {
+          await updateSmartphone({ id: smartphone!.id, body }).unwrap();
         } else {
-          galleryUrls = smartphone.gallery || [];
+          await createSmartphone(body).unwrap();
         }
-
-        const updateData = { ...values, gallery: galleryUrls };
-        await updateSmartphone({ id: smartphone.id, body: updateData }).unwrap();
-        toast({ title: 'Success', description: 'Smartphone updated successfully.' });
-      } else {
-        // If creating
-        if (values.gallery && values.gallery.length > 0) {
-          // Placeholder for upload logic
-          console.log('Files selected for upload:', values.gallery);
-          // galleryUrls = await uploadFiles(values.gallery);
-          toast({
-            title: 'Info',
-            description: 'File upload logic not implemented. Using placeholder URLs.',
-          });
-          galleryUrls = imagePreviews; // Using blob urls as placeholder
-        }
-        const createData = { ...values, gallery: galleryUrls };
-        await createSmartphone(createData).unwrap();
-        toast({ title: 'Success', description: 'Smartphone created successfully.' });
       }
+
+      toast({ title: 'Success', description: 'Smartphone updated successfully.' });
       onOpenChange(false);
     } catch (error) {
       console.error('Form submission error:', error);
@@ -224,12 +209,11 @@ export function SmartphoneFormDialog({
       });
     }
   }
-
   const isLoading = isCreating || isUpdating;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{smartphone ? 'Edit Smartphone' : 'Add New Smartphone'}</DialogTitle>
           <DialogDescription>
@@ -267,6 +251,21 @@ export function SmartphoneFormDialog({
               />
               <FormField
                 control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Slug</FormLabel>
+                    <FormControl>
+                      <Input placeholder="iphone-15-pro-max" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
                 name="price"
                 render={({ field }) => (
                   <FormItem>
@@ -278,8 +277,6 @@ export function SmartphoneFormDialog({
                   </FormItem>
                 )}
               />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="capacity"
