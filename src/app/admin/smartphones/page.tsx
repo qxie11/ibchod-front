@@ -90,7 +90,9 @@ export default function AdminSmartphonesPage() {
               <CardTitle>Smartphones</CardTitle>
               <CardDescription>Manage your products here.</CardDescription>
             </div>
-            <Button onClick={handleAddNew}>Add New</Button>
+            <Button size="small" onClick={handleAddNew}>
+              Add New
+            </Button>
           </div>
         </CardHeader>
         <CardContent>

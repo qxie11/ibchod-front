@@ -61,11 +61,23 @@ const formSchema = yup.object({
   active: yup.boolean().required(),
 });
 
-const updateFormSchema = formSchema.clone().shape({
+const updateFormSchema = yup.object({
+  name: yup.string().min(2).required(),
+  slug: yup
+    .string()
+    .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug must be in format: word-word-word')
+    .required(),
+  price: yup.number().positive().required(),
+  capacity: yup.number().positive().required(),
+  color: yup.string().min(2).required(),
+  small_desc: yup.string().optional(),
+  large_desc: yup.string().min(10).required(),
   gallery: yup.mixed().optional(),
+  active: yup.boolean().required(),
 });
 
 type SmartphoneFormData = yup.InferType<typeof formSchema>;
+type UpdateSmartphoneFormData = yup.InferType<typeof updateFormSchema>;
 
 interface SmartphoneFormDialogProps {
   open: boolean;
@@ -121,7 +133,9 @@ export function SmartphoneFormDialog({
   const [updateSmartphone, { isLoading: isUpdating }] = useUpdateSmartphoneMutation();
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
-  const form = useForm<SmartphoneFormData>({
+  const isUpdate = Boolean(smartphone);
+
+  const form = useForm<SmartphoneFormData | UpdateSmartphoneFormData>({
     resolver: yupResolver(smartphone ? updateFormSchema : formSchema),
     defaultValues: {
       name: '',
@@ -165,9 +179,8 @@ export function SmartphoneFormDialog({
     }
   };
 
-  async function onSubmit(values: SmartphoneFormData) {
+  async function onSubmit(values: SmartphoneFormData | UpdateSmartphoneFormData) {
     try {
-      const isUpdate = Boolean(smartphone);
       const hasFiles = values.gallery && (values.gallery as FileList).length > 0;
 
       if (hasFiles) {
@@ -195,6 +208,14 @@ export function SmartphoneFormDialog({
           await updateSmartphone({ id: smartphone!.id, body }).unwrap();
         } else {
           await createSmartphone(body).unwrap();
+        }
+      } else {
+        const { gallery: _gallery, ...body } = values;
+        const bodyWithGallery = { ...body, gallery: [] };
+        if (isUpdate) {
+          await updateSmartphone({ id: smartphone!.id, body: bodyWithGallery }).unwrap();
+        } else {
+          await createSmartphone(bodyWithGallery).unwrap();
         }
       }
 
