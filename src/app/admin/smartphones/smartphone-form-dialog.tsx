@@ -45,35 +45,26 @@ const formSchema = yup.object({
   large_desc: yup.string().min(10).required(),
   gallery: yup
     .mixed()
-    .test('required', 'At least one image is required.', (files) => {
-      return files && (files as FileList).length > 0;
+    .test('required', 'At least one image is required.', (value) => {
+      const files = value as FileList;
+      return files && files.length > 0;
     })
-    .test('fileSize', 'Max file size is 5MB.', (files) => {
-      if (!files) return false;
-      const fileList = files as FileList;
-      return Array.from(fileList).every((file) => file.size <= MAX_FILE_SIZE);
+    .test('fileSize', 'Max file size is 5MB.', (value) => {
+      if (!value) return true;
+      const files = value as FileList;
+      return Array.from(files).every((file) => file.size <= MAX_FILE_SIZE);
     })
-    .test('fileType', '.jpg, .jpeg, .png and .webp files are accepted.', (files) => {
-      if (!files) return false;
-      const fileList = files as FileList;
-      return Array.from(fileList).every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type));
-    }),
+    .test('fileType', '.jpg, .jpeg, .png and .webp files are accepted.', (value) => {
+      if (!value) return true;
+      const files = value as FileList;
+      return Array.from(files).every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type));
+    })
+    .optional(),
   active: yup.boolean().required(),
 });
 
-const updateFormSchema = yup.object({
-  name: yup.string().min(2).required(),
-  slug: yup
-    .string()
-    .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug must be in format: word-word-word')
-    .required(),
-  price: yup.number().positive().required(),
-  capacity: yup.number().positive().required(),
-  color: yup.string().min(2).required(),
-  small_desc: yup.string().optional(),
-  large_desc: yup.string().min(10).required(),
+const updateFormSchema = formSchema.omit(['gallery']).shape({
   gallery: yup.mixed().optional(),
-  active: yup.boolean().required(),
 });
 
 type SmartphoneFormData = yup.InferType<typeof formSchema>;
@@ -136,44 +127,58 @@ export function SmartphoneFormDialog({
   const isUpdate = Boolean(smartphone);
 
   const form = useForm<SmartphoneFormData | UpdateSmartphoneFormData>({
-    resolver: yupResolver(smartphone ? updateFormSchema : formSchema),
-    defaultValues: {
-      name: '',
-      slug: '',
-      price: 0,
-      capacity: 64,
-      color: '',
-      small_desc: '',
-      large_desc: '',
-      gallery: undefined,
-      active: true,
-    },
+    resolver: yupResolver(isUpdate ? updateFormSchema : formSchema),
+    defaultValues: isUpdate
+      ? smartphone
+      : {
+          name: '',
+          slug: '',
+          price: 0,
+          capacity: 64,
+          color: '',
+          small_desc: '',
+          large_desc: '',
+          gallery: undefined,
+          active: true,
+        },
   });
 
   useEffect(() => {
-    if (smartphone) {
-      form.reset({
-        name: smartphone.name,
-        slug: smartphone.slug || '',
-        price: smartphone.price,
-        capacity: smartphone.capacity,
-        color: smartphone.color,
-        small_desc: smartphone.small_desc,
-        large_desc: smartphone.large_desc,
-        gallery: undefined,
-        active: smartphone.active,
-      });
-      setImagePreviews(smartphone.gallery || []);
-    } else {
-      form.reset();
-      setImagePreviews([]);
+    if (open) {
+      if (smartphone) {
+        form.reset({
+          name: smartphone.name,
+          slug: smartphone.slug || '',
+          price: smartphone.price,
+          capacity: smartphone.capacity,
+          color: smartphone.color,
+          small_desc: smartphone.small_desc,
+          large_desc: smartphone.large_desc,
+          gallery: undefined,
+          active: smartphone.active,
+        });
+        setImagePreviews(smartphone.gallery || []);
+      } else {
+        form.reset({
+          name: '',
+          slug: '',
+          price: 0,
+          capacity: 64,
+          color: '',
+          small_desc: '',
+          large_desc: '',
+          gallery: undefined,
+          active: true,
+        });
+        setImagePreviews([]);
+      }
     }
   }, [smartphone, form, open]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      form.setValue('gallery', files);
+      form.setValue('gallery', files as any);
       const newPreviews = Array.from(files).map((file) => URL.createObjectURL(file));
       setImagePreviews(newPreviews);
     }
@@ -181,45 +186,53 @@ export function SmartphoneFormDialog({
 
   async function onSubmit(values: SmartphoneFormData | UpdateSmartphoneFormData) {
     try {
-      const hasFiles = values.gallery && (values.gallery as FileList).length > 0;
+      if (isUpdate) {
+        const changedData = new FormData();
+        let hasChanges = false;
+        (Object.keys(values) as Array<keyof typeof values>).forEach((key) => {
+          const formValue = values[key];
+          const initialValue = smartphone?.[key as keyof Smartphone];
 
-      if (hasFiles) {
-        const body = new FormData();
-        const fields: (keyof SmartphoneFormData)[] = [
-          'name',
-          'slug',
-          'price',
-          'capacity',
-          'color',
-          'small_desc',
-          'large_desc',
-          'active',
-        ];
-        fields.forEach((field) => {
-          const value = values[field];
-          body.append(field, typeof value === 'boolean' ? String(value) : String(value ?? ''));
+          if (key === 'gallery') {
+            const files = formValue as FileList | undefined;
+            if (files && files.length > 0) {
+              Array.from(files).forEach((file) => {
+                changedData.append('gallery', file);
+              });
+              hasChanges = true;
+            }
+          } else if (String(formValue) !== String(initialValue)) {
+            changedData.append(key, String(formValue));
+            hasChanges = true;
+          }
         });
 
-        Array.from(values.gallery as FileList).forEach((file) => {
-          body.append('gallery', file);
-        });
-
-        if (isUpdate) {
-          await updateSmartphone({ id: smartphone!.id, body }).unwrap();
+        if (hasChanges) {
+          await updateSmartphone({ id: smartphone!.id, body: changedData }).unwrap();
+          toast({ title: 'Success', description: 'Smartphone updated successfully.' });
         } else {
-          await createSmartphone(body).unwrap();
+          toast({ title: 'No changes', description: 'No fields were changed.' });
         }
       } else {
-        const { gallery: _gallery, ...body } = values;
-        const bodyWithGallery = { ...body, gallery: [] };
-        if (isUpdate) {
-          await updateSmartphone({ id: smartphone!.id, body: bodyWithGallery }).unwrap();
-        } else {
-          await createSmartphone(bodyWithGallery).unwrap();
-        }
+        const body = new FormData();
+        (Object.keys(values) as Array<keyof typeof values>).forEach((key) => {
+          const value = values[key];
+          if (key === 'gallery') {
+            const files = value as FileList;
+            if (files) {
+              Array.from(files).forEach((file) => {
+                body.append('gallery', file);
+              });
+            }
+          } else {
+            body.append(key, typeof value === 'boolean' ? String(value) : String(value ?? ''));
+          }
+        });
+
+        await createSmartphone(body).unwrap();
+        toast({ title: 'Success', description: 'Smartphone created successfully.' });
       }
 
-      toast({ title: 'Success', description: 'Smartphone updated successfully.' });
       onOpenChange(false);
     } catch (error) {
       console.error('Form submission error:', error);
@@ -230,15 +243,16 @@ export function SmartphoneFormDialog({
       });
     }
   }
+
   const isLoading = isCreating || isUpdating;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[725px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{smartphone ? 'Edit Smartphone' : 'Add New Smartphone'}</DialogTitle>
+          <DialogTitle>{isUpdate ? 'Edit Smartphone' : 'Add New Smartphone'}</DialogTitle>
           <DialogDescription>
-            {smartphone
+            {isUpdate
               ? 'Edit the details of the smartphone.'
               : 'Fill in the details for the new smartphone.'}
           </DialogDescription>
@@ -252,7 +266,7 @@ export function SmartphoneFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value?.toString()}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select name" />
@@ -277,7 +291,7 @@ export function SmartphoneFormDialog({
                   <FormItem>
                     <FormLabel>Slug</FormLabel>
                     <FormControl>
-                      <Input placeholder="iphone-15-pro-max" {...field} />
+                      <Input placeholder="iphone-15-pro-max" {...field} value={field.value || ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -292,7 +306,7 @@ export function SmartphoneFormDialog({
                   <FormItem>
                     <FormLabel>Price</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input type="number" {...field} value={field.value || 0} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -331,7 +345,7 @@ export function SmartphoneFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Color</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value?.toString()}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select color" />
@@ -357,7 +371,7 @@ export function SmartphoneFormDialog({
                 <FormItem>
                   <FormLabel>Short Description</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} value={field.value || ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -370,7 +384,7 @@ export function SmartphoneFormDialog({
                 <FormItem>
                   <FormLabel>Long Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field} />
+                    <Textarea {...field} value={field.value || ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -383,7 +397,13 @@ export function SmartphoneFormDialog({
                 <FormItem>
                   <FormLabel>Gallery</FormLabel>
                   <FormControl>
-                    <Input type="file" multiple accept="image/*" onChange={handleFileChange} />
+                    <Input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="file:border-0 file:bg-transparent file:text-sm file:font-medium"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

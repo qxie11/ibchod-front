@@ -61,13 +61,16 @@ export const productApi = baseApi.injectEndpoints({
     >({
       query: ({ id, body }) => ({
         url: `smartphones/${id}`,
-        method: 'PUT',
+        method: 'PATCH',
         body,
         ...(body instanceof FormData && {
           headers: {},
         }),
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Smartphones', id }],
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Smartphones', id },
+        { type: 'Smartphones', id: 'LIST' },
+      ],
     }),
     deleteSmartphone: build.mutation<{ success: boolean; id: number }, number>({
       query(id) {
