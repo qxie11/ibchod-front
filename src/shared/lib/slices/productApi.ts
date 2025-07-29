@@ -47,11 +47,14 @@ export const productApi = baseApi.injectEndpoints({
             ]
           : [{ type: 'Smartphones', id: 'LIST' }],
     }),
-    createSmartphone: build.mutation<Smartphone, FormData>({
+    createSmartphone: build.mutation<Smartphone, CreateSmartphoneDto | FormData>({
       query: (body) => ({
         url: 'smartphones',
         method: 'POST',
         body,
+        ...(body instanceof FormData && {
+          headers: {},
+        }),
       }),
       invalidatesTags: [{ type: 'Smartphones', id: 'LIST' }],
     }),

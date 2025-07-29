@@ -39,7 +39,7 @@ export const AddToCartButton = ({
   };
 
   if (cartItem) {
-    return <QuantityControl productId={product.id} size={size} className={className} />;
+    return <QuantityControl productId={product.id} className={className} />;
   }
 
   return (

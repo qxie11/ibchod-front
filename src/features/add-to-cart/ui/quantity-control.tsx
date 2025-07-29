@@ -7,15 +7,14 @@ import React from 'react';
 import { updateQuantity } from '@/entities/cart/model/slice';
 import { useCartItem } from '@/shared/lib/hooks';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch';
-import { Button, ButtonSize } from '@/shared/ui/button';
+import { Button } from '@/shared/ui/button';
 
 interface QuantityControlProps {
   productId: number;
-  size?: ButtonSize;
   className?: string;
 }
 
-export function QuantityControl({ productId, size, className }: QuantityControlProps) {
+export function QuantityControl({ productId, className }: QuantityControlProps) {
   const dispatch = useAppDispatch();
   const cartItem = useCartItem(productId);
   const quantity = cartItem?.quantity || 0;
@@ -27,8 +26,8 @@ export function QuantityControl({ productId, size, className }: QuantityControlP
   return (
     <div className={`flex items-center gap-2 justify-center ${className}`}>
       <Button
-        size={size}
-        className="px-3"
+        size="small"
+        className="px-4 py-1"
         variant="ghost"
         onClick={(e) => {
           e.preventDefault();
@@ -40,8 +39,8 @@ export function QuantityControl({ productId, size, className }: QuantityControlP
       </Button>
       <span className="font-bold text-lg w-8 text-center">{quantity}</span>
       <Button
-        size={size}
-        className="px-3"
+        size="small"
+        className="px-4 py-1"
         variant="ghost"
         onClick={(e) => {
           e.preventDefault();
