@@ -53,7 +53,9 @@ export function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       <div className="p-4">
-        <AddToCartButton className="w-full flex justify-center" size="small" product={product} />
+        <AddToCartButton size="sm" className="w-full" product={product}>
+          Přidat do košíku
+        </AddToCartButton>
       </div>
     </LiquidGlass>
   );

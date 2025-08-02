@@ -5,8 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import Image from 'next/image';
@@ -78,11 +77,11 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
           </BreadcrumbList>
         </Breadcrumb>
         <div className="mb-6">
-          <Button size="small" className="inline-block" href="/">
-            <span className="flex items-center gap-2">
+          <Button size="sm" asChild>
+            <Link href="/" className="inline-flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               Zpět na všechny produkty
-            </span>
+            </Link>
           </Button>
         </div>
         <LiquidGlass>
@@ -90,12 +89,11 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
             <div className="space-y-4">
               <div className="aspect-square relative overflow-hidden rounded-lg">
                 <Swiper
-                  modules={[Navigation, Pagination]}
+                  modules={[Navigation]}
                   navigation={{
                     nextEl: '.product-swiper-next',
                     prevEl: '.product-swiper-prev',
                   }}
-                  pagination={{ clickable: true }}
                   className="h-full w-full"
                 >
                   {product.gallery.map((url: string, idx: number) => (
@@ -160,17 +158,17 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                 </div>
               </div>
               <div className="flex gap-2 flex-col">
-                <AddToCartButton size="medium" product={product} className="mb-1 font-black">
+                <AddToCartButton size="lg" product={product} className="mb-1 font-black w-full">
                   Do kosiku
                 </AddToCartButton>
                 <Button
                   onClick={() => dispatch(addToCart(product))}
-                  size="medium"
+                  size="lg"
                   variant="ghost"
-                  href="/cart"
-                  className="font-black"
+                  asChild
+                  className="font-black w-full"
                 >
-                  Objednej teď
+                  <Link href="/cart">Objednej teď</Link>
                 </Button>
               </div>
             </div>
@@ -241,7 +239,6 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                     nextEl: '.swiper-next',
                     prevEl: '.swiper-prev',
                   }}
-                  pagination={{ clickable: true }}
                   breakpoints={{
                     640: {
                       slidesPerView: 2,

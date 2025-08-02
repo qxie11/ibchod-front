@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { ProductCard } from '@/entities/product';
 import type { GetProductsResponse, Smartphone } from '@/entities/product/model/types';
 import {
+  resetFilters,
   selectPriceRange,
   selectSelectedColor,
   selectSelectedModel,
@@ -25,7 +26,7 @@ import { Card } from '@/shared/ui/card';
 import Container from '@/shared/ui/container';
 import { LiquidGlass } from '@/shared/ui/liquid-glass';
 import Loader from '@/shared/ui/loader';
-import { Pagination } from '@/shared/ui/pagination';
+import { Pagination, PaginationContent } from '@/shared/ui/pagination';
 import Text from '@/shared/ui/text';
 import { Title } from '@/shared/ui/title';
 import { Header } from '@/widgets/header';
@@ -76,11 +77,9 @@ export default function HomePage({
     dispatch(setPriceRange([minPrice, maxPrice]));
   }, [dispatch, maxPrice, minPrice]);
 
-  const resetFil = () => {
+  const handleResetFilters = () => {
+    dispatch(resetFilters());
     dispatch(setPriceRange([minPrice, maxPrice]));
-    dispatch(setSelectedModel('all'));
-    dispatch(setSelectedStorage('all'));
-    dispatch(setSelectedColor('all'));
     onPageChange(1);
   };
 
@@ -148,7 +147,7 @@ export default function HomePage({
               selectedColor={selectedColor}
               setSelectedColor={(v) => dispatch(setSelectedColor(v))}
               colors={uniqueColors}
-              resetFilters={resetFil}
+              resetFilters={handleResetFilters}
             />
           </LiquidGlass>
           <div className="md:col-span-4">
@@ -173,12 +172,14 @@ export default function HomePage({
               </div>
             )}
             <div className="flex justify-center mt-8">
-              <Pagination
-                currentPage={currentPage}
-                totalItems={totalProducts}
-                itemsPerPage={ITEMS_PER_PAGE}
-                onPageChange={onPageChange}
-              />
+              <Pagination>
+                <PaginationContent
+                  currentPage={currentPage}
+                  totalItems={totalProducts}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  onPageChange={onPageChange}
+                />
+              </Pagination>
             </div>
           </div>
         </div>

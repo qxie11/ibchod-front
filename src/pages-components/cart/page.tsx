@@ -109,7 +109,8 @@ export default function CartPage() {
                       <div className="flex justify-between items-center w-full mt-4 md:mt-0 md:w-auto md:justify-start">
                         <div className="flex items-center gap-2 md:mx-4">
                           <Button
-                            size="small"
+                            size="icon"
+                            variant="outline"
                             onClick={() =>
                               dispatch(
                                 updateQuantity({
@@ -123,7 +124,8 @@ export default function CartPage() {
                           </Button>
                           <span className="w-8 text-center font-medium">{item.quantity}</span>
                           <Button
-                            size="small"
+                            size="icon"
+                            variant="outline"
                             onClick={() =>
                               dispatch(
                                 updateQuantity({
@@ -140,7 +142,7 @@ export default function CartPage() {
                           {((item.price ?? 0) * item.quantity).toLocaleString()} Kč
                         </div>
                         <Button
-                          size="small"
+                          size="icon"
                           variant="ghost"
                           className="ml-4 group"
                           onClick={() => dispatch(removeFromCart(item.id))}
@@ -172,8 +174,8 @@ export default function CartPage() {
                       </div>
                     </CardContent>
                     <CardFooter>
-                      <Button href="/checkout" className="w-full">
-                        Pokračovat k pokladně
+                      <Button asChild className="w-full">
+                        <Link href="/checkout">Pokračovat k pokladně</Link>
                       </Button>
                     </CardFooter>
                   </Card>
@@ -188,8 +190,8 @@ export default function CartPage() {
                 <Text className="text-muted-foreground mb-2">
                   Přidejte si produkty do košíku a začněte nakupovat.
                 </Text>
-                <Button size="small" href="/">
-                  Zpět do obchodu
+                <Button size="sm" asChild>
+                  <Link href="/">Zpět do obchodu</Link>
                 </Button>
               </div>
             )}

@@ -14,15 +14,16 @@ export function CartButton() {
   const isClient = useIsClient();
 
   return (
-    <Button size="medium" className="relative py-3 px-3 md:py-3 md:px-4">
-      <Link className="absolute inset-0" href="/cart"></Link>
-      <ShoppingCart className="h-5 w-5" />
-      <span className="sr-only">Otevřít košík</span>
-      {isClient && cartCount > 0 && (
-        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-primary-foreground">
-          {cartCount}
-        </span>
-      )}
+    <Button size="icon" className="relative" asChild>
+      <Link href="/cart">
+        <ShoppingCart className="h-5 w-5" />
+        <span className="sr-only">Otevřít košík</span>
+        {isClient && cartCount > 0 && (
+          <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-primary-foreground">
+            {cartCount}
+          </span>
+        )}
+      </Link>
     </Button>
   );
 }

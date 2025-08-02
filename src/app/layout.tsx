@@ -104,7 +104,7 @@ export default function RootLayout({
           easing="ease"
           speed={200}
         />
-        <div className="flex flex-col min-h-screen bg-muted">
+        <div className="flex flex-col min-h-screen">
           <StoreProvider>
             {children}
             <Toaster />

@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { selectCartItems } from '@/entities/cart';
 import type { Smartphone } from '@/entities/product/model/types';
@@ -110,11 +111,11 @@ export default function CheckoutPage() {
           </BreadcrumbList>
         </Breadcrumb>
         <div className="mb-6">
-          <Button size="small" className="inline-block" href="/">
-            <span className="flex items-center gap-2">
+          <Button size="sm" asChild>
+            <Link href="/" className="inline-flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               Zpět na hlavní stránku
-            </span>
+            </Link>
           </Button>
         </div>
         <h1 className="text-3xl font-bold mb-6">Dokončení objednávky</h1>

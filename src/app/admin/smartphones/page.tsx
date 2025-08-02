@@ -30,7 +30,7 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import Loader from '@/shared/ui/loader';
-import { Pagination } from '@/shared/ui/pagination';
+import { Pagination, PaginationContent } from '@/shared/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 
@@ -126,7 +126,7 @@ export default function AdminSmartphonesPage() {
             <TableCell>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button aria-haspopup="true" className="px-2 py-1" size="small" variant="ghost">
+                  <Button aria-haspopup="true" size="icon" variant="ghost">
                     <MoreHorizontal className="h-4 w-4" />
                     <span className="sr-only">Toggle menu</span>
                   </Button>
@@ -158,7 +158,7 @@ export default function AdminSmartphonesPage() {
               <CardTitle>Smartphony</CardTitle>
               <CardDescription>Spravujte své produkty zde.</CardDescription>
             </div>
-            <Button size="small" onClick={handleAddNew}>
+            <Button size="sm" onClick={handleAddNew}>
               Přidat nový
             </Button>
           </div>
@@ -188,12 +188,14 @@ export default function AdminSmartphonesPage() {
           </Tabs>
         </CardContent>
         <div className="flex justify-center p-4">
-          <Pagination
-            currentPage={currentPage}
-            totalItems={totalProducts}
-            itemsPerPage={ITEMS_PER_PAGE}
-            onPageChange={onPageChange}
-          />
+          <Pagination>
+            <PaginationContent
+              currentPage={currentPage}
+              totalItems={totalProducts}
+              itemsPerPage={ITEMS_PER_PAGE}
+              onPageChange={onPageChange}
+            />
+          </Pagination>
         </div>
       </Card>
       <SmartphoneFormDialog

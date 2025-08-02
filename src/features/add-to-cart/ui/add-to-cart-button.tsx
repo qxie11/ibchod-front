@@ -23,7 +23,7 @@ interface AddToCartButtonProps extends HTMLAttributes<HTMLButtonElement> {
 export const AddToCartButton = ({
   product,
   className,
-  size = 'medium',
+  size = 'default',
   children,
   ...rest
 }: AddToCartButtonProps) => {

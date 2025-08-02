@@ -82,7 +82,7 @@ export function ProductFilters({
         <div>
           <FormField className="mb-3" label="📱 Model">
             <Select value={selectedModel} onValueChange={setSelectedModel}>
-              <SelectTrigger className="py-1.5 text-sm">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -99,7 +99,7 @@ export function ProductFilters({
         <div>
           <FormField className="mb-3" label="💾 Úložiště">
             <Select value={selectedStorage} onValueChange={setSelectedStorage}>
-              <SelectTrigger className="py-1.5 text-sm">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -116,7 +116,7 @@ export function ProductFilters({
         <div>
           <FormField className="mb-3" label="🎨 Barva">
             <Select value={selectedColor} onValueChange={setSelectedColor}>
-              <SelectTrigger className="py-1.5 text-sm">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -130,7 +130,7 @@ export function ProductFilters({
             </Select>
           </FormField>
         </div>
-        <Button onClick={resetFilters} className="w-full" size="small">
+        <Button onClick={resetFilters} className="w-full" size="sm">
           Resetovat filtry
         </Button>
       </div>

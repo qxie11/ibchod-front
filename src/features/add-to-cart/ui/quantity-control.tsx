@@ -26,9 +26,8 @@ export function QuantityControl({ productId, className }: QuantityControlProps) 
   return (
     <div className={`flex items-center gap-2 justify-center ${className}`}>
       <Button
-        size="small"
-        className="px-4 py-1"
-        variant="ghost"
+        size="icon"
+        variant="outline"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -39,9 +38,8 @@ export function QuantityControl({ productId, className }: QuantityControlProps) 
       </Button>
       <span className="font-bold text-lg w-8 text-center">{quantity}</span>
       <Button
-        size="small"
-        className="px-4 py-1"
-        variant="ghost"
+        size="icon"
+        variant="outline"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();

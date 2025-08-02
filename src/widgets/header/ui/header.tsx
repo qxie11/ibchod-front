@@ -13,7 +13,7 @@ export function Header() {
   return (
     <LiquidGlass
       as="header"
-      className="max-w-[1220px] sticky top-0 z-50 w-full border-b border-border/40"
+      className="max-w-[1220px] sticky top-4 z-50 w-[95%] border-b border-border/40"
     >
       <Container className="flex py-2 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
