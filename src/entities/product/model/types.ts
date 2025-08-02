@@ -14,4 +14,6 @@ export interface Smartphone {
   quantity?: number;
   active: boolean;
   slug: string;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -6,29 +6,32 @@ import HomePage from '@/pages-components';
 import { GetProductsResponse } from '@/shared/lib/slices/productApi';
 
 export const metadata: Metadata = {
-  title: 'Hlavní stránka',
+  title: 'Repasované iPhony se zárukou | IObchod',
   description:
-    'Objevte nejnovější modely iPhone v IObchod. Široký výběr iPhone s garantovanou zárukou, rychlým doručením a profesionálním servisem. Nakupujte bezpečně online.',
+    'Objevte široký výběr repasovaných iPhonů v IObchod. Všechny modely se zárukou 12 měsíců, rychlým doručením a za skvělé ceny. Udržitelná volba pro vás i planetu.',
   keywords: [
-    'iPhone',
+    'repasované iPhone',
+    'použité iPhone',
+    'iPhone se zárukou',
+    'levný iPhone',
+    'IObchod',
     'Apple',
     'smartphone',
     'mobilní telefon',
-    'online prodej',
-    'záruka',
-    'doručení',
+    'udržitelnost',
   ],
   openGraph: {
-    title: 'IObchod - Nejnovější iPhone modely',
-    description: 'Objevte nejnovější modely iPhone v IObchod. Široký výběr s garantovanou zárukou.',
-    url: 'https://iphone-store-jet.vercel.app',
+    title: 'Repasované iPhony se zárukou | IObchod',
+    description:
+      'Široký výběr repasovaných iPhonů se zárukou. Udržitelná volba, skvělé ceny a rychlé doručení.',
+    url: '/',
     siteName: 'IObchod',
     images: [
       {
-        url: '/icons/icon-512x512.png',
-        width: 512,
-        height: 512,
-        alt: 'IObchod - Nejnovější iPhone modely',
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Repasované iPhony se zárukou od IObchod',
       },
     ],
     locale: 'cs_CZ',
@@ -36,9 +39,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'IObchod - Nejnovější iPhone modely',
-    description: 'Objevte nejnovější modely iPhone v IObchod. Široký výběr s garantovanou zárukou.',
-    images: ['/icons/icon-512x512.png'],
+    title: 'Repasované iPhony se zárukou | IObchod',
+    description:
+      'Nakupujte kvalitní repasované iPhony se zárukou. Rychlé doručení a skvělé ceny. Udržitelná volba pro chytřejší nákup.',
+    images: ['/twitter-image.png'],
   },
   alternates: {
     canonical: '/',

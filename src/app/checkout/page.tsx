@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Dokončení objednávky - IObchod',
     description: 'Dokončete svou objednávku iPhone v IObchod. Bezpečné platby a rychlé doručení.',
-    url: 'https://iphone-store-jet.vercel.app/checkout',
+    url: '/checkout',
     siteName: 'IObchod',
     images: [
       {

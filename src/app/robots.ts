@@ -11,12 +11,20 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin/', '/api/', '/_next/', '/private/'],
+        disallow: ['/admin/', '/cart/', '/checkout/'],
       },
       {
         userAgent: 'Googlebot',
         allow: '/',
-        disallow: ['/admin/', '/api/'],
+        disallow: ['/admin/', '/cart/', '/checkout/'],
+      },
+      {
+        userAgent: 'AhrefsBot',
+        disallow: '/',
+      },
+      {
+        userAgent: 'SemrushBot',
+        disallow: '/',
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

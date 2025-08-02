@@ -53,11 +53,9 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
         <Container className="flex-1 py-8">
           <div className="text-center py-20">
             <Title variant="h1" className="text-2xl font-bold mb-2">
-              Product not found
+              Produkt nenalezen
             </Title>
-            <Text className="text-muted-foreground">
-              The product you are looking for doesnt exist.
-            </Text>
+            <Text className="text-muted-foreground">Produkt, který hledáte, neexistuje.</Text>
           </div>
         </Container>
       </>
@@ -71,11 +69,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Products</BreadcrumbLink>
+              <BreadcrumbLink href="/">Domů</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -87,7 +81,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
           <Button size="small" className="inline-block" href="/">
             <span className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
-              Back to all products
+              Zpět na všechny produkty
             </span>
           </Button>
         </div>
@@ -137,7 +131,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                 Apple {product.name}
               </Title>
               <div className="mb-5 flex items-center gap-2">
-                <Badge variant="secondary">{product.capacity}</Badge>
+                <Badge variant="secondary">{product.capacity}GB</Badge>
                 <Badge variant="secondary">{product.color}</Badge>
               </div>
               <div className="flex items-center gap-3 mb-6">
@@ -167,7 +161,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
               </div>
               <div className="flex gap-2 flex-col">
                 <AddToCartButton size="medium" product={product} className="mb-1 font-black">
-                  Do kosicu
+                  Do kosiku
                 </AddToCartButton>
                 <Button
                   onClick={() => dispatch(addToCart(product))}

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Nákupní košík - IObchod',
     description: 'Váš nákupní košík v IObchod. Zkontrolujte vybrané iPhone modely.',
-    url: 'https://iphone-store-jet.vercel.app/cart',
+    url: '/cart',
     siteName: 'IObchod',
     images: [
       {

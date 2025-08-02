@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Administrace - IObchod',
     description: 'Administrační panel IObchod pro správu produktů a objednávek.',
-    url: 'https://iphone-store-jet.vercel.app/admin',
+    url: '/admin',
     siteName: 'IObchod',
     images: [
       {

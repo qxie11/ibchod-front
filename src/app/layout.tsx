@@ -12,6 +12,8 @@ import './globals.css';
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex' });
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://iphone-store-jet.vercel.app';
+
 export const metadata: Metadata = {
   title: {
     default: 'IObchod - Oficiální prodej iPhone v České republice',
@@ -36,14 +38,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://iphone-store-jet.vercel.app'),
+  metadataBase: new URL(baseUrl),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'cs_CZ',
-    url: 'https://iphone-store-jet.vercel.app',
+    url: baseUrl,
     siteName: 'IObchod',
     title: 'IObchod - Oficiální prodej iPhone v České republice',
     description:
