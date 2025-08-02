@@ -33,28 +33,28 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 const formSchema = yup.object({
-  name: yup.string().min(2).required(),
+  name: yup.string().min(2).required('Název je povinný'),
   slug: yup
     .string()
-    .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug must be in format: word-word-word')
-    .required(),
-  price: yup.number().positive().required(),
-  capacity: yup.number().positive().required(),
-  color: yup.string().min(2).required(),
+    .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug musí být ve formátu: slovo-slovo-slovo')
+    .required('Slug je povinný'),
+  price: yup.number().positive().required('Cena je povinná'),
+  capacity: yup.number().positive().required('Kapacita je povinná'),
+  color: yup.string().min(2).required('Barva je povinná'),
   small_desc: yup.string().optional(),
-  large_desc: yup.string().min(10).required(),
+  large_desc: yup.string().min(10).required('Dlouhý popis je povinný'),
   gallery: yup
     .mixed()
-    .test('required', 'At least one image is required.', (value) => {
+    .test('required', 'Je vyžadován alespoň jeden obrázek.', (value) => {
       const files = value as FileList;
       return files && files.length > 0;
     })
-    .test('fileSize', 'Max file size is 5MB.', (value) => {
+    .test('fileSize', 'Maximální velikost souboru je 5MB.', (value) => {
       if (!value) return true;
       const files = value as FileList;
       return Array.from(files).every((file) => file.size <= MAX_FILE_SIZE);
     })
-    .test('fileType', '.jpg, .jpeg, .png and .webp files are accepted.', (value) => {
+    .test('fileType', 'Jsou přijímány soubory .jpg, .jpeg, .png a .webp.', (value) => {
       if (!value) return true;
       const files = value as FileList;
       return Array.from(files).every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type));
@@ -209,9 +209,9 @@ export function SmartphoneFormDialog({
 
         if (hasChanges) {
           await updateSmartphone({ id: smartphone!.id, body: changedData }).unwrap();
-          toast({ title: 'Success', description: 'Smartphone updated successfully.' });
+          toast({ title: 'Úspěch', description: 'Smartphone byl úspěšně aktualizován.' });
         } else {
-          toast({ title: 'No changes', description: 'No fields were changed.' });
+          toast({ title: 'Žádné změny', description: 'Nebyly změněny žádné pole.' });
         }
       } else {
         const body = new FormData();
@@ -230,7 +230,7 @@ export function SmartphoneFormDialog({
         });
 
         await createSmartphone(body).unwrap();
-        toast({ title: 'Success', description: 'Smartphone created successfully.' });
+        toast({ title: 'Úspěch', description: 'Smartphone byl úspěšně vytvořen.' });
       }
 
       onOpenChange(false);
@@ -238,8 +238,8 @@ export function SmartphoneFormDialog({
       console.error('Form submission error:', error);
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: 'Something went wrong.',
+        title: 'Chyba',
+        description: 'Něco se pokazilo.',
       });
     }
   }
@@ -250,11 +250,9 @@ export function SmartphoneFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[725px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isUpdate ? 'Edit Smartphone' : 'Add New Smartphone'}</DialogTitle>
+          <DialogTitle>{isUpdate ? 'Upravit smartphone' : 'Přidat nový smartphone'}</DialogTitle>
           <DialogDescription>
-            {isUpdate
-              ? 'Edit the details of the smartphone.'
-              : 'Fill in the details for the new smartphone.'}
+            {isUpdate ? 'Upravte detaily smartphonu.' : 'Vyplňte detaily pro nový smartphone.'}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -265,11 +263,11 @@ export function SmartphoneFormDialog({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Název</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value?.toString()}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select name" />
+                          <SelectValue placeholder="Vyberte název" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -304,7 +302,7 @@ export function SmartphoneFormDialog({
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price</FormLabel>
+                    <FormLabel>Cena</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} value={field.value || 0} />
                     </FormControl>
@@ -317,14 +315,14 @@ export function SmartphoneFormDialog({
                 name="capacity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Capacity (GB)</FormLabel>
+                    <FormLabel>Kapacita (GB)</FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(parseInt(value, 10))}
                       value={String(field.value)}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select capacity" />
+                          <SelectValue placeholder="Vyberte kapacitu" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -344,11 +342,11 @@ export function SmartphoneFormDialog({
                 name="color"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Color</FormLabel>
+                    <FormLabel>Barva</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value?.toString()}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select color" />
+                          <SelectValue placeholder="Vyberte barvu" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -369,7 +367,7 @@ export function SmartphoneFormDialog({
               name="small_desc"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Short Description</FormLabel>
+                  <FormLabel>Krátký popis</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value || ''} />
                   </FormControl>
@@ -382,7 +380,7 @@ export function SmartphoneFormDialog({
               name="large_desc"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Long Description</FormLabel>
+                  <FormLabel>Dlouhý popis</FormLabel>
                   <FormControl>
                     <Textarea {...field} value={field.value || ''} />
                   </FormControl>
@@ -395,7 +393,7 @@ export function SmartphoneFormDialog({
               name="gallery"
               render={({ field: _field }) => (
                 <FormItem>
-                  <FormLabel>Gallery</FormLabel>
+                  <FormLabel>Galerie</FormLabel>
                   <FormControl>
                     <Input
                       type="file"
@@ -429,7 +427,7 @@ export function SmartphoneFormDialog({
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                   <div className="space-y-0.5">
-                    <FormLabel>Active</FormLabel>
+                    <FormLabel>Aktivní</FormLabel>
                   </div>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -439,10 +437,10 @@ export function SmartphoneFormDialog({
             />
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
-                Cancel
+                Zrušit
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Saving...' : 'Save'}
+                {isLoading ? 'Ukládání...' : 'Uložit'}
               </Button>
             </DialogFooter>
           </form>

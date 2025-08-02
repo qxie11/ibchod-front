@@ -55,7 +55,7 @@ export default function AdminSmartphonesPage() {
   }
 
   if (error) {
-    return <div>Error loading products</div>;
+    return <div>Chyba při načítání produktů</div>;
   }
   const products = data?.items ?? [];
   const totalProducts = data?.total ?? 0;
@@ -94,12 +94,12 @@ export default function AdminSmartphonesPage() {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="hidden w-[100px] sm:table-cell">Image</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Price</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead className="hidden w-[100px] sm:table-cell">Obrázek</TableHead>
+          <TableHead>Název</TableHead>
+          <TableHead>Cena</TableHead>
+          <TableHead>Stav</TableHead>
           <TableHead>
-            <span className="sr-only">Actions</span>
+            <span className="sr-only">Akce</span>
           </TableHead>
         </TableRow>
       </TableHeader>
@@ -120,7 +120,7 @@ export default function AdminSmartphonesPage() {
             <TableCell>{product.price.toLocaleString()} Kč</TableCell>
             <TableCell>
               <Badge variant={product.active ? 'default' : 'destructive'}>
-                {product.active ? 'Active' : 'Inactive'}
+                {product.active ? 'Aktivní' : 'Neaktivní'}
               </Badge>
             </TableCell>
             <TableCell>
@@ -132,13 +132,13 @@ export default function AdminSmartphonesPage() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuItem onSelect={() => handleEdit(product)}>Edit</DropdownMenuItem>
+                  <DropdownMenuLabel>Akce</DropdownMenuLabel>
+                  <DropdownMenuItem onSelect={() => handleEdit(product)}>Upravit</DropdownMenuItem>
                   <DropdownMenuItem
                     onSelect={() => handleDeleteClick(product)}
                     className="text-red-600"
                   >
-                    Delete
+                    Smazat
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -155,11 +155,11 @@ export default function AdminSmartphonesPage() {
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>Smartphones</CardTitle>
-              <CardDescription>Manage your products here.</CardDescription>
+              <CardTitle>Smartphony</CardTitle>
+              <CardDescription>Spravujte své produkty zde.</CardDescription>
             </div>
             <Button size="small" onClick={handleAddNew}>
-              Add New
+              Přidat nový
             </Button>
           </div>
         </CardHeader>
@@ -170,13 +170,13 @@ export default function AdminSmartphonesPage() {
                 value="active"
                 className="data-[state=active]:bg-blue-500 data-[state=active]:text-white"
               >
-                Active ({activeProducts.length})
+                Aktivní ({activeProducts.length})
               </TabsTrigger>
               <TabsTrigger
                 value="inactive"
                 className="data-[state=active]:bg-blue-500 data-[state=active]:text-white"
               >
-                Inactive ({inactiveProducts.length})
+                Neaktivní ({inactiveProducts.length})
               </TabsTrigger>
             </TabsList>
             <TabsContent value="active">
@@ -204,15 +204,15 @@ export default function AdminSmartphonesPage() {
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>Jste si jisti?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the smartphone &quot;
+              Tuto akci nelze vrátit zpět. Tímto trvale smažete smartphone &quot;
               {smartphoneToDelete?.name}&quot;.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm}>Delete</AlertDialogAction>
+            <AlertDialogCancel>Zrušit</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>Smazat</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

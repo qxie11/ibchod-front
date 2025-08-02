@@ -27,7 +27,7 @@ export default function AdminOrdersPage() {
   }
 
   if (error || !orders) {
-    return <div>Error loading orders</div>;
+    return <div>Chyba při načítání objednávek</div>;
   }
 
   return (
@@ -36,11 +36,11 @@ export default function AdminOrdersPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Order ID</TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead className="text-right">Details</TableHead>
+              <TableHead>Číslo objednávky</TableHead>
+              <TableHead>Zákazník</TableHead>
+              <TableHead>Telefon</TableHead>
+              <TableHead>Datum</TableHead>
+              <TableHead className="text-right">Detaily</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -65,17 +65,17 @@ export default function AdminOrdersPage() {
         <Dialog open={!!openOrderId} onOpenChange={() => setOpenOrderId(null)}>
           <DialogContent className="max-w-xl">
             <DialogHeader>
-              <DialogTitle>Order Details</DialogTitle>
+              <DialogTitle>Detaily objednávky</DialogTitle>
             </DialogHeader>
             {selectedOrder ? (
               <div className="space-y-4">
                 <div>
-                  <strong>Customer:</strong> {selectedOrder.name} ({selectedOrder.email})
+                  <strong>Zákazník:</strong> {selectedOrder.name} ({selectedOrder.email})
                   <br />
-                  <strong>Phone:</strong> {selectedOrder.phone}
+                  <strong>Telefon:</strong> {selectedOrder.phone}
                 </div>
                 <div>
-                  <strong>Items:</strong>
+                  <strong>Položky:</strong>
                   <div className="mt-2 space-y-4">
                     {(selectedOrder.items as any[])?.map(({ smartphone: item, quantity }) => (
                       <Card key={item.id} className="flex items-center p-4">
@@ -107,14 +107,14 @@ export default function AdminOrdersPage() {
                           {((item.price ?? 0) * quantity).toLocaleString()} Kč
                         </div>
                         <div className="ml-4 text-xs text-muted-foreground">
-                          {item.active ? 'Active' : 'Inactive'}
+                          {item.active ? 'Aktivní' : 'Neaktivní'}
                         </div>
                       </Card>
                     ))}
                   </div>
                 </div>
                 <DialogClose asChild>
-                  <button className="mt-4 btn btn-primary">Close</button>
+                  <button className="mt-4 btn btn-primary">Zavřít</button>
                 </DialogClose>
               </div>
             ) : null}

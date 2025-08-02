@@ -60,7 +60,7 @@ function CartItem({ item }: { item: Smartphone }) {
       <div>
         <div className="font-medium">{item.name}</div>
         <div className="text-sm text-gray-500">{item.small_desc}</div>
-        <div className="text-sm">Množství: {item.quantity}</div>
+        <div className="text-sm">Počet kusů: {item.quantity}</div>
       </div>
     </li>
   );
@@ -117,7 +117,7 @@ export default function CheckoutPage() {
             </span>
           </Button>
         </div>
-        <h1 className="text-3xl font-bold mb-6">Pokladna</h1>
+        <h1 className="text-3xl font-bold mb-6">Dokončení objednávky</h1>
         <div className="flex gap-4 max-md:flex-col">
           <LiquidGlass className="basis-2/3 w-full mx-auto p-0">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-6">
@@ -141,7 +141,7 @@ export default function CheckoutPage() {
                 />
               </FormField>
               <Button type="submit" className="w-full" disabled={isSubmitting || isOrderLoading}>
-                {isOrderLoading ? 'Odesílání…' : 'Odeslat objednávku'}
+                {isOrderLoading ? 'Odesílání…' : 'Dokončit objednávku'}
               </Button>
               {isSuccess && (
                 <p className="text-green-600 text-center mt-2">Objednávka byla úspěšně odeslána!</p>

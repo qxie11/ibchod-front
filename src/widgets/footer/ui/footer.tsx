@@ -8,16 +8,16 @@ export function Footer() {
       <Container>
         <div className="py-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
           <div className="flex flex-col items-center md:items-start">
-            <span className="text-xl font-bold text-primary mb-2">iPhony.cz</span>
+            <span className="text-xl font-bold text-primary mb-2">IObchod.cz</span>
             <span className="text-sm text-muted-foreground">Repasované iPhony se zárukou</span>
           </div>
           <div className="flex flex-col items-center gap-1">
             <span className="font-semibold text-sm">Kontakt</span>
             <a
-              href="mailto:info@iphony.cz"
+              href="mailto:info@iobchod.cz"
               className="text-sm text-muted-foreground hover:underline"
             >
-              info@iphony.cz
+              info@iobchod.cz
             </a>
             <a href="tel:+420123456789" className="text-sm text-muted-foreground hover:underline">
               +420 123 456 789
@@ -37,7 +37,7 @@ export function Footer() {
         </div>
       </Container>
       <div className="text-center text-xs text-muted-foreground py-2 border-t">
-        © {new Date().getFullYear()} iPhony.cz. Všechna práva vyhrazena.
+        © {new Date().getFullYear()} IObchod.cz. Všechna práva vyhrazena.
       </div>
     </footer>
   );

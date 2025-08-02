@@ -22,12 +22,12 @@ export default function AdminDashboardPage() {
   return (
     <div>
       <Title variant="h1" className="mb-6">
-        Admin Dashboard
+        Administrace
       </Title>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+            <CardTitle className="text-sm font-medium">Celkem produktů</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -40,13 +40,13 @@ export default function AdminDashboardPage() {
               href="/admin/smartphones"
               className="text-xs text-muted-foreground hover:underline"
             >
-              View all products
+              Zobrazit všechny produkty
             </Link>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+            <CardTitle className="text-sm font-medium">Celkem objednávek</CardTitle>
             <ListOrdered className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -56,7 +56,7 @@ export default function AdminDashboardPage() {
               <div className="text-2xl font-bold">{orderCount}</div>
             )}
             <Link href="/admin/orders" className="text-xs text-muted-foreground hover:underline">
-              View all orders
+              Zobrazit všechny objednávky
             </Link>
           </CardContent>
         </Card>

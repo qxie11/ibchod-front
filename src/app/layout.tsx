@@ -13,8 +13,68 @@ import './globals.css';
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex' });
 
 export const metadata: Metadata = {
-  title: 'iStore Minimal',
-  description: 'An elegant iPhone store built with Next.js',
+  title: {
+    default: 'IObchod - Oficiální prodej iPhone v České republice',
+    template: '%s | IObchod',
+  },
+  description:
+    'Oficiální prodej iPhone v České republice. Nejnovější modely iPhone s garantovanou zárukou, rychlým doručením a profesionálním servisem. Nakupujte bezpečně online.',
+  keywords: [
+    'iPhone',
+    'Apple',
+    'smartphone',
+    'mobilní telefon',
+    'Česká republika',
+    'online prodej',
+    'záruka',
+  ],
+  authors: [{ name: 'IObchod Team' }],
+  creator: 'IObchod',
+  publisher: 'IObchod',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://iphone-store-jet.vercel.app'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'cs_CZ',
+    url: 'https://iphone-store-jet.vercel.app',
+    siteName: 'IObchod',
+    title: 'IObchod - Oficiální prodej iPhone v České republice',
+    description:
+      'Oficiální prodej iPhone v České republice. Nejnovější modely iPhone s garantovanou zárukou, rychlým doručením a profesionálním servisem.',
+    images: [
+      {
+        url: '/icons/icon-512x512.png',
+        width: 512,
+        height: 512,
+        alt: 'IObchod - Oficiální prodej iPhone',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'IObchod - Oficiální prodej iPhone v České republice',
+    description:
+      'Oficiální prodej iPhone v České republice. Nejnovější modely iPhone s garantovanou zárukou.',
+    images: ['/icons/icon-512x512.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   manifest: '/manifest.json',
 };
 
