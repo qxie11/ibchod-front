@@ -19,12 +19,24 @@ export interface CreateSmartphoneDto {
   gallery?: object;
   large_desc?: string;
   small_desc?: string;
-  active?: boolean;
+  active?: string;
   id?: number;
   /** @format date-time */
   createdAt?: string;
   /** @format date-time */
   updatedAt?: string;
+}
+
+export interface UpdateSmartphoneDto {
+  name?: string;
+  slug?: string;
+  color?: string;
+  capacity?: number;
+  price?: number;
+  gallery?: object;
+  large_desc?: string;
+  small_desc?: string;
+  active?: string;
 }
 
 export interface CreateOrderDto {
@@ -40,6 +52,10 @@ export interface CreateOrderDto {
   message: string;
   items: string[];
 }
+
+export type RegisterDto = object;
+
+export type LoginDto = object;
 
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>;
@@ -375,6 +391,40 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: 'GET',
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags Smartphone
+     * @name SmartphoneControllerUpdate
+     * @request PATCH:/smartphones/{id}
+     */
+    smartphoneControllerUpdate: (
+      id: string,
+      data: UpdateSmartphoneDto,
+      params: RequestParams = {}
+    ) =>
+      this.request<void, any>({
+        path: `/smartphones/${id}`,
+        method: 'PATCH',
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Smartphone
+     * @name SmartphoneControllerDelete
+     * @request DELETE:/smartphones/{id}
+     */
+    smartphoneControllerDelete: (id: string, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/smartphones/${id}`,
+        method: 'DELETE',
+        ...params,
+      }),
   };
   orders = {
     /**
@@ -446,6 +496,67 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<void, any>({
         path: `/orders/${id}`,
         method: 'DELETE',
+        ...params,
+      }),
+  };
+  auth = {
+    /**
+     * No description
+     *
+     * @tags Auth
+     * @name AuthControllerRegister
+     * @request POST:/auth/register
+     */
+    authControllerRegister: (data: RegisterDto, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/auth/register`,
+        method: 'POST',
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Auth
+     * @name AuthControllerLogin
+     * @request POST:/auth/login
+     */
+    authControllerLogin: (data: LoginDto, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/auth/login`,
+        method: 'POST',
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Auth
+     * @name AuthControllerRefresh
+     * @request POST:/auth/refresh
+     */
+    authControllerRefresh: (params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/auth/refresh`,
+        method: 'POST',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Auth
+     * @name AuthControllerLogout
+     * @request POST:/auth/logout
+     */
+    authControllerLogout: (params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/auth/logout`,
+        method: 'POST',
         ...params,
       }),
   };

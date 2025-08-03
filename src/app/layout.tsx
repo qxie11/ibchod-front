@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { Readex_Pro } from 'next/font/google';
 
 import { StoreProvider } from '@/app/StoreProvider';
+import { AuthProvider } from '@/providers/auth-provider';
 import { Toaster } from '@/shared/ui/toaster';
 import { Footer } from '@/widgets/footer/ui/footer';
 
@@ -105,11 +106,13 @@ export default function RootLayout({
           speed={200}
         />
         <div className="flex flex-col min-h-screen">
-          <StoreProvider>
-            {children}
-            <Toaster />
-            <Footer />
-          </StoreProvider>
+          <AuthProvider>
+            <StoreProvider>
+              {children}
+              <Toaster />
+              <Footer />
+            </StoreProvider>
+          </AuthProvider>
         </div>
       </body>
     </html>

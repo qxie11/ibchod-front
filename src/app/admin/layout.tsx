@@ -4,6 +4,8 @@ import type { Metadata } from 'next';
 
 import Link from 'next/link';
 
+import { SignOutButton } from '@/components/auth/sign-out-button';
+import { TokenAdminGuard } from '@/components/auth/token-admin-guard';
 import Container from '@/shared/ui/container';
 import { Header } from '@/widgets/header';
 
@@ -36,14 +38,14 @@ export const metadata: Metadata = {
 };
 
 const adminNavLinks = [
-  { href: '/admin', label: 'Dashboard', icon: Home },
+  { href: '/admin', label: 'Přehled', icon: Home },
   { href: '/admin/smartphones', label: 'Smartphony', icon: Package },
   { href: '/admin/orders', label: 'Objednávky', icon: ListOrdered },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <TokenAdminGuard>
       <Header />
       <Container className="flex-1 py-8 w-full">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -62,11 +64,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </Link>
                 );
               })}
+              <div className="pt-4 mt-4 border-t">
+                <SignOutButton />
+              </div>
             </nav>
           </aside>
           <main className="md:col-span-3">{children}</main>
         </div>
       </Container>
-    </>
+    </TokenAdminGuard>
   );
 }
