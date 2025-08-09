@@ -4,7 +4,7 @@ import Container from '@/shared/ui/container';
 
 export function Footer() {
   return (
-    <footer className="w-full bg-muted border-t mt-16">
+    <footer className="w-full bg-secondary border-t mt-16">
       <Container>
         <div className="py-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
           <div className="flex flex-col items-center md:items-start">
@@ -23,7 +23,7 @@ export function Footer() {
               +420 123 456 789
             </a>
           </div>
-          <div className="flex flex-col items-center gap-1">
+          <div className="flex flex-col items-center md:items-end gap-1">
             <a href="#" className="text-sm text-muted-foreground hover:underline">
               Obchodní podmínky
             </a>
@@ -36,7 +36,7 @@ export function Footer() {
           </div>
         </div>
       </Container>
-      <div className="text-center text-xs text-muted-foreground py-2 border-t">
+      <div className="text-center text-xs text-muted-foreground py-4 border-t bg-background">
         © {new Date().getFullYear()} IObchod. Všechna práva vyhrazena.
       </div>
     </footer>

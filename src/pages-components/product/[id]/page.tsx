@@ -1,8 +1,6 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useDispatch } from 'react-redux';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { Navigation } from 'swiper/modules';
@@ -11,16 +9,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { addToCart } from '@/entities/cart';
 import { Smartphone } from '@/entities/product/model/types';
+import { ProductCard } from '@/entities/product/ui/product-card';
 import { AddToCartButton } from '@/features/add-to-cart';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/shared/ui/accordion';
-import { Badge } from '@/shared/ui/badge';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -30,9 +21,7 @@ import {
   BreadcrumbSeparator,
 } from '@/shared/ui/breadcrumb';
 import { Button } from '@/shared/ui/button';
-import { Card } from '@/shared/ui/card';
 import Container from '@/shared/ui/container';
-import { LiquidGlass } from '@/shared/ui/liquid-glass';
 import Text from '@/shared/ui/text';
 import { Title } from '@/shared/ui/title';
 import { Header } from '@/widgets/header';
@@ -43,8 +32,6 @@ interface ProductDetailPageProps {
 }
 
 export default function ProductDetailPage({ product, similarProducts }: ProductDetailPageProps) {
-  const dispatch = useDispatch();
-
   if (!product) {
     return (
       <>
@@ -77,17 +64,18 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
           </BreadcrumbList>
         </Breadcrumb>
         <div className="mb-6">
-          <Button size="sm" asChild>
+          <Button size="sm" variant="ghost" asChild>
             <Link href="/" className="inline-flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               Zpět na všechny produkty
             </Link>
           </Button>
         </div>
-        <LiquidGlass>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-4">
+
+        <div className="bg-card p-8 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="space-y-4">
-              <div className="aspect-square relative overflow-hidden rounded-lg">
+              <div className="aspect-square relative overflow-hidden rounded-lg border">
                 <Swiper
                   modules={[Navigation]}
                   navigation={{
@@ -95,6 +83,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                     prevEl: '.product-swiper-prev',
                   }}
                   className="h-full w-full"
+                  loop
                 >
                   {product.gallery.map((url: string, idx: number) => (
                     <SwiperSlide key={url + idx}>
@@ -102,259 +91,76 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                         src={url ?? ''}
                         alt={product.name + ' photo ' + (idx + 1)}
                         fill
-                        className="object-cover"
-                        priority={idx === 1}
+                        className="object-contain"
+                        priority={idx === 0}
                       />
                     </SwiperSlide>
                   ))}
                   <button
-                    className="product-swiper-prev absolute top-1/2 left-2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-accent border border-accent hover:bg-accent hover:text-white transition"
+                    className="product-swiper-prev absolute top-1/2 left-2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center text-foreground border border-border hover:bg-white transition"
                     aria-label="Předchozí obrázek"
                     type="button"
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
-                    className="product-swiper-next absolute top-1/2 right-2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-accent border border-accent hover:bg-accent hover:text-white transition"
+                    className="product-swiper-next absolute top-1/2 right-2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center text-foreground border border-border hover:bg-white transition"
                     aria-label="Další obrázek"
                     type="button"
                   >
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="w-5 h-5" />
                   </button>
                 </Swiper>
               </div>
             </div>
             <div>
               <Title className="mb-3" size="medium" variant="h1">
-                Apple {product.name}
+                Apple {product.name} {product.capacity}GB {product.color}
               </Title>
-              <div className="mb-5 flex items-center gap-2">
-                <Badge variant="secondary">{product.capacity}GB</Badge>
-                <Badge variant="secondary">{product.color}</Badge>
-              </div>
-              <div className="flex items-center gap-3 mb-6">
-                <Text className="text-3xl font-bold text-green-600">{product.price ?? 0} Kč</Text>
+
+              <Text className="text-muted-foreground mb-6">{product.large_desc}</Text>
+              <div className="flex items-baseline gap-3 mb-6">
+                <Text className="text-3xl font-bold text-foreground">
+                  {product.price.toLocaleString('cs-CZ')} Kč
+                </Text>
                 <Text className="text-lg text-muted-foreground line-through">
-                  {Math.round(+(product?.price ?? 0) * 1.3)} Kč
+                  {Math.round(+(product?.price ?? 0) * 1.3).toLocaleString('cs-CZ')} Kč
                 </Text>
               </div>
-              <Text className="text-muted-foreground mb-6">{product.large_desc}</Text>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <AddToCartButton size="lg" product={product} className="w-full">
+                Přidat do košíku
+              </AddToCartButton>
+
+              <div className="mt-8 space-y-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-3">
-                  <span className="text-green-600 text-2xl">✔</span>
-                  <span>12 měsíců oficiální záruka</span>
+                  <span className="text-green-600">✔</span>
+                  <span>12 měsíců záruka</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-green-600 text-2xl">🚚</span>
-                  <span>Doprava zdarma po celé zemi</span>
+                  <span className="text-green-600">✔</span>
+                  <span>Doprava zdarma po celé ČR</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-green-600 text-2xl">💬</span>
-                  <span>Podpora 24/7 a konzultace</span>
+                  <span className="text-green-600">✔</span>
+                  <span>Možnost vrácení do 14 dnů</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-green-600 text-2xl">♻️</span>
-                  <span>Možnost výkupu a upgradu</span>
-                </div>
-              </div>
-              <div className="flex gap-2 flex-col">
-                <AddToCartButton size="lg" product={product} className="mb-1 font-black w-full">
-                  Do kosiku
-                </AddToCartButton>
-                <Button
-                  onClick={() => dispatch(addToCart(product))}
-                  size="lg"
-                  variant="ghost"
-                  asChild
-                  className="font-black w-full"
-                >
-                  <Link href="/cart">Objednej teď</Link>
-                </Button>
               </div>
             </div>
           </div>
-        </LiquidGlass>
-
-        <div className="mt-4 md:mt-8">
-          <LiquidGlass>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <Title variant="h3" className="mb-4">
-                    Key Features
-                  </Title>
-                  <ul className="space-y-2 text-muted-foreground">
-                    <li>• A17 Pro chip with 6-core GPU</li>
-                    <li>• Pro camera system with 48MP Main</li>
-                    <li>• 6.1 Super Retina XDR display</li>
-                    <li>• All-day battery life</li>
-                    <li>• Ceramic Shield front</li>
-                    <li>• Water and dust resistant</li>
-                  </ul>
-                </div>
-                <div>
-                  <Title variant="h3" className="mb-4">
-                    Technical Specifications
-                  </Title>
-                  <div className="space-y-2 text-muted-foreground">
-                    <div className="flex justify-between">
-                      <span>Display:</span>
-                      <span>6.1 Super Retina XDR</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Chip:</span>
-                      <span>A17 Pro</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Storage:</span>
-                      <span>{product.capacity}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Color:</span>
-                      <span>{product.color}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Battery:</span>
-                      <span>Up to 23 hours</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </LiquidGlass>
         </div>
 
         {similarProducts.length > 0 && (
-          <div className="mt-4 md:mt-8">
-            <LiquidGlass>
-              <div className="p-6">
-                <Title variant="h2" className="mb-6">
-                  Similar Models
-                </Title>
-                <Swiper
-                  modules={[Navigation]}
-                  spaceBetween={8}
-                  slidesPerView={1.1}
-                  navigation={{
-                    nextEl: '.swiper-next',
-                    prevEl: '.swiper-prev',
-                  }}
-                  breakpoints={{
-                    640: {
-                      slidesPerView: 2,
-                      spaceBetween: 24,
-                    },
-                    1024: {
-                      slidesPerView: 3,
-                      spaceBetween: 24,
-                    },
-                  }}
-                  className="pb-12"
-                >
-                  {similarProducts.map((similarProduct, i) => (
-                    <SwiperSlide key={`${similarProduct.slug}-${i}`}>
-                      <Card className="relative flex flex-row items-center bg-white rounded-xl border border-gray-200 transition-all h-full min-h-[120px]">
-                        <Link className="absolute inset-0 z-10" href={similarProduct.slug}></Link>
-                        <div className="w-20 h-20 flex-shrink-0 relative m-3 overflow-hidden rounded-xl shadow-2xl">
-                          <Image
-                            src={similarProduct.gallery[0] as unknown as string}
-                            alt={similarProduct.gallery[0] as unknown as string}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="flex flex-col flex-1 px-2 py-3">
-                          <h3 className="font-bold text-base mb-1">
-                            {similarProduct.name} {similarProduct.capacity}GB
-                          </h3>
-                          <Text className="text-sm text-muted-foreground">
-                            {similarProduct.small_desc}
-                          </Text>
-
-                          <div className="flex items-center gap-2">
-                            <Text className="text-base font-bold text-green-600">
-                              {product.price ?? 0} Kč
-                            </Text>
-                            <Text className="text-sm text-muted-foreground line-through">
-                              {Math.round(+(product?.price ?? 0) * 1.3)} Kč
-                            </Text>
-                          </div>
-                        </div>
-                      </Card>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-                <div className="flex justify-center gap-4 mt-4">
-                  <div className="swiper-prev">
-                    <button className="w-10 h-10 rounded-full border-2 border-accent flex items-center justify-center bg-white text-accent hover:text-white hover:bg-accent transition">
-                      <svg
-                        width="20"
-                        height="20"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="swiper-next">
-                    <button className="w-10 h-10 rounded-full border-2 border-accent flex items-center justify-center bg-white text-accent hover:text-white hover:bg-accent transition">
-                      <svg
-                        width="20"
-                        height="20"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </LiquidGlass>
+          <div className="mt-12">
+            <Title variant="h2" className="mb-6">
+              Podobné modely
+            </Title>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {similarProducts.map((similarProduct) => (
+                <ProductCard key={similarProduct.id} product={similarProduct} />
+              ))}
+            </div>
           </div>
         )}
-        <LiquidGlass className="mt-4 md:mt-8">
-          <div className="p-6">
-            <Title variant="h2" className="mb-6 text-center">
-              Často kladené dotazy
-            </Title>
-            <Accordion type="single" collapsible className="w-full mx-auto">
-              <AccordionItem value="q1">
-                <AccordionTrigger>Jak funguje záruka?</AccordionTrigger>
-                <AccordionContent>
-                  Na všechny naše iPhony poskytujeme 12 měsíců oficiální záruky. Pokud se v tomto
-                  období objeví jakýkoli problém, zdarma jej opravíme nebo vyměníme zařízení.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="q2">
-                <AccordionTrigger>Mohu zboží vrátit?</AccordionTrigger>
-                <AccordionContent>
-                  Ano, zboží můžete vrátit do 14 dnů bez udání důvodu. Stačí nás kontaktovat a my
-                  vám zašleme instrukce k vrácení.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="q3">
-                <AccordionTrigger>Jak rychle probíhá doručení?</AccordionTrigger>
-                <AccordionContent>
-                  Objednávky odesíláme do 24 hodin od potvrzení. Doručení obvykle trvá 1–2 pracovní
-                  dny po celé ČR.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="q4">
-                <AccordionTrigger>Je možné využít trade-in?</AccordionTrigger>
-                <AccordionContent>
-                  Ano, nabízíme možnost výkupu vašeho starého zařízení na protiúčet. Kontaktujte nás
-                  pro individuální nabídku.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-        </LiquidGlass>
       </Container>
     </>
   );

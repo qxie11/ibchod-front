@@ -8,6 +8,7 @@ import { addToCart } from '@/entities/cart/model/slice';
 import type { Smartphone } from '@/entities/product/model/types';
 import { useCartItem } from '@/shared/lib/hooks';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch';
+import { useIsClient } from '@/shared/lib/hooks/useIsClient';
 import { Button, ButtonSize, ButtonVariant } from '@/shared/ui/button';
 
 import { QuantityControl } from './quantity-control';
@@ -29,6 +30,7 @@ export const AddToCartButton = ({
 }: AddToCartButtonProps) => {
   const dispatch = useAppDispatch();
   const cartItem = useCartItem(product.id);
+  const isClient = useIsClient();
 
   const handleAddToCart = (e?: React.MouseEvent<HTMLButtonElement>) => {
     if (e) {
@@ -37,6 +39,14 @@ export const AddToCartButton = ({
     }
     dispatch(addToCart(product));
   };
+
+  if (!isClient) {
+    return (
+      <Button size={size} className={className} {...rest}>
+        {children || <ShoppingCart size={17} />}
+      </Button>
+    );
+  }
 
   if (cartItem) {
     return <QuantityControl productId={product.id} className={className} />;

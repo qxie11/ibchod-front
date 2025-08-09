@@ -4,63 +4,50 @@ export default {
   darkMode: ['class'],
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
+    container: {
+      center: true,
+      padding: '2rem',
+      screens: {
+        '2xl': '1400px',
+      },
+    },
     extend: {
       fontFamily: {
         sans: ['var(--font-readex)', 'sans-serif'],
-        body: ['Readex Pro', 'sans-serif'],
-        headline: ['Readex Pro', 'sans-serif'],
-        code: ['monospace'],
       },
       colors: {
-        background: '#f5f6f7',
-        foreground: '#23272f',
-        card: {
-          DEFAULT: '#fff',
-          foreground: '#23272f',
-        },
-        popover: {
-          DEFAULT: '#fff',
-          foreground: '#23272f',
-        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: '#2563eb',
-          foreground: '#fff',
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
         },
         secondary: {
-          DEFAULT: '#f3f4f6',
-          foreground: '#1a1a1a',
-        },
-        muted: {
-          DEFAULT: '#f3f4f6',
-          foreground: '#6b7280',
-        },
-        accent: {
-          DEFAULT: '#2563eb',
-          foreground: '#fff',
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
         },
         destructive: {
-          DEFAULT: '#ef4444',
-          foreground: '#fafafa',
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
         },
-        border: '#e5e7eb',
-        input: '#e5e7eb',
-        ring: '#2563eb',
-        chart: {
-          '1': '#fa8231',
-          '2': '#1abc9c',
-          '3': '#34495e',
-          '4': '#f7b731',
-          '5': '#fd9644',
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
         },
-        sidebar: {
-          DEFAULT: '#23272f',
-          foreground: '#fafafa',
-          primary: '#2563eb',
-          'primary-foreground': '#fff',
-          accent: '#2563eb',
-          'accent-foreground': '#fff',
-          border: '#23272f',
-          ring: '#2563eb',
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
         },
       },
       borderRadius: {

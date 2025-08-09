@@ -25,7 +25,6 @@ import {
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import Container from '@/shared/ui/container';
-import { LiquidGlass } from '@/shared/ui/liquid-glass';
 import { Separator } from '@/shared/ui/separator';
 import Text from '@/shared/ui/text';
 import { Title } from '@/shared/ui/title';
@@ -52,151 +51,143 @@ export default function CartPage() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <LiquidGlass>
-          <div className="p-6">
-            <Title variant="h1" className="text-3xl font-bold mb-6">
-              Váš košík
-            </Title>
-            {cartItems.length > 0 ? (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-4">
-                  {cartItems.map((item) => (
-                    <Card
-                      key={`${item.id}-${item.color}`}
-                      className="flex flex-col md:flex-row items-start md:items-center p-4"
-                    >
-                      <div className="flex items-center w-full md:w-auto">
-                        <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border">
-                          <Image
-                            src={item.gallery?.[0] ?? ''}
-                            alt={item.name ?? 'iPhone'}
-                            fill
-                            style={{ objectFit: 'cover' }}
-                            data-ai-hint="iphone side"
-                          />
-                        </div>
-                        <div className="flex-1 ml-4 md:hidden">
-                          <Title variant="h4" className="!text-lg font-semibold">
-                            <Link href={`/product/${item.slug}`} className="hover:underline">
-                              {item.name}
-                            </Link>
-                          </Title>
-                          <Text className="text-sm text-muted-foreground">
-                            {item.capacity}GB - {item.color}
-                          </Text>
-                          <Text className="font-medium text-green-600 mt-1">
-                            {(item.price ?? 0).toLocaleString()} Kč
-                          </Text>
-                        </div>
-                      </div>
 
-                      <div className="hidden md:block flex-1 ml-4">
-                        <Title variant="h4" className="!text-lg font-semibold">
-                          <Link href={`/product/${item.slug}`} className="hover:underline">
-                            {item.name}
-                          </Link>
-                        </Title>
-                        <Text className="text-sm text-muted-foreground">
-                          {item.capacity}GB - {item.color}
-                        </Text>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Text className="font-medium text-green-600">
-                            {(item.price ?? 0).toLocaleString()} Kč
-                          </Text>
-                        </div>
-                      </div>
+        <Title variant="h1" className="text-3xl font-bold mb-6">
+          Váš košík
+        </Title>
+        {cartItems.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div className="lg:col-span-2 space-y-4">
+              {cartItems.map((item) => (
+                <Card
+                  key={`${item.id}-${item.color}`}
+                  className="flex flex-col md:flex-row items-start md:items-center p-4"
+                >
+                  <div className="flex items-center w-full md:w-auto">
+                    <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border">
+                      <Image
+                        src={item.gallery?.[0] ?? ''}
+                        alt={item.name ?? 'iPhone'}
+                        fill
+                        style={{ objectFit: 'contain' }}
+                        data-ai-hint="iphone"
+                      />
+                    </div>
+                    <div className="flex-1 ml-4 md:hidden">
+                      <Title variant="h4" className="!text-base font-medium">
+                        <Link href={`/product/${item.slug}`} className="hover:underline">
+                          {item.name}
+                        </Link>
+                      </Title>
+                      <Text className="text-sm text-muted-foreground">
+                        {item.capacity}GB - {item.color}
+                      </Text>
+                      <Text className="font-bold text-foreground mt-1 text-lg">
+                        {(item.price ?? 0).toLocaleString()} Kč
+                      </Text>
+                    </div>
+                  </div>
 
-                      <div className="flex justify-between items-center w-full mt-4 md:mt-0 md:w-auto md:justify-start">
-                        <div className="flex items-center gap-2 md:mx-4">
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            onClick={() =>
-                              dispatch(
-                                updateQuantity({
-                                  productId: item.id,
-                                  quantity: item.quantity - 1,
-                                })
-                              )
-                            }
-                          >
-                            <Minus className="h-4 w-4" />
-                          </Button>
-                          <span className="w-8 text-center font-medium">{item.quantity}</span>
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            onClick={() =>
-                              dispatch(
-                                updateQuantity({
-                                  productId: item.id,
-                                  quantity: item.quantity + 1,
-                                })
-                              )
-                            }
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <div className="font-bold w-24 text-right">
-                          {((item.price ?? 0) * item.quantity).toLocaleString()} Kč
-                        </div>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="ml-4 group"
-                          onClick={() => dispatch(removeFromCart(item.id))}
-                        >
-                          <Trash2 className="group-hover:text-white h-4 w-4 text-muted-foreground hover:text-destructive" />
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-                <div className="lg:col-span-1">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Shrnutí objednávky</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex justify-between">
-                        <span>Mezisoučet ({cartCount} položek)</span>
-                        <span>{cartTotal?.toLocaleString()} Kč</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Doprava</span>
-                        <span>Zdarma</span>
-                      </div>
-                      <Separator />
-                      <div className="flex justify-between font-bold text-lg">
-                        <span>Celkem</span>
-                        <span>{cartTotal?.toLocaleString()} Kč</span>
-                      </div>
-                    </CardContent>
-                    <CardFooter>
-                      <Button asChild className="w-full">
-                        <Link href="/checkout">Pokračovat k pokladně</Link>
+                  <div className="hidden md:block flex-1 ml-4">
+                    <Title variant="h4" className="!text-base font-medium">
+                      <Link href={`/product/${item.slug}`} className="hover:underline">
+                        {item.name}
+                      </Link>
+                    </Title>
+                    <Text className="text-sm text-muted-foreground">
+                      {item.capacity}GB - {item.color}
+                    </Text>
+                  </div>
+
+                  <div className="flex justify-between items-center w-full mt-4 md:mt-0 md:w-auto md:justify-start">
+                    <div className="flex items-center gap-2 md:mx-4">
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() =>
+                          dispatch(
+                            updateQuantity({
+                              productId: item.id,
+                              quantity: item.quantity - 1,
+                            })
+                          )
+                        }
+                      >
+                        <Minus className="h-4 w-4" />
                       </Button>
-                    </CardFooter>
-                  </Card>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-1 flex-col items-center justify-center text-center border-2 border-dashed rounded-lg py-20">
-                <ShoppingCart className="h-16 w-16 text-muted-foreground/50" />
-                <Title variant="h3" className="mb-4 text-xl font-semibold">
-                  Váš košík je prázdný
-                </Title>
-                <Text className="text-muted-foreground mb-2">
-                  Přidejte si produkty do košíku a začněte nakupovat.
-                </Text>
-                <Button size="sm" asChild>
-                  <Link href="/">Zpět do obchodu</Link>
-                </Button>
-              </div>
-            )}
+                      <span className="w-8 text-center font-medium text-base">{item.quantity}</span>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() =>
+                          dispatch(
+                            updateQuantity({
+                              productId: item.id,
+                              quantity: item.quantity + 1,
+                            })
+                          )
+                        }
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="font-bold w-32 text-right text-lg">
+                      {((item.price ?? 0) * item.quantity).toLocaleString()} Kč
+                    </div>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="ml-4 group"
+                      onClick={() => dispatch(removeFromCart(item.id))}
+                    >
+                      <Trash2 className="h-5 w-5 text-muted-foreground hover:text-destructive transition-colors" />
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+            <div className="lg:col-span-1 sticky top-24">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Shrnutí objednávky</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between">
+                    <span>Produkty ({cartCount})</span>
+                    <span>{cartTotal?.toLocaleString()} Kč</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Doprava</span>
+                    <span className="font-medium text-green-600">Zdarma</span>
+                  </div>
+                  <Separator />
+                  <div className="flex justify-between font-bold text-lg">
+                    <span>Celkem k zaplacení</span>
+                    <span>{cartTotal?.toLocaleString()} Kč</span>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full" size="lg">
+                    <Link href="/checkout">K pokladně</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
           </div>
-        </LiquidGlass>
+        ) : (
+          <div className="flex flex-1 flex-col items-center justify-center text-center border-2 border-dashed rounded-lg py-20 bg-card">
+            <ShoppingCart className="h-16 w-16 text-muted-foreground/50 mb-4" />
+            <Title variant="h3" className="mb-2 text-xl font-semibold">
+              Váš košík je prázdný
+            </Title>
+            <Text className="text-muted-foreground mb-4">
+              Přidejte si produkty do košíku a začněte nakupovat.
+            </Text>
+            <Button size="sm" asChild>
+              <Link href="/">Zpět do obchodu</Link>
+            </Button>
+          </div>
+        )}
       </Container>
     </>
   );

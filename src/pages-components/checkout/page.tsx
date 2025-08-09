@@ -21,10 +21,10 @@ import {
   BreadcrumbSeparator,
 } from '@/shared/ui/breadcrumb';
 import { Button } from '@/shared/ui/button';
+import { Card, CardContent } from '@/shared/ui/card';
 import Container from '@/shared/ui/container';
 import FormField from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
-import { LiquidGlass } from '@/shared/ui/liquid-glass';
 import { Header } from '@/widgets/header';
 
 const schema = yup.object().shape({
@@ -45,23 +45,25 @@ type FormData = {
 function CartItem({ item }: { item: Smartphone }) {
   const imageUrl = item.gallery?.[0];
   return (
-    <li className="flex items-center gap-4 border-b pb-2">
-      <div className="w-16 h-16 flex items-center justify-center overflow-hidden">
+    <li className="flex items-center gap-4 py-3">
+      <div className="relative w-16 h-16 flex-shrink-0">
         {imageUrl && (
           <Image
-            width={64}
-            height={64}
-            quality={30}
             src={imageUrl}
             alt={item.name || ''}
-            className="object-contain rounded max-w-full max-h-full"
+            fill
+            className="object-contain rounded-md border"
           />
         )}
       </div>
-      <div>
-        <div className="font-medium">{item.name}</div>
-        <div className="text-sm text-gray-500">{item.small_desc}</div>
-        <div className="text-sm">Počet kusů: {item.quantity}</div>
+      <div className="flex-grow">
+        <div className="font-medium text-sm">{item.name}</div>
+        <div className="text-sm text-gray-500">
+          {item.capacity}GB, {item.color}
+        </div>
+      </div>
+      <div className="text-sm font-semibold">
+        {item.quantity} x {item.price.toLocaleString('cs-CZ')} Kč
       </div>
     </li>
   );
@@ -79,6 +81,8 @@ export default function CheckoutPage() {
     resolver: yupResolver(schema),
   });
 
+  const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+
   const onSubmit = async (data: FormData) => {
     const order = {
       ...data,
@@ -91,18 +95,22 @@ export default function CheckoutPage() {
       await createOrder(order).unwrap();
       reset();
     } catch {
-      // Ошибка будет показана ниже
+      // Error is displayed via isError state
     }
   };
 
   return (
     <>
       <Header />
-      <Container className="py-10 w-full">
+      <Container className="py-10 w-full max-w-4xl">
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/">Domů</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/cart">Košík</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -111,58 +119,90 @@ export default function CheckoutPage() {
           </BreadcrumbList>
         </Breadcrumb>
         <div className="mb-6">
-          <Button size="sm" asChild>
-            <Link href="/" className="inline-flex items-center gap-2">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/cart" className="inline-flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
-              Zpět na hlavní stránku
+              Zpět do košíku
             </Link>
           </Button>
         </div>
-        <h1 className="text-3xl font-bold mb-6">Dokončení objednávky</h1>
-        <div className="flex gap-4 max-md:flex-col">
-          <LiquidGlass className="basis-2/3 w-full mx-auto p-0">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-6">
-              <FormField label="Jméno" error={errors.name?.message}>
-                <Input {...register('name')} placeholder="Vaše jméno" error={!!errors.name} />
-              </FormField>
-              <FormField label="E-mail" error={errors.email?.message}>
-                <Input
-                  {...register('email')}
-                  placeholder="vas@email.cz"
-                  type="email"
-                  error={!!errors.email}
-                />
-              </FormField>
-              <FormField label="Telefon" error={errors.phone?.message}>
-                <Input
-                  {...register('phone')}
-                  placeholder="+420123456789"
-                  type="tel"
-                  error={!!errors.phone}
-                />
-              </FormField>
-              <Button type="submit" className="w-full" disabled={isSubmitting || isOrderLoading}>
-                {isOrderLoading ? 'Odesílání…' : 'Dokončit objednávku'}
-              </Button>
-              {isSuccess && (
-                <p className="text-green-600 text-center mt-2">Objednávka byla úspěšně odeslána!</p>
-              )}
-              {isError && (
-                <p className="text-red-600 text-center mt-2">Chyba při odesílání objednávky.</p>
-              )}
-            </form>
-          </LiquidGlass>
-          <div className="basis-1/3">
-            <h2 className="text-2xl font-semibold mb-4">Vaše produkty</h2>
-            {cartItems.length === 0 ? (
-              <p>Košík je prázdný.</p>
-            ) : (
-              <ul className="space-y-4">
-                {cartItems.map((item) => (
-                  <CartItem key={item.id} item={item} />
-                ))}
-              </ul>
-            )}
+        <h1 className="text-3xl font-bold mb-8">Dokončení objednávky</h1>
+        <div className="grid md:grid-cols-2 gap-12">
+          <Card className="bg-card">
+            <CardContent className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Fakturační údaje</h2>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <FormField label="Jméno a příjmení" error={errors.name?.message}>
+                  <Input {...register('name')} placeholder="Jan Novák" error={!!errors.name} />
+                </FormField>
+                <FormField label="E-mail" error={errors.email?.message}>
+                  <Input
+                    {...register('email')}
+                    placeholder="vas@email.cz"
+                    type="email"
+                    error={!!errors.email}
+                  />
+                </FormField>
+                <FormField label="Telefon" error={errors.phone?.message}>
+                  <Input
+                    {...register('phone')}
+                    placeholder="+420 123 456 789"
+                    type="tel"
+                    error={!!errors.phone}
+                  />
+                </FormField>
+                <Button
+                  type="submit"
+                  className="w-full mt-4"
+                  size="lg"
+                  disabled={isSubmitting || isOrderLoading || isSuccess}
+                >
+                  {isOrderLoading
+                    ? 'Odesílání…'
+                    : isSuccess
+                      ? 'Objednávka odeslána!'
+                      : `Objednat a zaplatit ${cartTotal.toLocaleString('cs-CZ')} Kč`}
+                </Button>
+                {isSuccess && (
+                  <p className="text-green-600 text-center mt-2">
+                    Objednávka byla úspěšně odeslána! Děkujeme za Váš nákup.
+                  </p>
+                )}
+                {isError && (
+                  <p className="text-red-600 text-center mt-2">Chyba při odesílání objednávky.</p>
+                )}
+              </form>
+            </CardContent>
+          </Card>
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Vaše objednávka</h2>
+            <Card className="bg-card">
+              <CardContent className="p-6">
+                {cartItems.length === 0 ? (
+                  <p>Košík je prázdný.</p>
+                ) : (
+                  <ul className="space-y-2 divide-y">
+                    {cartItems.map((item) => (
+                      <CartItem key={item.id} item={item} />
+                    ))}
+                  </ul>
+                )}
+                <div className="mt-6 pt-4 border-t">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Mezisoučet</span>
+                    <span>{cartTotal.toLocaleString('cs-CZ')} Kč</span>
+                  </div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Doprava</span>
+                    <span className="text-green-600 font-medium">Zdarma</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-lg mt-4">
+                    <span>Celkem</span>
+                    <span>{cartTotal.toLocaleString('cs-CZ')} Kč</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </Container>
