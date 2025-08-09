@@ -14,13 +14,10 @@ export function Footer() {
           <div className="flex flex-col items-center gap-1">
             <span className="font-semibold text-sm">Kontakt</span>
             <a
-              href="mailto:info@iobchod.cz"
+              href="mailto:ibchodstore@gmail.com"
               className="text-sm text-muted-foreground hover:underline"
             >
-              info@iobchod.cz
-            </a>
-            <a href="tel:+420123456789" className="text-sm text-muted-foreground hover:underline">
-              +420 123 456 789
+              ibchodstore@gmail.com
             </a>
           </div>
           <div className="flex flex-col items-center md:items-end gap-1">

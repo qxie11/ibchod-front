@@ -102,7 +102,7 @@ export default function CheckoutPage() {
   return (
     <>
       <Header />
-      <Container className="py-10 w-full max-w-4xl">
+      <Container className="w-full">
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>

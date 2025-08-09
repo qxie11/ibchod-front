@@ -13,6 +13,12 @@ import { Smartphone } from '@/entities/product/model/types';
 import { ProductCard } from '@/entities/product/ui/product-card';
 import { AddToCartButton } from '@/features/add-to-cart';
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/shared/ui/accordion';
+import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -83,7 +89,6 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                     prevEl: '.product-swiper-prev',
                   }}
                   className="h-full w-full"
-                  loop
                 >
                   {product.gallery.map((url: string, idx: number) => (
                     <SwiperSlide key={url + idx}>
@@ -91,24 +96,24 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                         src={url ?? ''}
                         alt={product.name + ' photo ' + (idx + 1)}
                         fill
-                        className="object-contain"
-                        priority={idx === 0}
+                        className="object-cover"
+                        priority={idx === 1}
                       />
                     </SwiperSlide>
                   ))}
                   <button
-                    className="product-swiper-prev absolute top-1/2 left-2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center text-foreground border border-border hover:bg-white transition"
+                    className="product-swiper-prev absolute top-1/2 left-2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-accent border border-accent hover:bg-accent hover:text-white transition"
                     aria-label="Předchozí obrázek"
                     type="button"
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-4 h-4 text-primary" />
                   </button>
                   <button
-                    className="product-swiper-next absolute top-1/2 right-2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center text-foreground border border-border hover:bg-white transition"
+                    className="product-swiper-next absolute top-1/2 right-2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-accent border border-accent hover:bg-accent hover:text-white transition"
                     aria-label="Další obrázek"
                     type="button"
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-4 h-4 text-primary" />
                   </button>
                 </Swiper>
               </div>
@@ -118,7 +123,10 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                 Apple {product.name} {product.capacity}GB {product.color}
               </Title>
 
-              <Text className="text-muted-foreground mb-6">{product.large_desc}</Text>
+              <Text
+                dangerouslySetInnerHTML={{ __html: product.large_desc }}
+                className="text-muted-foreground mb-6 whitespace-pre-line"
+              />
               <div className="flex items-baseline gap-3 mb-6">
                 <Text className="text-3xl font-bold text-foreground">
                   {product.price.toLocaleString('cs-CZ')} Kč
@@ -134,7 +142,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
               <div className="mt-8 space-y-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-3">
                   <span className="text-green-600">✔</span>
-                  <span>12 měsíců záruka</span>
+                  <span>1 měsíc záruka</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-green-600">✔</span>
@@ -143,6 +151,53 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                 <div className="flex items-center gap-3">
                   <span className="text-green-600">✔</span>
                   <span>Možnost vrácení do 14 dnů</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 md:mt-8 bg-card p-8 rounded-lg">
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <Title variant="h3" className="mb-4">
+                  Key Features
+                </Title>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li>• A17 Pro chip with 6-core GPU</li>
+                  <li>• Pro camera system with 48MP Main</li>
+                  <li>• 6.1 Super Retina XDR display</li>
+                  <li>• All-day battery life</li>
+                  <li>• Ceramic Shield front</li>
+                  <li>• Water and dust resistant</li>
+                </ul>
+              </div>
+              <div>
+                <Title variant="h3" className="mb-4">
+                  Technical Specifications
+                </Title>
+                <div className="space-y-2 text-muted-foreground">
+                  <div className="flex justify-between">
+                    <span>Display:</span>
+                    <span>6.1 Super Retina XDR</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Chip:</span>
+                    <span>A17 Pro</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Storage:</span>
+                    <span>{product.capacity}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Color:</span>
+                    <span>{product.color}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Battery:</span>
+                    <span>Up to 23 hours</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -161,6 +216,44 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
             </div>
           </div>
         )}
+
+        <div className="mt-4 md:mt-8">
+          <div className="p-6">
+            <Title variant="h2" className="mb-6 text-center">
+              Často kladené dotazy
+            </Title>
+            <Accordion type="single" collapsible className="w-full mx-auto">
+              <AccordionItem value="q1">
+                <AccordionTrigger>Jak funguje záruka?</AccordionTrigger>
+                <AccordionContent>
+                  Na všechny naše iPhony poskytujeme 12 měsíců oficiální záruky. Pokud se v tomto
+                  období objeví jakýkoli problém, zdarma jej opravíme nebo vyměníme zařízení.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="q2">
+                <AccordionTrigger>Mohu zboží vrátit?</AccordionTrigger>
+                <AccordionContent>
+                  Ano, zboží můžete vrátit do 14 dnů bez udání důvodu. Stačí nás kontaktovat a my
+                  vám zašleme instrukce k vrácení.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="q3">
+                <AccordionTrigger>Jak rychle probíhá doručení?</AccordionTrigger>
+                <AccordionContent>
+                  Objednávky odesíláme do 24 hodin od potvrzení. Doručení obvykle trvá 1–2 pracovní
+                  dny po celé ČR.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="q4">
+                <AccordionTrigger>Je možné využít trade-in?</AccordionTrigger>
+                <AccordionContent>
+                  Ano, nabízíme možnost výkupu vašeho starého zařízení na protiúčet. Kontaktujte nás
+                  pro individuální nabídku.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </div>
       </Container>
     </>
   );

@@ -95,7 +95,9 @@ const nameOptions = [
   'iPhone 14',
   'iPhone 13',
   'iPhone 13 Mini',
+  'iPhone 13 Pro',
   'iPhone 12',
+  'iPhone 12 Pro',
   'iPhone SE',
 ];
 

@@ -8,7 +8,6 @@ import { Button } from '@/shared/ui/button';
 import FormField from '@/shared/ui/form-field';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Slider } from '@/shared/ui/slider';
-import { Title } from '@/shared/ui/title';
 
 interface ProductFiltersProps {
   priceRange: number[];
@@ -55,10 +54,6 @@ export function ProductFilters({
 
   return (
     <div className="p-4">
-      <Title variant="h2" size="small" className="mb-3">
-        Filtry
-      </Title>
-
       <div className="space-y-4">
         <div>
           <FormField className="mb-3" label="💵 Cena">

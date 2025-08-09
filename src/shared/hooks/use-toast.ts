@@ -5,8 +5,9 @@ import * as React from 'react';
 
 import type { ToastActionElement, ToastProps } from '@/shared/ui/toast';
 
-const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 1000000;
+const TOAST_LIMIT = 3;
+const TOAST_REMOVE_DELAY = 1000;
+const TOAST_DISMISS_DELAY = 3000; // 3 секунды
 
 type ToasterToast = ToastProps & {
   id: string;
@@ -158,6 +159,11 @@ function toast({ ...props }: Toast) {
       },
     },
   });
+
+  // Автоматическое закрытие через 3 секунды
+  setTimeout(() => {
+    dismiss();
+  }, TOAST_DISMISS_DELAY);
 
   return {
     id: id,

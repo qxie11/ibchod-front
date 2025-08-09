@@ -97,8 +97,8 @@ export default function HomePage({
           12měsíční zárukou.
         </Text>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <aside className="md:col-span-1 h-fit md:sticky md:top-24 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr_1fr_1fr] lg:gap-x-8 gap-y-8">
+          <aside className="md:col-span-1 h-fit lg:sticky md:top-24 w-full">
             <Card>
               <CardHeader>
                 <CardTitle>Filtry</CardTitle>
