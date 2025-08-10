@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 9002",
+    "dev": "next dev -p 3001",
+    "docker:dev": "docker run -d -p 9002:9002 --name iphone-store-app iphone-store",
+    "docker:build": "docker build -t iphone-store .",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "next build",
@@ -58,7 +60,6 @@
     "lucide-react": "^0.475.0",
     "next": "15.3.3",
     "next-auth": "^4.24.11",
-    "nextjs-progressbar": "^0.0.16",
     "nextjs-toploader": "^3.8.16",
     "patch-package": "^8.0.0",
     "react": "^18.3.1",

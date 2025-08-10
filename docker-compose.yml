@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  iphone-store:
+    build: .
+    ports:
+      - "9002:9002"
+    environment:
+      - NODE_ENV=production
+      - PORT=9002
+      - NEXTAUTH_URL=http://localhost:9002
+      - NEXTAUTH_SECRET=secretjwt
+      - NEXT_PUBLIC_API_URL=https://iobchod-server.vercel.app
+      - NEXT_PUBLIC_BASE_URL=http://localhost:9002
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASSWORD=admin123
+    volumes:
+      - ./.next:/app/.next
+    restart: unless-stopped
