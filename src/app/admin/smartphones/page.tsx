@@ -39,16 +39,37 @@ import { SmartphoneFormDialog } from './smartphone-form-dialog';
 const ITEMS_PER_PAGE = 10;
 export default function AdminSmartphonesPage() {
   const { currentPage, onPageChange, skip } = usePagination();
-  const { data, error, isLoading } = useGetProductsQuery({
+  const [activeTab, setActiveTab] = useState<'active' | 'inactive'>('active');
+
+  const {
+    data: activeData,
+    error: activeError,
+    isLoading: activeLoading,
+  } = useGetProductsQuery({
     take: ITEMS_PER_PAGE,
     skip,
+    active: true,
   });
+
+  const {
+    data: inactiveData,
+    error: inactiveError,
+    isLoading: inactiveLoading,
+  } = useGetProductsQuery({
+    take: ITEMS_PER_PAGE,
+    skip,
+    active: false,
+  });
+
   const [deleteSmartphone] = useDeleteSmartphoneMutation();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedSmartphone, setSelectedSmartphone] = useState<Smartphone | undefined>(undefined);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [smartphoneToDelete, setSmartphoneToDelete] = useState<Smartphone | null>(null);
+
+  const isLoading = activeLoading || inactiveLoading;
+  const error = activeError || inactiveError;
 
   if (isLoading) {
     return <Loader />;
@@ -57,10 +78,11 @@ export default function AdminSmartphonesPage() {
   if (error) {
     return <div>Chyba při načítání produktů</div>;
   }
-  const products = data?.items ?? [];
-  const totalProducts = data?.total ?? 0;
-  const activeProducts = products.filter((product: Smartphone) => product.active);
-  const inactiveProducts = products.filter((product: Smartphone) => !product.active);
+
+  const activeProducts = activeData?.items ?? [];
+  const inactiveProducts = inactiveData?.items ?? [];
+  const totalActiveProducts = activeData?.total ?? 0;
+  const totalInactiveProducts = inactiveData?.total ?? 0;
 
   const handleEdit = (product: Smartphone) => {
     setSelectedSmartphone(product);
@@ -164,19 +186,23 @@ export default function AdminSmartphonesPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="active" className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as 'active' | 'inactive')}
+            className="w-full"
+          >
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger
                 value="active"
                 className="data-[state=active]:bg-blue-500 data-[state=active]:text-white"
               >
-                Aktivní ({activeProducts.length})
+                Aktivní ({totalActiveProducts})
               </TabsTrigger>
               <TabsTrigger
                 value="inactive"
                 className="data-[state=active]:bg-blue-500 data-[state=active]:text-white"
               >
-                Neaktivní ({inactiveProducts.length})
+                Neaktivní ({totalInactiveProducts})
               </TabsTrigger>
             </TabsList>
             <TabsContent value="active">
@@ -191,7 +217,7 @@ export default function AdminSmartphonesPage() {
           <Pagination>
             <PaginationContent
               currentPage={currentPage}
-              totalItems={totalProducts}
+              totalItems={activeTab === 'active' ? totalActiveProducts : totalInactiveProducts}
               itemsPerPage={ITEMS_PER_PAGE}
               onPageChange={onPageChange}
             />

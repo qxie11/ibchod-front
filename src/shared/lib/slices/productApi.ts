@@ -11,6 +11,7 @@ interface GetProductsParams {
   color?: string;
   capacity?: string;
   search?: string;
+  active?: boolean;
 }
 
 export interface GetProductsResponse {
@@ -24,7 +25,17 @@ export type UpdateSmartphoneDto = Partial<CreateSmartphoneDto>;
 export const productApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getProducts: build.query<GetProductsResponse, GetProductsParams>({
-      query: ({ take = 10, skip = 0, maxPrice, minPrice, name, color, capacity, search }) => {
+      query: ({
+        take = 10,
+        skip = 0,
+        maxPrice,
+        minPrice,
+        name,
+        color,
+        capacity,
+        search,
+        active,
+      }) => {
         const params = new URLSearchParams();
         params.set('take', String(take));
         params.set('skip', String(skip));
@@ -34,6 +45,7 @@ export const productApi = baseApi.injectEndpoints({
         if (color !== undefined) params.set('color', color);
         if (capacity !== undefined) params.set('capacity', capacity);
         if (search !== undefined) params.set('search', search);
+        if (active !== undefined) params.set('active', String(active));
         return `smartphones?${params.toString()}`;
       },
       providesTags: (result) =>
