@@ -6,6 +6,7 @@
     "dev": "next dev -p 3001",
     "docker:dev": "docker run -d -p 9002:9002 --name iphone-store-app iphone-store",
     "docker:build": "docker build -t iphone-store .",
+    "docker:start": "docker start iphone-store",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "next build",
