@@ -10,6 +10,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=9002
+      - HOSTNAME=0.0.0.0
     volumes:
       - ./.next:/app/.next
     restart: unless-stopped
