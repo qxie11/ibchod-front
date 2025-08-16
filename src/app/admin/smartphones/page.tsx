@@ -38,8 +38,13 @@ import { SmartphoneFormDialog } from './smartphone-form-dialog';
 
 const ITEMS_PER_PAGE = 10;
 export default function AdminSmartphonesPage() {
-  const { currentPage, onPageChange, skip } = usePagination();
   const [activeTab, setActiveTab] = useState<'active' | 'inactive'>('active');
+
+  const activePagination = usePagination();
+  const inactivePagination = usePagination();
+
+  const currentPagination = activeTab === 'active' ? activePagination : inactivePagination;
+  const { currentPage, onPageChange } = currentPagination;
 
   const {
     data: activeData,
@@ -47,7 +52,7 @@ export default function AdminSmartphonesPage() {
     isLoading: activeLoading,
   } = useGetProductsQuery({
     take: ITEMS_PER_PAGE,
-    skip,
+    skip: activePagination.skip,
     active: true,
   });
 
@@ -57,7 +62,7 @@ export default function AdminSmartphonesPage() {
     isLoading: inactiveLoading,
   } = useGetProductsQuery({
     take: ITEMS_PER_PAGE,
-    skip,
+    skip: inactivePagination.skip,
     active: false,
   });
 
@@ -68,12 +73,8 @@ export default function AdminSmartphonesPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [smartphoneToDelete, setSmartphoneToDelete] = useState<Smartphone | null>(null);
 
-  const isLoading = activeLoading || inactiveLoading;
-  const error = activeError || inactiveError;
-
-  if (isLoading) {
-    return <Loader />;
-  }
+  const error =
+    (activeTab === 'active' && activeError) || (activeTab === 'inactive' && inactiveError);
 
   if (error) {
     return <div>Chyba při načítání produktů</div>;
@@ -188,7 +189,15 @@ export default function AdminSmartphonesPage() {
         <CardContent>
           <Tabs
             value={activeTab}
-            onValueChange={(value) => setActiveTab(value as 'active' | 'inactive')}
+            onValueChange={(value) => {
+              setActiveTab(value as 'active' | 'inactive');
+              // Сброс пагинации при переключении вкладок
+              if (value === 'active') {
+                activePagination.onPageChange(1);
+              } else {
+                inactivePagination.onPageChange(1);
+              }
+            }}
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2">
@@ -206,10 +215,22 @@ export default function AdminSmartphonesPage() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="active">
-              <ProductTable products={activeProducts} />
+              {activeLoading ? (
+                <div className="flex justify-center p-8">
+                  <Loader />
+                </div>
+              ) : (
+                <ProductTable products={activeProducts} />
+              )}
             </TabsContent>
             <TabsContent value="inactive">
-              <ProductTable products={inactiveProducts} />
+              {inactiveLoading ? (
+                <div className="flex justify-center p-8">
+                  <Loader />
+                </div>
+              ) : (
+                <ProductTable products={inactiveProducts} />
+              )}
             </TabsContent>
           </Tabs>
         </CardContent>

@@ -21,7 +21,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.prismic.io',
+        hostname: 'iobchod-bucket.s3.eu-north-1.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'iobchod-store-bucket.s3.eu-north-1.amazonaws.com',
       },
       {
         protocol: 'https',
