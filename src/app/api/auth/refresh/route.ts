@@ -20,7 +20,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    if (response.data) {
+    // @ts-ignore
+    if (response?.data) {
       const responseData = response.data as any;
 
       if (responseData.accessToken) {

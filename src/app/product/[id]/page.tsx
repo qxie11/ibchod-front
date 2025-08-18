@@ -5,8 +5,12 @@ import { notFound } from 'next/navigation';
 import { Smartphone } from '@/entities/product/model/types';
 import ProductPage from '@/pages-components/product/[id]/page';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const { id } = params;
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
 
   try {
     const product: Smartphone = await fetch(
@@ -35,7 +39,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
         'iPhone',
         product.name,
         `${product.capacity}GB`,
-        product.color,
+        product.color || '',
         'repasovaný iPhone',
         'použitý iPhone',
         'Apple',
@@ -72,7 +76,10 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
         card: 'summary_large_image',
         title,
         description,
-        images: product.gallery.length > 0 ? [product.gallery[0]] : ['/icons/icon-512x512.png'],
+        images:
+          product.gallery && product.gallery.length > 0
+            ? [product.gallery[0]]
+            : ['/icons/icon-512x512.png'],
       },
       alternates: {
         canonical: canonicalUrl,
@@ -89,7 +96,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-export default async function Page(props: { params: { id: string } }) {
+export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const slug = params.id;
   try {
