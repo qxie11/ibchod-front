@@ -23,8 +23,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 ENV NODE_ENV=production
 ENV PORT=9002
-ENV NEXT_TELEMETRY_DISABLED 1
-
+ENV HOSTNAME=0.0.0.0
+ENV NEXT_TELEMETRY_DISABLED=1
 
 EXPOSE 9002
 
