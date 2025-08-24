@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
+    "dev": "next dev -p 3002",
     "docker:dev": "docker run -d -p 9002:9002 --name iphone-store-app iphone-store",
     "docker:build": "docker buildx build --platform linux/amd64,linux/arm64 -t dsx11/iobchod-store:latest --push .",
     "docker:push": "docker push dsx11/iobchod-store:latest",

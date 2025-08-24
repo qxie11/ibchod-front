@@ -9,11 +9,11 @@ import type { Smartphone } from '@/entities/product/model/types';
 import { useCartItem } from '@/shared/lib/hooks';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch';
 import { useIsClient } from '@/shared/lib/hooks/useIsClient';
-import { Button, ButtonSize, ButtonVariant } from '@/shared/ui/button';
+import { Button, ButtonProps, ButtonSize, ButtonVariant } from '@/shared/ui/button';
 
 import { QuantityControl } from './quantity-control';
 
-interface AddToCartButtonProps extends HTMLAttributes<HTMLButtonElement> {
+interface AddToCartButtonProps extends ButtonProps, HTMLAttributes<HTMLButtonElement> {
   product: Smartphone;
   className?: string;
   size?: ButtonSize;

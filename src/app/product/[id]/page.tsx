@@ -6,7 +6,7 @@ import { Smartphone } from '@/entities/product/model/types';
 import ProductPage from '@/pages-components/product/[id]/page';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const product: Smartphone = await fetch(
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
         'iPhone',
         product.name,
         `${product.capacity}GB`,
-        product.color,
+        product.color ?? '',
         'repasovaný iPhone',
         'použitý iPhone',
         'Apple',

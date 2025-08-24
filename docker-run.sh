@@ -1,29 +1,19 @@
-#!/bin/bash
+docker pull dsx11/iobchod-store
 
-echo "🚀 Запуск iPhone Store..."
-
-# Останавливаем старые контейнеры
-docker-compose down
-
-# Удаляем старые образы
-docker rmi iphone-store-iphone-store:latest 2>/dev/null || true
-
-# Пересобираем без кэша
-docker-compose build --no-cache
-
-# Запускаем
-docker-compose up -d
+# Запускаем контейнер с frontend на порту 9002
+docker run -d \
+  --name iphone-store \
+  -p 9002:9002 \
+  --restart unless-stopped \
+  dsx11/iobchod-store
 
 echo "⏳ Ждем запуска..."
-sleep 15
+sleep 10
 
-echo "📊 Статус:"
-docker-compose ps
-
-echo "📝 Логи:"
-docker-compose logs --tail=10
+echo "📊 Запущенные контейнеры:"
+docker ps
 
 echo "🌐 Тестируем доступность..."
-curl -I http://localhost:9002/ 2>/dev/null | head -1 || echo "❌ Недоступно"
+curl -I http://localhost:9002/ 2>/dev/null | head -1 || echo "❌ Приложение недоступно"
 
-echo "✅ Готово! http://localhost:9002"
+echo "✅ Готово! Приложение: http://51.20.132.226/"
