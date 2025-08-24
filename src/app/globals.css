@@ -86,3 +86,197 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  /* Animated Gradient Backgrounds */
+  .animate-gradient {
+    animation: gradient 8s ease infinite;
+  }
+
+  .animate-gradient-reverse {
+    animation: gradient-reverse 12s ease infinite;
+  }
+
+  .animate-gradient-slow {
+    animation: gradient-slow 16s ease infinite;
+  }
+
+  @keyframes gradient {
+    0%,
+    100% {
+      transform: translate(0%, 0%) rotate(0deg);
+      opacity: 0.3;
+    }
+    25% {
+      transform: translate(10%, 10%) rotate(90deg);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translate(-5%, 5%) rotate(180deg);
+      opacity: 0.3;
+    }
+    75% {
+      transform: translate(-10%, -5%) rotate(270deg);
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes gradient-reverse {
+    0%,
+    100% {
+      transform: translate(0%, 0%) rotate(0deg) scale(1);
+      opacity: 0.2;
+    }
+    33% {
+      transform: translate(-15%, 15%) rotate(120deg) scale(1.1);
+      opacity: 0.4;
+    }
+    66% {
+      transform: translate(10%, -10%) rotate(240deg) scale(0.9);
+      opacity: 0.2;
+    }
+  }
+
+  @keyframes gradient-slow {
+    0%,
+    100% {
+      transform: translate(0%, 0%) rotate(0deg) scale(1);
+      opacity: 0.1;
+    }
+    50% {
+      transform: translate(20%, -20%) rotate(180deg) scale(1.2);
+      opacity: 0.3;
+    }
+  }
+}
+
+/* Animated Hero Animations */
+@keyframes hero-gradient {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1.05) rotate(1deg);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02) rotate(-1deg);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(1.03) rotate(0.5deg);
+  }
+}
+
+@keyframes hero-gradient-reverse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1) rotate(0deg);
+  }
+  33% {
+    opacity: 0.8;
+    transform: scale(1.03) rotate(-1deg);
+  }
+  66% {
+    opacity: 0.7;
+    transform: scale(1.01) rotate(1deg);
+  }
+}
+
+@keyframes hero-gradient-slow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.02) rotate(0.5deg);
+  }
+}
+
+@keyframes float-1 {
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-20px) translateX(10px);
+  }
+}
+
+@keyframes float-2 {
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-30px) translateX(-15px);
+  }
+}
+
+@keyframes float-3 {
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-15px) translateX(20px);
+  }
+}
+
+@keyframes float-4 {
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-25px) translateX(-10px);
+  }
+}
+
+@keyframes float-5 {
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-35px) translateX(15px);
+  }
+}
+
+.animate-hero-gradient {
+  animation: hero-gradient 6s ease-in-out infinite;
+}
+
+.animate-hero-gradient-reverse {
+  animation: hero-gradient-reverse 8s ease-in-out infinite;
+}
+
+.animate-hero-gradient-slow {
+  animation: hero-gradient-slow 10s ease-in-out infinite;
+}
+
+.animate-float-1 {
+  animation: float-1 6s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-2 8s ease-in-out infinite;
+}
+
+.animate-float-3 {
+  animation: float-3 10s ease-in-out infinite;
+}
+
+.animate-float-4 {
+  animation: float-4 7s ease-in-out infinite;
+}
+
+.animate-float-5 {
+  animation: float-5 9s ease-in-out infinite;
+}

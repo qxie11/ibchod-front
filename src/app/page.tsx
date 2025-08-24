@@ -54,10 +54,12 @@ const ITEMS_PER_PAGE = 10;
 export default async function Page() {
   try {
     const [phonesList, filters] = await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/smartphones?take=${ITEMS_PER_PAGE}&skip=0`).then(
-        (res) => res.json() as Promise<GetProductsResponse>
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/smartphones?take=${ITEMS_PER_PAGE}&skip=0`, {
+        cache: 'no-store',
+      }).then((res) => res.json() as Promise<GetProductsResponse>),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/smartphones/filters`, { cache: 'no-store' }).then(
+        (res) => res.json()
       ),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/smartphones/filters`).then((res) => res.json()),
     ]);
 
     return (

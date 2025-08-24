@@ -3,14 +3,14 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '@/shared/lib/store';
 
 interface FilterState {
-  priceRange: number[];
+  priceRange: number[] | null;
   selectedModel: string;
   selectedStorage: string;
   selectedColor: string;
 }
 
 const initialState: FilterState = {
-  priceRange: [0, 0],
+  priceRange: null,
   selectedModel: 'all',
   selectedStorage: 'all',
   selectedColor: 'all',
@@ -34,7 +34,7 @@ export const filterSlice = createSlice({
     },
 
     resetFilters(state) {
-      state.priceRange = [0, 0];
+      state.priceRange = null;
       state.selectedModel = 'all';
       state.selectedStorage = 'all';
       state.selectedColor = 'all';

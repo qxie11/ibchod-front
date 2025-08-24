@@ -4,7 +4,7 @@ services:
   iphone-store:
     build: .
     ports:
-      - "9002:9002"
+      - '9002:9002'
     env_file:
       - .env
     environment:
