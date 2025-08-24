@@ -75,6 +75,16 @@ export class SitemapGenerator {
         changeFrequency: 'weekly',
       },
       {
+        pattern: '^/blog$',
+        priority: 0.8,
+        changeFrequency: 'weekly',
+      },
+      {
+        pattern: '^/blog/',
+        priority: 0.7,
+        changeFrequency: 'monthly',
+      },
+      {
         pattern: '^/category/',
         priority: 0.8,
         changeFrequency: 'weekly',
@@ -320,10 +330,44 @@ export class SitemapGenerator {
             index === self.findIndex((r: any) => r.url === route.url)
         );
 
-      const allEntries = [...staticEntries, ...productEntries];
+      // Загружаем статьи блога
+      console.log('📝 Загружаем статьи блога из API...');
+
+      const blogResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog?take=1000&skip=0`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(10000),
+        next: { revalidate: 86400 },
+      });
+
+      let blogEntries: MetadataRoute.Sitemap = [];
+
+      if (blogResponse.ok) {
+        const blogData = await blogResponse.json();
+
+        if (blogData && Array.isArray(blogData.items)) {
+          blogEntries = blogData.items
+            .filter((article: any) => article.slug && article.published)
+            .map((article: any) => ({
+              url: `${this.config.baseUrl}/blog/${article.slug}`,
+              lastModified: new Date(article.updatedAt || article.publishedAt || Date.now()),
+              changeFrequency: 'monthly' as const,
+              priority: 0.7,
+            }))
+            .filter(
+              (route: any, index: number, self: any[]) =>
+                index === self.findIndex((r: any) => r.url === route.url)
+            );
+        }
+      } else {
+        console.error(`Sitemap: Failed to fetch blog articles, status: ${blogResponse.status}`);
+      }
+
+      const allEntries = [...staticEntries, ...productEntries, ...blogEntries];
 
       console.log(
-        `Sitemap: Generated ${allEntries.length} routes (${staticEntries.length} static + ${productEntries.length} products)`
+        `Sitemap: Generated ${allEntries.length} routes (${staticEntries.length} static + ${productEntries.length} products + ${blogEntries.length} blog articles)`
       );
 
       return allEntries;

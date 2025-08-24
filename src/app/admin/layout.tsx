@@ -1,4 +1,4 @@
-import { Home, ListOrdered, Package } from 'lucide-react';
+import { FileText, Home, ListOrdered, Package } from 'lucide-react';
 
 import type { Metadata } from 'next';
 
@@ -41,6 +41,7 @@ const adminNavLinks = [
   { href: '/admin', label: 'Přehled', icon: Home },
   { href: '/admin/smartphones', label: 'Smartphony', icon: Package },
   { href: '/admin/orders', label: 'Objednávky', icon: ListOrdered },
+  { href: '/admin/blog', label: 'Blog', icon: FileText },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

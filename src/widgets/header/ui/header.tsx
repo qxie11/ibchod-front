@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import { SearchDialog } from '@/features/search-products';
 import Logo from '@/shared/assets/icons/logo.svg';
+import { Button } from '@/shared/ui/button';
 import Container from '@/shared/ui/container';
 import { LiquidGlass } from '@/shared/ui/liquid-glass';
 import { CartButton } from '@/widgets/cart-button';
@@ -17,6 +18,9 @@ export function Header() {
           <Image src={Logo} width={68} height={61} alt="IObchod" />
         </Link>
         <div className="flex flex-1 items-center justify-end ml-2 space-x-2 md:space-x-4">
+          <Button variant="ghost" href="/blog" className="hidden md:flex">
+            Blog
+          </Button>
           <div>
             <SearchDialog />
           </div>
