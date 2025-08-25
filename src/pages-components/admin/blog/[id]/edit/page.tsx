@@ -64,7 +64,6 @@ export default function EditBlogArticlePage({ article }: EditBlogArticlePageProp
         published: article.published || false,
       });
 
-      // Устанавливаем превью текущего изображения
       if (article.featuredImage) {
         setImagePreview(article.featuredImage);
       }
@@ -97,13 +96,11 @@ export default function EditBlogArticlePage({ article }: EditBlogArticlePageProp
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Проверка размера файла
       if (file.size > MAX_FILE_SIZE) {
         alert('Soubor je příliš velký. Maximální velikost je 5MB.');
         return;
       }
 
-      // Проверка типа файла
       if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
         alert('Povolené jsou pouze obrázky ve formátu JPEG, PNG nebo WebP.');
         return;
@@ -131,12 +128,10 @@ export default function EditBlogArticlePage({ article }: EditBlogArticlePageProp
       formDataToSend.append('author', formData.author);
       formDataToSend.append('published', formData.published ? 'true' : 'false');
 
-      // Добавляем теги
       tags.forEach((tag) => {
         formDataToSend.append('tags', tag);
       });
 
-      // Добавляем изображение, если оно выбрано
       if (featuredImage) {
         formDataToSend.append('featuredImage', featuredImage);
       }

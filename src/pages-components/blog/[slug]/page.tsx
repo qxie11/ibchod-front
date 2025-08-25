@@ -2,9 +2,11 @@
 
 import { ArrowLeft, Calendar, Eye, Share2, Tag, User } from 'lucide-react';
 
+import { useState } from 'react';
+
 import Image from 'next/image';
 
-import { useGetBlogArticleBySlugQuery } from '@/shared/lib/slices/blogApi';
+import { ShareModal } from '@/components/share-modal';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import Container from '@/shared/ui/container';
@@ -33,78 +35,12 @@ interface BlogArticlePageProps {
   article: BlogArticle;
 }
 
-export default function BlogArticlePage({ article: initialArticle }: BlogArticlePageProps) {
-  const {
-    data: article,
-    isLoading,
-    error,
-  } = useGetBlogArticleBySlugQuery(initialArticle.slug, {
-    initialData: initialArticle,
-  });
+export default function BlogArticlePage({ article }: BlogArticlePageProps) {
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const handleShare = () => {
-    if (navigator.share) {
-      navigator
-        .share({
-          title: article?.title,
-          text: article?.excerpt,
-          url: window.location.href,
-        })
-        .catch((error) => {
-          console.log('Error sharing:', error);
-          copyToClipboard();
-        });
-    } else {
-      copyToClipboard();
-    }
+    setIsShareModalOpen(true);
   };
-
-  const copyToClipboard = () => {
-    navigator.clipboard
-      .writeText(window.location.href)
-      .then(() => {
-        alert('Odkaz byl zkopírován do schránky!');
-      })
-      .catch(() => {
-        const textArea = document.createElement('textarea');
-        textArea.value = window.location.href;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert('Odkaz byl zkopírován do schránky!');
-      });
-  };
-
-  if (isLoading) {
-    return (
-      <>
-        <Header />
-        <Container className="py-8">
-          <div className="text-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <Text className="mt-4">Načítání článku...</Text>
-          </div>
-        </Container>
-      </>
-    );
-  }
-
-  if (error || !article) {
-    return (
-      <>
-        <Header />
-        <Container className="flex-1 py-8">
-          <div className="text-center py-20">
-            <Title variant="h1" className="text-2xl font-bold mb-2">
-              Článek nenalezen
-            </Title>
-            <Text className="text-muted-foreground">Článek, který hledáte, neexistuje.</Text>
-          </div>
-        </Container>
-      </>
-    );
-  }
 
   return (
     <>
@@ -208,6 +144,14 @@ export default function BlogArticlePage({ article: initialArticle }: BlogArticle
           </footer>
         </article>
       </Container>
+
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        title={article.title}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        excerpt={article.excerpt}
+      />
     </>
   );
 }
