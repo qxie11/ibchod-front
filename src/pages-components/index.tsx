@@ -1,8 +1,13 @@
 'use client';
 
-import { CheckCircle, Shield, Truck, Users } from 'lucide-react';
+import { CheckCircle, ChevronLeft, ChevronRight, Shield, Truck, Users } from 'lucide-react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import { Autoplay, Navigation, Pagination as SwiperPagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import Link from 'next/link';
 
@@ -55,6 +60,7 @@ export default function HomePage({
   minPrice,
 }: HomePageProps) {
   const dispatch = useAppDispatch();
+  const swiperRef = useRef<any>(null);
   const { currentPage, onPageChange, skip } = usePagination();
 
   const priceRange = useAppSelector(selectPriceRange);
@@ -274,118 +280,190 @@ export default function HomePage({
             </Text>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Review 1 */}
-            <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-xl">👨‍💼</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900 dark:text-gray-100">Petr Novák</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">iPhone 13 Pro</div>
-                </div>
-              </div>
-              <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
-              <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                &ldquo;Koupil jsem si iPhone 13 Pro a jsem nadšený! Telefon vypadá jako nový,
-                funguje perfektně a ušetřil jsem skoro 15 tisíc korun. Doporučuji všem!&rdquo;
-              </Text>
-            </Card>
-
-            {/* Review 2 */}
-            <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-xl">👩‍💻</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900 dark:text-gray-100">
-                    Anna Svobodová
+          <div className="relative">
+            <Swiper
+              ref={swiperRef}
+              modules={[Navigation, SwiperPagination, Autoplay]}
+              spaceBetween={24}
+              slidesPerView={1}
+              navigation={{
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+              }}
+              pagination={{
+                clickable: true,
+                el: '.swiper-pagination',
+              }}
+              autoplay={{
+                delay: 5000,
+                disableOnInteraction: false,
+              }}
+              loop={true}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                1024: {
+                  slidesPerView: 3,
+                },
+              }}
+              className="reviews-swiper"
+              style={{ paddingLeft: '48px', paddingRight: '48px' }}
+            >
+              {/* Review 1 */}
+              <SwiperSlide>
+                <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 h-full flex flex-col">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-xl">👨‍💼</span>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100">
+                        Petr Novák
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">iPhone 13 Pro</div>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">iPhone 12</div>
-                </div>
-              </div>
-              <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
-              <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                &ldquo;Rychlé doručení a telefon v perfektním stavu. Záruka 12 měsíců mě uklidňuje a
-                cena byla opravdu výhodná. Určitě si tu koupím i další iPhone!&rdquo;
-              </Text>
-            </Card>
+                  <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
+                  <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                    &ldquo;Koupil jsem si iPhone 13 Pro a jsem nadšený! Telefon vypadá jako nový,
+                    funguje perfektně a ušetřil jsem skoro 15 tisíc korun. Doporučuji všem!&rdquo;
+                  </Text>
+                </Card>
+              </SwiperSlide>
 
-            {/* Review 3 */}
-            <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-xl">👨‍🎓</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900 dark:text-gray-100">
-                    Martin Dvořák
+              {/* Review 2 */}
+              <SwiperSlide>
+                <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 h-full flex flex-col">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-xl">👩‍💻</span>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100">
+                        Anna Svobodová
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">iPhone 12</div>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">iPhone 14</div>
-                </div>
-              </div>
-              <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
-              <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                &ldquo;Jako student ocením, že můžu mít kvalitní iPhone za rozumnou cenu. Telefon
-                funguje bez problémů a vypadá skvěle. Skvělá volba pro rozpočet!&rdquo;
-              </Text>
-            </Card>
+                  <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
+                  <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                    &ldquo;Rychlé doručení a telefon v perfektním stavu. Záruka 12 měsíců mě
+                    uklidňuje a cena byla opravdu výhodná. Určitě si tu koupím i další
+                    iPhone!&rdquo;
+                  </Text>
+                </Card>
+              </SwiperSlide>
 
-            {/* Review 4 */}
-            <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-xl">👩‍🏫</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900 dark:text-gray-100">Jana Černá</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">iPhone 13</div>
-                </div>
-              </div>
-              <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
-              <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                &ldquo;Profesionální přístup a kvalitní zboží. Telefon přišel v krásném balení s
-                veškerými příslušenstvími. Určitě budu doporučovat přátelům!&rdquo;
-              </Text>
-            </Card>
+              {/* Review 3 */}
+              <SwiperSlide>
+                <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 h-full flex flex-col">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-xl">👨‍🎓</span>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100">
+                        Martin Dvořák
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">iPhone 14</div>
+                    </div>
+                  </div>
+                  <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
+                  <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                    &ldquo;Jako student ocením, že můžu mít kvalitní iPhone za rozumnou cenu.
+                    Telefon funguje bez problémů a vypadá skvěle. Skvělá volba pro rozpočet!&rdquo;
+                  </Text>
+                </Card>
+              </SwiperSlide>
 
-            {/* Review 5 */}
-            <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-xl">👨‍💼</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900 dark:text-gray-100">Tomáš Veselý</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">iPhone 12 Pro</div>
-                </div>
-              </div>
-              <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
-              <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                &ldquo;Koupil jsem si iPhone 12 Pro pro firmu. Kvalita je výborná, cena příznivá a
-                dodání rychlé. Ideální pro firemní použití!&rdquo;
-              </Text>
-            </Card>
+              {/* Review 4 */}
+              <SwiperSlide>
+                <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 h-full flex flex-col">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-xl">👩‍🏫</span>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100">
+                        Jana Černá
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">iPhone 13</div>
+                    </div>
+                  </div>
+                  <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
+                  <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                    &ldquo;Profesionální přístup a kvalitní zboží. Telefon přišel v krásném balení s
+                    veškerými příslušenstvími. Určitě budu doporučovat přátelům!&rdquo;
+                  </Text>
+                </Card>
+              </SwiperSlide>
 
-            {/* Review 6 */}
-            <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-xl">👩‍🎨</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900 dark:text-gray-100">Lucie Malá</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">iPhone 14 Pro</div>
-                </div>
-              </div>
-              <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
-              <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                &ldquo;iPhone 14 Pro je úžasný! Kamera je fantastická, výkon skvělý a ušetřila jsem
-                spoustu peněz. Repasované telefony jsou budoucnost!&rdquo;
-              </Text>
-            </Card>
+              {/* Review 5 */}
+              <SwiperSlide>
+                <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20 h-full flex flex-col">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-xl">👨‍💼</span>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100">
+                        Tomáš Veselý
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">iPhone 12 Pro</div>
+                    </div>
+                  </div>
+                  <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
+                  <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                    &ldquo;Koupil jsem si iPhone 12 Pro pro firmu. Kvalita je výborná, cena příznivá
+                    a dodání rychlé. Ideální pro firemní použití!&rdquo;
+                  </Text>
+                </Card>
+              </SwiperSlide>
+
+              {/* Review 6 */}
+              <SwiperSlide>
+                <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 h-full flex flex-col">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-xl">👩‍🎨</span>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100">
+                        Lucie Malá
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">iPhone 14 Pro</div>
+                    </div>
+                  </div>
+                  <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
+                  <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                    &ldquo;iPhone 14 Pro je úžasný! Kamera je fantastická, výkon skvělý a ušetřila
+                    jsem spoustu peněz. Repasované telefony jsou budoucnost!&rdquo;
+                  </Text>
+                </Card>
+              </SwiperSlide>
+            </Swiper>
+
+            {/* Custom Navigation Buttons */}
+            <div className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
+              <button
+                className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group transform hover:scale-110 active:scale-95"
+                onClick={() => swiperRef.current?.swiper.slidePrev()}
+              >
+                <ChevronLeft className="w-5 h-5 text-white transition-transform duration-300 group-hover:-translate-x-0.5" />
+              </button>
+            </div>
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
+              <button
+                className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group transform hover:scale-110 active:scale-95"
+                onClick={() => swiperRef.current?.swiper.slideNext()}
+              >
+                <ChevronRight className="w-5 h-5 text-white transition-transform duration-300 group-hover:translate-x-0.5" />
+              </button>
+            </div>
+
+            {/* Pagination */}
+            <div className="swiper-pagination mt-8 flex justify-center"></div>
           </div>
 
           {/* CTA Section */}
