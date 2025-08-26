@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
         description: 'Požadovaný iPhone model nebyl nalezen v naší nabídce.',
       };
     }
-    const title = `iPhone ${product.name} ${product.capacity}GB ${product.color} | IObchod`;
+    const title = `${product.name} ${product.capacity}GB ${product.color}`;
     const description = `Kupte si repasovaný iPhone ${product.name} s kapacitou ${product.capacity}GB v barvě ${product.color}. Záruka 12 měsíců a doprava zdarma. Ušetřete peníze i planetu.`;
     const canonicalUrl = `/product/${id}`;
 
