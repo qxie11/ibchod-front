@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       };
     }
     const title = `${product.name} ${product.capacity}GB ${product.color}`;
-    const description = `Kupte si repasovaný iPhone ${product.name} s kapacitou ${product.capacity}GB v barvě ${product.color}. Záruka 12 měsíců a doprava zdarma. Ušetřete peníze i planetu.`;
+    const description = `Kupte si repasovaný iPhone ${product.name} s kapacitou ${product.capacity}GB v barvě ${product.color}. Záruka 3 měsíců a doprava zdarma. Ušetřete peníze i planetu.`;
     const canonicalUrl = `/product/${id}`;
 
     return {

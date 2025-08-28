@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import BlogPage from '@/pages-components/blog';
 
 export const metadata: Metadata = {
-  title: 'Blog - Nejnovější články o iPhonech a technologiích | IObchod',
+  title: 'Blog - Nejnovější články o iPhonech a technologiích',
   description:
     'Objevte nejnovější články o iPhonech, technologiích a udržitelnosti. Tipy, recenze, porovnání a novinky ze světa Apple a repasovaných zařízení. Expertní rady pro výběr a používání iPhone.',
   keywords: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'IObchod Team' }],
   openGraph: {
-    title: 'Blog - Nejnovější články o iPhonech a technologiích | IObchod',
+    title: 'Blog - Nejnovější články o iPhonech a technologiích',
     description:
       'Objevte nejnovější články o iPhonech, technologiích a udržitelnosti. Tipy, recenze a novinky ze světa Apple.',
     url: '/blog',
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Blog - Nejnovější články o iPhonech a technologiích | IObchod',
+    title: 'Blog - Nejnovější články o iPhonech a technologiích',
     description:
       'Objevte nejnovější články o iPhonech, technologiích a udržitelnosti. Tipy, recenze a novinky ze světa Apple.',
     images: ['/blog-twitter-image.png'],

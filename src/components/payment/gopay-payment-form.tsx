@@ -73,10 +73,8 @@ export function GoPayPaymentForm({
       const result = await response.json();
 
       if (result.success) {
-        // Сохраняем ID платежа в localStorage для отслеживания
         localStorage.setItem('currentPaymentId', result.payment.id.toString());
 
-        // Перенаправляем на страницу оплаты GoPay
         window.location.href = result.payment.gateway_url;
       } else {
         throw new Error(result.error || 'Chyba při vytváření platby');

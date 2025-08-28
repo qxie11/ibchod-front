@@ -21,13 +21,13 @@ const FormField: React.FC<FormFieldProps> = ({ label, error, children, className
 
   return (
     <div className={className}>
-      <label htmlFor={id} className="block font-medium text-gray-700 mb-1">
+      <label htmlFor={id} className="block font-medium text-gray-700 mb-1 text-xs md:text-sm">
         {label}
       </label>
       <div className="mb-1">{child}</div>
       <Text
         className={cn(
-          'mb-1 text-lg font-medium text-red-600 overflow-hidden transition-all duration-300 ease-in-out',
+          'mb-1 text-sm md:text-lg font-medium text-red-600 overflow-hidden transition-all duration-300 ease-in-out',
           {
             'max-h-0': !error,
             'max-h-[100px]': error,

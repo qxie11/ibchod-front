@@ -26,8 +26,7 @@ export function Footer() {
             </p>
             <div className="flex gap-2">
               <Badge variant="secondary" className="bg-blue-600 text-white">
-                <Shield className="w-3 h-3 mr-1" />
-                12 měsíců záruka
+                <Shield className="w-3 h-3 mr-1" />3 měsíců záruka
               </Badge>
             </div>
           </div>
@@ -140,7 +139,7 @@ export function Footer() {
               <Shield className="w-6 h-6 text-green-400" />
               <div>
                 <div className="font-medium">Plná záruka</div>
-                <div className="text-sm text-gray-400">12 měsíců</div>
+                <div className="text-sm text-gray-400">3 měsíců</div>
               </div>
             </div>
             <div className="flex items-center gap-3 text-center md:text-left">

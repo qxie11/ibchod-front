@@ -105,7 +105,6 @@ export default function HomePage({
   const products = phoneListState?.items ?? [];
   const totalProducts = phoneListState?.total ?? 0;
 
-  // Получаем топ-3 продукта для hero секции
   const topProducts = products.slice(0, 3);
 
   return (
@@ -132,7 +131,7 @@ export default function HomePage({
                 se zárukou
               </Title>
               <Text className="text-xl text-gray-600 mb-6 max-w-2xl mx-auto">
-                Ušetřete až 40% na originálních iPhone s plnou zárukou 12 měsíců. Rychlé doručení a
+                Ušetřete až 40% na originálních iPhone s plnou zárukou 3měsíců. Rychlé doručení a
                 30denní možnost vrácení.
               </Text>
 
@@ -144,7 +143,7 @@ export default function HomePage({
                 </div>
                 <div className="flex items-center gap-1">
                   <Shield className="w-4 h-4 text-green-500" />
-                  <span>12 měsíců záruka</span>
+                  <span>3měsíců záruka</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Truck className="w-4 h-4 text-blue-500" />
@@ -171,7 +170,7 @@ export default function HomePage({
                 {topProducts.map((product) => (
                   <Card
                     key={product.id}
-                    className="relative overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                    className="relative overflow-hidden hover:shadow-xl transition-shadow duration-300 py-4"
                   >
                     <div className="absolute top-2 left-2 z-10">
                       <Badge
@@ -214,7 +213,7 @@ export default function HomePage({
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
                   <Shield className="w-6 h-6 text-green-600" />
                 </div>
-                <Text className="font-semibold text-gray-900">12 měsíců záruka</Text>
+                <Text className="font-semibold text-gray-900">3měsíců záruka</Text>
                 <Text className="text-sm text-gray-600">Plná záruka</Text>
               </div>
               <div className="flex flex-col items-center">
@@ -437,7 +436,7 @@ export default function HomePage({
                       tagName="blockquote"
                       className="text-gray-700 text-sm leading-relaxed flex-grow"
                     >
-                      &ldquo;Rychlé doručení a telefon v perfektním stavu. Záruka 12 měsíců mě
+                      &ldquo;Rychlé doručení a telefon v perfektním stavu. Záruka 3měsíců mě
                       uklidňuje a cena byla opravdu výhodná. Určitě si tu koupím i další
                       iPhone!&rdquo;
                     </Text>

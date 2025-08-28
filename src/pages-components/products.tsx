@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle, Clock, Shield, Star, Truck, Users, Zap } from 'lucide-react';
+import { Clock, Shield, Star, Truck, Zap } from 'lucide-react';
 
 import { useEffect } from 'react';
 
@@ -112,7 +112,7 @@ export default function ProductsPage({
                 se zárukou
               </Title>
               <Text className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
-                Ušetřete až 40% na originálních iPhone s plnou zárukou 12 měsíců. Rychlé doručení a
+                Ušetřete až 40% na originálních iPhone s plnou zárukou 3 měsíců. Rychlé doručení a
                 30denní možnost vrácení.
               </Text>
 
@@ -124,48 +124,12 @@ export default function ProductsPage({
                 </div>
                 <div className="flex items-center gap-1">
                   <Shield className="w-4 h-4 text-green-500" />
-                  <span>12 měsíců záruka</span>
+                  <span>3 měsíců záruka</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Truck className="w-4 h-4 text-blue-500" />
                   <span>Doručení do 24h</span>
                 </div>
-              </div>
-            </div>
-          </Container>
-        </section>
-
-        {/* Trust Signals */}
-        <section className="py-8 bg-white border-b">
-          <Container>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                  <Shield className="w-6 h-6 text-green-600" />
-                </div>
-                <Text className="font-semibold text-gray-900">12 měsíců záruka</Text>
-                <Text className="text-sm text-gray-600">Plná záruka</Text>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                  <Truck className="w-6 h-6 text-blue-600" />
-                </div>
-                <Text className="font-semibold text-gray-900">Doručení do 24h</Text>
-                <Text className="text-sm text-gray-600">Rychlé dodání</Text>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
-                  <Users className="w-6 h-6 text-purple-600" />
-                </div>
-                <Text className="font-semibold text-gray-900">500+ spokojených</Text>
-                <Text className="text-sm text-gray-600">Zákazníků</Text>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
-                  <CheckCircle className="w-6 h-6 text-yellow-600" />
-                </div>
-                <Text className="font-semibold text-gray-900">30 dní vrácení</Text>
-                <Text className="text-sm text-gray-600">Bez rizika</Text>
               </div>
             </div>
           </Container>

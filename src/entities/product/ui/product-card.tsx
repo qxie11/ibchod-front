@@ -22,8 +22,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const savings = Math.round(+product.price * 0.4);
-  const originalPrice = Math.round(+product.price * 1.4);
+  const savings = Math.round(+product.price * 0.2);
+  const originalPrice = Math.round(+product.price * 1.2);
 
   // Отправляем событие просмотра товара в GTM
   useEffect(() => {
@@ -117,7 +117,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="flex items-center gap-3 mb-3 text-xs text-gray-500">
               <div className="flex items-center gap-1">
                 <CheckCircle className="w-3 h-3 text-green-500" />
-                <span>12 měsíců záruka</span>
+                <span>3 měsíců záruka</span>
               </div>
               <div className="flex items-center gap-1">
                 <Truck className="w-3 h-3 text-blue-500" />

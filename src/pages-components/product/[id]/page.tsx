@@ -196,8 +196,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                   Repasovaný
                 </Badge>
                 <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
-                  <Shield className="w-3 h-3 mr-1" />
-                  12 měsíců záruka
+                  <Shield className="w-3 h-3 mr-1" />3 měsíců záruka
                 </Badge>
                 <Badge
                   variant="secondary"
@@ -419,7 +418,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                 Jak funguje záruka?
               </AccordionTrigger>
               <AccordionContent className="px-6 pb-4 text-gray-700">
-                Na všechny naše iPhony poskytujeme 12 měsíců oficiální záruky. Pokud se v tomto
+                Na všechny naše iPhony poskytujeme 3 měsíců oficiální záruky. Pokud se v tomto
                 období objeví jakýkoli problém, zdarma jej opravíme nebo vyměníme zařízení.
               </AccordionContent>
             </AccordionItem>

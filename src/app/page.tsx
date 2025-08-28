@@ -8,7 +8,7 @@ import { GetProductsResponse } from '@/shared/lib/slices/productApi';
 export const metadata: Metadata = {
   title: 'Repasované iPhony se zárukou | IObchod',
   description:
-    'Objevte široký výběr repasovaných iPhonů v IObchod. Všechny modely se zárukou 12 měsíců, rychlým doručením a za skvělé ceny. Udržitelná volba pro vás i planetu.',
+    'Objevte široký výběr repasovaných iPhonů v IObchod. Všechny modely se zárukou 3 měsíců, rychlým doručením a za skvělé ceny. Udržitelná volba pro vás i planetu.',
   keywords: [
     'repasované iPhone',
     'použité iPhone',
