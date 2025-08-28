@@ -40,12 +40,14 @@ export function SearchDialog() {
     { enableOnFormTags: true },
     [setOpen]
   );
-  const { data: { items: results } = [], isLoading } = useGetProductsQuery(
+  const { data, isLoading } = useGetProductsQuery(
     { search: query, take: 10 },
     {
       skip: !open || query.length <= 1,
     }
   );
+
+  const results = data?.items || [];
 
   const handleSelect = (productId: string) => {
     router.push(`/product/${productId}`);

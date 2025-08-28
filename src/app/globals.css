@@ -160,7 +160,6 @@
   pointer-events: none;
 }
 
-/* Swiper стили для отзывов */
 .reviews-swiper {
   padding-bottom: 40px;
   min-height: 300px;
@@ -189,8 +188,52 @@
   transform: scale(1.2);
 }
 
-/* Скрываем стандартные стрелки Swiper */
 .swiper-button-prev::after,
 .swiper-button-next::after {
   display: none;
+}
+
+@media (max-width: 768px) {
+  .reviews-swiper {
+    padding-bottom: 30px;
+    min-height: 250px;
+  }
+
+  .reviews-swiper .swiper-slide {
+    padding: 0 4px;
+  }
+
+  .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+  }
+
+  .swiper-pagination-bullet-active {
+    transform: scale(1.1);
+  }
+
+  .reviews-swiper .swiper-slide .card {
+    min-height: 200px;
+  }
+
+  /* Улучшаем отображение карточек на мобильных */
+  .reviews-swiper .swiper-slide .card {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Компактные отступы для мобильных */
+  .reviews-swiper .swiper-slide .card .text-sm {
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .reviews-swiper {
+    padding-bottom: 35px;
+  }
+
+  .reviews-swiper .swiper-slide {
+    padding: 0 8px;
+  }
 }

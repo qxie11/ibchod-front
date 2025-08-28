@@ -354,23 +354,23 @@ export default function HomePage({
         </section>
 
         {/* Reviews Section */}
-        <section className="py-16 bg-white">
+        <section className="py-8 md:py-16 bg-white">
           <Container>
-            <div className="text-center mb-12">
-              <Title variant="h2" className="text-3xl font-bold mb-4 text-gray-900">
+            <div className="text-center mb-8 md:mb-12">
+              <Title variant="h2" className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">
                 Co říkají naši zákazníci
               </Title>
-              <Text className="text-lg text-gray-600 max-w-2xl mx-auto">
+              <Text className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto px-4">
                 Přečtěte si autentické recenze od spokojených zákazníků, kteří si vybrali naše
                 repasované iPhony.
               </Text>
             </div>
 
-            <div className="relative">
+            <div className="relative px-4 md:px-0">
               <Swiper
                 ref={swiperRef}
                 modules={[Navigation, SwiperPagination, Autoplay]}
-                spaceBetween={24}
+                spaceBetween={16}
                 slidesPerView={1}
                 navigation={{
                   nextEl: '.swiper-button-next',
@@ -381,164 +381,192 @@ export default function HomePage({
                   el: '.swiper-pagination',
                 }}
                 autoplay={{
-                  delay: 5000,
+                  delay: 6000,
                   disableOnInteraction: false,
                 }}
                 loop={true}
                 breakpoints={{
                   640: {
                     slidesPerView: 2,
+                    spaceBetween: 20,
                   },
                   1024: {
                     slidesPerView: 3,
+                    spaceBetween: 24,
                   },
                 }}
                 className="reviews-swiper"
-                style={{ paddingLeft: '48px', paddingRight: '48px' }}
+                style={{
+                  paddingLeft: '0px',
+                  paddingRight: '0px',
+                  paddingBottom: '40px',
+                }}
               >
                 {/* Review 1 */}
                 <SwiperSlide>
-                  <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 h-full flex flex-col">
-                    <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-xl">👨‍💼</span>
+                  <Card className="p-4 md:p-6 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 h-full flex flex-col">
+                    <div className="flex items-center mb-3 md:mb-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-lg md:text-xl">👨‍💼</span>
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">Petr Novák</div>
-                        <div className="text-sm text-gray-600">iPhone 13 Pro</div>
+                        <div className="font-semibold text-gray-900 text-sm md:text-base">
+                          Petr Novák
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-600">iPhone 13 Pro</div>
                       </div>
                     </div>
-                    <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
+                    <div className="flex text-yellow-400 mb-3 text-sm md:text-base">
+                      {'★'.repeat(5)}
+                    </div>
                     <Text
                       tagName="blockquote"
                       className="text-gray-700 text-sm leading-relaxed flex-grow"
                     >
-                      &ldquo;Koupil jsem si iPhone 13 Pro a jsem nadšený! Telefon vypadá jako nový,
-                      funguje perfektně a ušetřil jsem skoro 15 tisíc korun. Doporučuji všem!&rdquo;
+                      &ldquo;Koupil jsem si iPhone 13 Pro a jsem spokojený. Telefon vypadá dobře,
+                      funguje bez problémů a ušetřil jsem dost peněz. Doručení bylo rychlé.&rdquo;
                     </Text>
                   </Card>
                 </SwiperSlide>
 
                 {/* Review 2 */}
                 <SwiperSlide>
-                  <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 h-full flex flex-col">
-                    <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-xl">👩‍💻</span>
+                  <Card className="p-4 md:p-6 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 h-full flex flex-col">
+                    <div className="flex items-center mb-3 md:mb-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-lg md:text-xl">👩‍💻</span>
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">Anna Svobodová</div>
-                        <div className="text-sm text-gray-600">iPhone 12</div>
+                        <div className="font-semibold text-gray-900 text-sm md:text-base">
+                          Anna Svobodová
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-600">iPhone 12</div>
                       </div>
                     </div>
-                    <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
+                    <div className="flex text-yellow-400 mb-3 text-sm md:text-base">
+                      {'★'.repeat(5)}
+                    </div>
                     <Text
                       tagName="blockquote"
                       className="text-gray-700 text-sm leading-relaxed flex-grow"
                     >
-                      &ldquo;Rychlé doručení a telefon v perfektním stavu. Záruka 3měsíců mě
-                      uklidňuje a cena byla opravdu výhodná. Určitě si tu koupím i další
-                      iPhone!&rdquo;
+                      &ldquo;Telefon přišel včas a v dobrém stavu. Záruka je fajn, cena byla
+                      výhodná. Zatím funguje bez problémů, jsem spokojená.&rdquo;
                     </Text>
                   </Card>
                 </SwiperSlide>
 
                 {/* Review 3 */}
                 <SwiperSlide>
-                  <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 h-full flex flex-col">
-                    <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-xl">👨‍🎓</span>
+                  <Card className="p-4 md:p-6 border-0 shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 h-full flex flex-col">
+                    <div className="flex items-center mb-3 md:mb-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-lg md:text-xl">👨‍🎓</span>
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">Martin Dvořák</div>
-                        <div className="text-sm text-gray-600">iPhone 14</div>
+                        <div className="font-semibold text-gray-900 text-sm md:text-base">
+                          Martin Dvořák
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-600">iPhone 14</div>
                       </div>
                     </div>
-                    <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
+                    <div className="flex text-yellow-400 mb-3 text-sm md:text-base">
+                      {'★'.repeat(5)}
+                    </div>
                     <Text
                       tagName="blockquote"
                       className="text-gray-700 text-sm leading-relaxed flex-grow"
                     >
-                      &ldquo;Jako student ocením, že můžu mít kvalitní iPhone za rozumnou cenu.
-                      Telefon funguje bez problémů a vypadá skvěle. Skvělá volba pro
-                      rozpočet!&rdquo;
+                      &ldquo;Jako student jsem rád za možnost koupit si iPhone za rozumnou cenu.
+                      Telefon funguje dobře, vypadá skvěle. Doporučuji.&rdquo;
                     </Text>
                   </Card>
                 </SwiperSlide>
 
                 {/* Review 4 */}
                 <SwiperSlide>
-                  <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-orange-50 to-red-50 h-full flex flex-col">
-                    <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-xl">👩‍🏫</span>
+                  <Card className="p-4 md:p-6 border-0 shadow-lg bg-gradient-to-br from-orange-50 to-red-50 h-full flex flex-col">
+                    <div className="flex items-center mb-3 md:mb-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-lg md:text-xl">👩‍🏫</span>
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">Jana Černá</div>
-                        <div className="text-sm text-gray-600">iPhone 13</div>
+                        <div className="font-semibold text-gray-900 text-sm md:text-base">
+                          Jana Černá
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-600">iPhone 13</div>
                       </div>
                     </div>
-                    <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
+                    <div className="flex text-yellow-400 mb-3 text-sm md:text-base">
+                      {'★'.repeat(5)}
+                    </div>
                     <Text
                       tagName="blockquote"
                       className="text-gray-700 text-sm leading-relaxed flex-grow"
                     >
-                      &ldquo;Profesionální přístup a kvalitní zboží. Telefon přišel v krásném balení
-                      s veškerými příslušenstvími. Určitě budu doporučovat přátelům!&rdquo;
+                      &ldquo;Telefon přišel v pěkném balení, vše bylo kompletní. Funguje bez
+                      problémů, cena byla dobrá. Spokojenost.&rdquo;
                     </Text>
                   </Card>
                 </SwiperSlide>
 
                 {/* Review 5 */}
                 <SwiperSlide>
-                  <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-teal-50 to-cyan-50 h-full flex flex-col">
-                    <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-xl">👨‍💼</span>
+                  <Card className="p-4 md:p-6 border-0 shadow-lg bg-gradient-to-br from-teal-50 to-cyan-50 h-full flex flex-col">
+                    <div className="flex items-center mb-3 md:mb-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-teal-100 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-lg md:text-xl">👨‍💼</span>
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">Tomáš Veselý</div>
-                        <div className="text-sm text-gray-600">iPhone 12 Pro</div>
+                        <div className="font-semibold text-gray-900 text-sm md:text-base">
+                          Tomáš Veselý
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-600">iPhone 12 Pro</div>
                       </div>
                     </div>
-                    <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
+                    <div className="flex text-yellow-400 mb-3 text-sm md:text-base">
+                      {'★'.repeat(5)}
+                    </div>
                     <Text
                       tagName="blockquote"
                       className="text-gray-700 text-sm leading-relaxed flex-grow"
                     >
-                      &ldquo;Koupil jsem si iPhone 12 Pro pro firmu. Kvalita je výborná, cena
-                      příznivá a dodání rychlé. Ideální pro firemní použití!&rdquo;
+                      &ldquo;Koupil jsem iPhone 12 Pro pro firmu. Kvalita je dobrá, cena příznivá,
+                      dodání rychlé. Vhodné pro firemní použití.&rdquo;
                     </Text>
                   </Card>
                 </SwiperSlide>
 
                 {/* Review 6 */}
                 <SwiperSlide>
-                  <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-indigo-50 to-blue-50 h-full flex flex-col">
-                    <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-xl">👩‍🎨</span>
+                  <Card className="p-4 md:p-6 border-0 shadow-lg bg-gradient-to-br from-indigo-50 to-blue-50 h-full flex flex-col">
+                    <div className="flex items-center mb-3 md:mb-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-lg md:text-xl">👩‍🎨</span>
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">Lucie Malá</div>
-                        <div className="text-sm text-gray-600">iPhone 14 Pro</div>
+                        <div className="font-semibold text-gray-900 text-sm md:text-base">
+                          Lucie Malá
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-600">iPhone 14 Pro</div>
                       </div>
                     </div>
-                    <div className="flex text-yellow-400 mb-3">{'★'.repeat(5)}</div>
+                    <div className="flex text-yellow-400 mb-3 text-sm md:text-base">
+                      {'★'.repeat(5)}
+                    </div>
                     <Text
                       tagName="blockquote"
                       className="text-gray-700 text-sm leading-relaxed flex-grow"
                     >
-                      &ldquo;iPhone 14 Pro je úžasný! Kamera je fantastická, výkon skvělý a ušetřila
-                      jsem spoustu peněz. Repasované telefony jsou budoucnost!&rdquo;
+                      &ldquo;iPhone 14 Pro je skvělý! Kamera je výborná, výkon dobrý a ušetřila jsem
+                      hodně peněz. Repasované telefony stojí za to.&rdquo;
                     </Text>
                   </Card>
                 </SwiperSlide>
               </Swiper>
 
-              {/* Custom Navigation Buttons */}
-              <div className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
+              {/* Custom Navigation Buttons - Hidden on mobile */}
+              <div className="hidden md:block absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
                 <button
                   className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group transform hover:scale-110 active:scale-95"
                   onClick={() => swiperRef.current?.swiper.slidePrev()}
@@ -546,7 +574,7 @@ export default function HomePage({
                   <ChevronLeft className="w-5 h-5 text-white transition-transform duration-300 group-hover:-translate-x-0.5" />
                 </button>
               </div>
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
+              <div className="hidden md:block absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
                 <button
                   className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group transform hover:scale-110 active:scale-95"
                   onClick={() => swiperRef.current?.swiper.slideNext()}
@@ -556,7 +584,7 @@ export default function HomePage({
               </div>
 
               {/* Pagination */}
-              <div className="swiper-pagination mt-8 flex justify-center"></div>
+              <div className="swiper-pagination mt-4 md:mt-8 flex justify-center"></div>
             </div>
           </Container>
         </section>

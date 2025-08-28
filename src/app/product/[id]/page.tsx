@@ -89,7 +89,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-export default async function Page(props: { params: { id: string } }) {
+export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const slug = params.id;
   try {

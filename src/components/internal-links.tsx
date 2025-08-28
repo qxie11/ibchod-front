@@ -63,7 +63,6 @@ export function InternalLinks({
                   size="sm"
                   href={link.url}
                   className="flex items-center gap-1 text-sm"
-                  target={link.isExternal ? '_blank' : '_self'}
                   rel={link.isExternal ? 'noopener noreferrer' : undefined}
                 >
                   Přečíst více
