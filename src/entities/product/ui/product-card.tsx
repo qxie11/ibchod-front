@@ -2,10 +2,13 @@
 
 import { CheckCircle, Star, Truck, Zap } from 'lucide-react';
 
+import { useEffect } from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { AddToCartButton } from '@/features/add-to-cart';
+import { viewItem } from '@/lib/gtm';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader } from '@/shared/ui/card';
@@ -21,6 +24,11 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const savings = Math.round(+product.price * 0.4);
   const originalPrice = Math.round(+product.price * 1.4);
+
+  // Отправляем событие просмотра товара в GTM
+  useEffect(() => {
+    viewItem(product);
+  }, [product]);
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 h-full group border-0 shadow-md">
