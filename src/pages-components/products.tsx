@@ -1,12 +1,10 @@
 'use client';
 
-import { Filter, Smartphone as SmartphoneIcon } from 'lucide-react';
+import { CheckCircle, Clock, Shield, Star, Truck, Users, Zap } from 'lucide-react';
 
 import { useEffect } from 'react';
 
-import { AnimatedHero } from '@/components/animated-hero';
 import { ProductCard } from '@/entities/product';
-import type { Smartphone } from '@/entities/product/model/types';
 import {
   resetFilters,
   selectPriceRange,
@@ -25,7 +23,7 @@ import { useAppSelector } from '@/shared/lib/hooks/useAppSelector';
 import { GetProductsResponse, useGetProductsQuery } from '@/shared/lib/slices/productApi';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent } from '@/shared/ui/card';
 import Container from '@/shared/ui/container';
 import Loader from '@/shared/ui/loader';
 import { Pagination, PaginationContent } from '@/shared/ui/pagination';
@@ -65,33 +63,25 @@ export default function ProductsPage({
       take: ITEMS_PER_PAGE,
       skip,
       name: selectedModel !== 'all' ? selectedModel : undefined,
-      minPrice: priceRange?.[0],
-      maxPrice: priceRange?.[1],
+      minPrice: priceRange?.[0] || minPrice,
+      maxPrice: priceRange?.[1] || maxPrice,
       color: selectedColor !== 'all' ? selectedColor : undefined,
       capacity: selectedStorage !== 'all' ? selectedStorage : undefined,
     },
     {
-      skip: !priceRange || priceRange[1] === 0,
+      skip: !priceRange || JSON.stringify(priceRange) === JSON.stringify([minPrice, maxPrice]),
     }
   );
 
   useEffect(() => {
-    if (
-      minPrice !== undefined &&
-      maxPrice !== undefined &&
-      minPrice > 0 &&
-      maxPrice > 0 &&
-      (!priceRange || priceRange[1] === 0)
-    ) {
+    if (minPrice !== undefined && maxPrice !== undefined && priceRange?.[1] === 0) {
       dispatch(setPriceRange([minPrice, maxPrice]));
     }
   }, [dispatch, maxPrice, minPrice, priceRange]);
 
   const handleResetFilters = () => {
     dispatch(resetFilters());
-    if (minPrice !== undefined && maxPrice !== undefined) {
-      dispatch(setPriceRange([minPrice, maxPrice]));
-    }
+    dispatch(setPriceRange([minPrice, maxPrice]));
     onPageChange(1);
   };
 
@@ -99,115 +89,224 @@ export default function ProductsPage({
   const totalProducts = phoneListState?.total ?? 0;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <>
       <Header />
 
-      {/* Hero Section */}
-      <AnimatedHero>
-        <Container className="relative py-16">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                <SmartphoneIcon className="w-8 h-8 text-white" />
+      <main>
+        {/* Hero Section */}
+        <section className="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
+          <Container>
+            <div className="text-center mb-8">
+              <Badge
+                variant="secondary"
+                className="mb-4 bg-red-100 text-red-800 border-red-200 animate-pulse"
+              >
+                <Clock className="w-3 h-3 mr-1" />
+                Omezená nabídka - Do vyprodání!
+              </Badge>
+              <Title variant="h1" className="text-3xl md:text-5xl font-bold mb-4 text-gray-900">
+                Repasované{' '}
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  iPhony
+                </span>{' '}
+                se zárukou
+              </Title>
+              <Text className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
+                Ušetřete až 40% na originálních iPhone s plnou zárukou 12 měsíců. Rychlé doručení a
+                30denní možnost vrácení.
+              </Text>
+
+              {/* Social Proof */}
+              <div className="flex items-center justify-center gap-6 mb-6 text-sm text-gray-600">
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                  <span>4.8/5 (500+ recenzí)</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Shield className="w-4 h-4 text-green-500" />
+                  <span>12 měsíců záruka</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Truck className="w-4 h-4 text-blue-500" />
+                  <span>Doručení do 24h</span>
+                </div>
               </div>
             </div>
-            <Title variant="h1" className="text-4xl md:text-5xl font-bold mb-4 text-white">
-              Repasované iPhony
-            </Title>
-            <Text className="text-lg md:text-xl mb-6 text-blue-100 max-w-2xl mx-auto">
-              Široký výběr kvalitních repasovaných iPhonů se zárukou. Ušetřete až 70% oproti novým
-              zařízením.
-            </Text>
-            <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-              {totalProducts} produktů k dispozici
-            </Badge>
-          </div>
-        </Container>
-      </AnimatedHero>
+          </Container>
+        </section>
 
-      {/* Products Section */}
-      <section className="py-16">
-        <Container>
-          <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] lg:gap-x-8 gap-y-8">
-            <aside className="h-fit lg:sticky lg:top-24 w-full">
-              <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
-                  <CardTitle className="flex items-center gap-2">
-                    <Filter className="w-5 h-5" />
-                    Filtry
-                    <Badge variant="secondary" className="ml-auto">
-                      {products.length} z {totalProducts}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <ProductFilters
-                    priceRange={priceRange || [minPrice, maxPrice]}
-                    setPriceRange={(v) => dispatch(setPriceRange(v))}
-                    minPrice={minPrice}
-                    maxPrice={maxPrice}
-                    selectedModel={selectedModel}
-                    setSelectedModel={(v) => dispatch(setSelectedModel(v))}
-                    models={uniqueBrands}
-                    selectedStorage={selectedStorage}
-                    setSelectedStorage={(v) => dispatch(setSelectedStorage(v))}
-                    storages={uniqueCapacities}
-                    selectedColor={selectedColor}
-                    setSelectedColor={(v) => dispatch(setSelectedColor(v))}
-                    colors={uniqueColors}
-                    resetFilters={handleResetFilters}
-                  />
-                </CardContent>
-              </Card>
-            </aside>
+        {/* Trust Signals */}
+        <section className="py-8 bg-white border-b">
+          <Container>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                  <Shield className="w-6 h-6 text-green-600" />
+                </div>
+                <Text className="font-semibold text-gray-900">12 měsíců záruka</Text>
+                <Text className="text-sm text-gray-600">Plná záruka</Text>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                  <Truck className="w-6 h-6 text-blue-600" />
+                </div>
+                <Text className="font-semibold text-gray-900">Doručení do 24h</Text>
+                <Text className="text-sm text-gray-600">Rychlé dodání</Text>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
+                  <Users className="w-6 h-6 text-purple-600" />
+                </div>
+                <Text className="font-semibold text-gray-900">500+ spokojených</Text>
+                <Text className="text-sm text-gray-600">Zákazníků</Text>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
+                  <CheckCircle className="w-6 h-6 text-yellow-600" />
+                </div>
+                <Text className="font-semibold text-gray-900">30 dní vrácení</Text>
+                <Text className="text-sm text-gray-600">Bez rizika</Text>
+              </div>
+            </div>
+          </Container>
+        </section>
 
-            <div>
-              <div className="relative">
-                {isLoading && (
-                  <div className="absolute z-10 inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center rounded-lg">
+        {/* Products Section */}
+        <section className="py-16 bg-gray-50">
+          <Container>
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Filters Sidebar */}
+              <div className="lg:w-1/3">
+                <div className="sticky top-24">
+                  <Card className="shadow-sm border">
+                    <CardContent className="w-full max-w-[85%] py-4 px-0 mx-auto">
+                      <div className="flex items-center justify-between mb-4">
+                        <Title variant="h3" className="text-lg font-semibold">
+                          Filtry
+                        </Title>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleResetFilters}
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          Vymazat
+                        </Button>
+                      </div>
+                      <ProductFilters
+                        priceRange={priceRange || [minPrice, maxPrice]}
+                        setPriceRange={(v) => dispatch(setPriceRange(v))}
+                        minPrice={minPrice}
+                        maxPrice={maxPrice}
+                        selectedModel={selectedModel}
+                        setSelectedModel={(v) => dispatch(setSelectedModel(v))}
+                        models={uniqueBrands}
+                        selectedStorage={selectedStorage}
+                        setSelectedStorage={(v) => dispatch(setSelectedStorage(v))}
+                        storages={uniqueCapacities}
+                        selectedColor={selectedColor}
+                        setSelectedColor={(v) => dispatch(setSelectedColor(v))}
+                        colors={uniqueColors}
+                        resetFilters={handleResetFilters}
+                      />
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
+              {/* Products Grid */}
+              <div className="lg:w-2/3">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <Title variant="h2" className="text-2xl font-bold text-gray-900">
+                      Repasované iPhony
+                    </Title>
+                    <Text className="text-gray-600">Nalezeno {totalProducts} produktů</Text>
+                  </div>
+
+                  {/* Quick CTA */}
+                  <div className="hidden md:block">
+                    <Button
+                      href="/checkout"
+                      size="sm"
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                    >
+                      <Zap className="w-4 h-4 mr-2" />
+                      Rychlý nákup
+                    </Button>
+                  </div>
+                </div>
+
+                {isLoading ? (
+                  <div className="flex justify-center py-12">
                     <Loader />
                   </div>
-                )}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map((product: Smartphone) => (
-                    <div key={product.id} className="relative group">
-                      <ProductCard product={product} />
+                ) : products.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Title variant="h3" className="text-xl font-semibold mb-2">
+                      Žádné produkty nenalezeny
+                    </Title>
+                    <Text className="text-gray-600 mb-4">
+                      Zkuste upravit filtry nebo se podívejte na všechny produkty.
+                    </Text>
+                    <Button href="/products" variant="default">
+                      Zobrazit všechny produkty
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                      {products.map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                      ))}
                     </div>
-                  ))}
-                </div>
+
+                    {/* Pagination */}
+                    {totalProducts > ITEMS_PER_PAGE && (
+                      <div className="flex justify-center">
+                        <Pagination>
+                          <PaginationContent
+                            currentPage={currentPage}
+                            totalItems={totalProducts}
+                            itemsPerPage={ITEMS_PER_PAGE}
+                            onPageChange={onPageChange}
+                          />
+                        </Pagination>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
-
-              {products.length === 0 && !isLoading && (
-                <div className="text-center py-20">
-                  <div className="text-6xl mb-4">📱</div>
-                  <Title variant="h3" className="text-2xl font-semibold text-foreground mb-2">
-                    Nebyly nalezeny žádné produkty
-                  </Title>
-                  <Text className="text-muted-foreground mb-6">
-                    Zkuste upravit filtry vyhledávání nebo se podívejte na naši kompletní nabídku.
-                  </Text>
-                  <Button onClick={handleResetFilters} variant="outline">
-                    Zobrazit všechny produkty
-                  </Button>
-                </div>
-              )}
-
-              {products.length > 0 && (
-                <div className="flex justify-center mt-12">
-                  <Pagination>
-                    <PaginationContent
-                      currentPage={currentPage}
-                      totalItems={totalProducts}
-                      itemsPerPage={ITEMS_PER_PAGE}
-                      onPageChange={onPageChange}
-                    />
-                  </Pagination>
-                </div>
-              )}
             </div>
-          </div>
-        </Container>
-      </section>
-    </main>
+          </Container>
+        </section>
+
+        {/* Bottom CTA Section */}
+        <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600">
+          <Container>
+            <div className="text-center text-white">
+              <Title variant="h2" className="text-3xl font-bold mb-4">
+                Neváhejte a ušetřete!
+              </Title>
+              <Text className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
+                Repasované iPhony jsou stejně kvalitní jako nové, ale za mnohem lepší cenu. Navíc
+                pomáháte životnímu prostředí.
+              </Text>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  href="/checkout"
+                  variant="secondary"
+                  size="lg"
+                  className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
+                >
+                  <Zap className="w-5 h-5 mr-2" />
+                  Rychlý nákup
+                </Button>
+              </div>
+            </div>
+          </Container>
+        </section>
+      </main>
+    </>
   );
 }
