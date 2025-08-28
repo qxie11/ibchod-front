@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 
 export default async function Page({ params }: { params: { id: string } }) {
   try {
-    // Сначала получаем список всех статей
     const articlesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, {
       cache: 'no-store',
     });

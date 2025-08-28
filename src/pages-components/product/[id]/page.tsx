@@ -6,6 +6,7 @@ import {
   CheckCircle,
   ChevronLeft,
   ChevronRight,
+  Heart,
   Shield,
   Star,
   Truck,
@@ -54,18 +55,21 @@ interface ProductDetailPageProps {
 
 export default function ProductDetailPage({ product, similarProducts }: ProductDetailPageProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isWishlisted, setIsWishlisted] = useState(false);
   const dispatch = useAppDispatch();
 
   if (!product) {
     return (
       <>
         <Header />
-        <Container className="flex-1 py-8">
+        <Container className="flex-1 py-12">
           <div className="text-center py-20">
-            <Title variant="h1" className="text-2xl font-bold mb-2">
+            <Title variant="h1" className="text-3xl font-bold mb-4">
               Produkt nenalezen
             </Title>
-            <Text className="text-muted-foreground">Produkt, který hledáte, neexistuje.</Text>
+            <Text className="text-muted-foreground text-lg">
+              Produkt, který hledáte, neexistuje.
+            </Text>
           </div>
         </Container>
       </>
@@ -76,27 +80,41 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
     <>
       <Header />
 
-      <Container className="py-8 w-full">
-        <Breadcrumb className="mb-6">
+      <Container className="py-8 md:py-12 w-full max-w-7xl mx-auto">
+        {/* Breadcrumb */}
+        <Breadcrumb className="mb-8">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/" className="text-gray-600 hover:text-gray-900">
+              <BreadcrumbLink
+                href="/"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
                 Domů
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="text-gray-400" />
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-gray-900">{product.name}</BreadcrumbPage>
+              <BreadcrumbLink
+                href="/products"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Produkty
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="text-gray-400" />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="text-gray-900 font-medium">{product.name}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="mb-6">
+        {/* Back Button */}
+        <div className="mb-8">
           <Button
             size="sm"
             variant="ghost"
-            href="/"
-            className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 inline-flex items-center gap-2"
+            href="/products"
+            className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 inline-flex items-center gap-2 transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4" />
             Zpět na všechny produkty
@@ -104,10 +122,10 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
         </div>
 
         {/* Main Product Card */}
-        <div className="bg-white/80 backdrop-blur-sm border border-white/20 shadow-2xl rounded-2xl p-8 mb-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="bg-white border border-gray-200 shadow-xl rounded-2xl p-6 md:p-8 mb-12 overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Image Gallery */}
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="aspect-square relative overflow-hidden rounded-xl border border-gray-200 shadow-lg">
                 <Swiper
                   modules={[Navigation]}
@@ -127,7 +145,7 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                           src={url ?? ''}
                           alt={product.name + ' photo ' + (idx + 1)}
                           fill
-                          className="object-cover transition-transform duration-200 group-hover:scale-105"
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
                           priority={idx === 0}
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 flex items-center justify-center">
@@ -168,18 +186,18 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
               </div>
 
               {/* Image Thumbnails */}
-              <div className="flex gap-2 overflow-x-auto pb-2">
+              <div className="flex gap-3 overflow-x-auto pb-2">
                 {product.gallery.slice(0, 4).map((url: string, idx: number) => (
                   <div
                     key={url + idx}
-                    className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-gray-200 cursor-pointer hover:border-blue-400 transition-colors duration-200"
+                    className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-200 cursor-pointer hover:border-blue-400 transition-all duration-200 hover:shadow-md"
                     onClick={() => setSelectedImage(url)}
                   >
                     <Image
                       src={url ?? ''}
                       alt={`Thumbnail ${idx + 1}`}
-                      width={64}
-                      height={64}
+                      width={80}
+                      height={80}
                       className="object-cover w-full h-full hover:scale-110 transition-transform duration-200"
                     />
                   </div>
@@ -188,59 +206,87 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
             </div>
 
             {/* Product Info */}
-            <div className="space-y-6">
-              {/* Badges */}
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+            <div className="space-y-8">
+              {/* Trust Badges */}
+              <div className="flex flex-wrap gap-3">
+                <Badge
+                  variant="secondary"
+                  className="bg-green-100 text-green-800 border-green-200 px-3 py-1"
+                >
                   <CheckCircle className="w-3 h-3 mr-1" />
                   Repasovaný
                 </Badge>
-                <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
+                <Badge
+                  variant="secondary"
+                  className="bg-blue-100 text-blue-800 border-blue-200 px-3 py-1"
+                >
                   <Shield className="w-3 h-3 mr-1" />3 měsíců záruka
                 </Badge>
                 <Badge
                   variant="secondary"
-                  className="bg-purple-100 text-purple-800 border-purple-200"
+                  className="bg-purple-100 text-purple-800 border-purple-200 px-3 py-1"
                 >
                   <Truck className="w-3 h-3 mr-1" />
                   Doprava zdarma
                 </Badge>
+                <Badge
+                  variant="secondary"
+                  className="bg-orange-100 text-orange-800 border-orange-200 px-3 py-1"
+                >
+                  <Star className="w-3 h-3 mr-1" />
+                  Kvalita ověřena
+                </Badge>
               </div>
 
-              {/* Title */}
+              {/* Title and Rating */}
               <div>
                 <Title
-                  className="mb-2 text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent"
+                  className="mb-3 text-3xl md:text-4xl font-bold text-gray-900"
                   size="large"
                   variant="h1"
                 >
                   Apple {product.name}
                 </Title>
-                <Text className="text-lg text-muted-foreground">
+                <Text className="text-lg text-gray-600 mb-4">
                   {product.capacity}GB • {product.color}
                 </Text>
               </div>
 
-              {/* Price */}
-              <div className="space-y-2">
-                <div className="flex items-baseline gap-3">
-                  <Text className="text-4xl font-bold text-foreground">
+              {/* Price Section */}
+              <div className="space-y-3 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                <div className="flex items-baseline gap-4">
+                  <Text className="text-4xl md:text-5xl font-bold text-gray-900">
                     {product.price.toLocaleString('cs-CZ')} Kč
                   </Text>
-                  <Text className="text-xl text-muted-foreground line-through">
+                  <Text className="text-xl text-gray-500 line-through">
                     {Math.round(+(product?.price ?? 0) * 1.3).toLocaleString('cs-CZ')} Kč
                   </Text>
                 </div>
-                <Text className="text-sm text-green-600 font-medium">
-                  Ušetříte {Math.round(+(product?.price ?? 0) * 0.3).toLocaleString('cs-CZ')} Kč
-                </Text>
+                <div className="flex items-center gap-3">
+                  <Badge className="bg-green-500 text-white px-3 py-1">
+                    Ušetříte {Math.round(+(product?.price ?? 0) * 0.3).toLocaleString('cs-CZ')} Kč
+                  </Badge>
+                  <Text className="text-sm text-gray-600">(30% sleva z původní ceny)</Text>
+                </div>
               </div>
 
-              {/* Add to Cart */}
+              {/* Action Buttons */}
               <div className="space-y-4">
-                <AddToCartButton size="lg" product={product} className="w-full">
-                  Přidat do košíku
-                </AddToCartButton>
+                <div className="flex gap-3">
+                  <AddToCartButton size="lg" product={product} className="flex-1">
+                    <Truck className="w-5 h-5 mr-2" />
+                    Přidat do košíku
+                  </AddToCartButton>
+
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => setIsWishlisted(!isWishlisted)}
+                    className={`px-4 ${isWishlisted ? 'text-red-500 border-red-500' : ''}`}
+                  >
+                    <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-current' : ''}`} />
+                  </Button>
+                </div>
 
                 <Button
                   onClick={() => {
@@ -248,63 +294,116 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
                     window.location.href = '/cart';
                   }}
                   size="lg"
-                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 text-lg font-semibold py-4"
                 >
-                  Koupit nyní
+                  <Zap className="w-5 h-5 mr-2" />
+                  Koupit nyní - Doručení do 24h
                 </Button>
               </div>
 
-              {/* Features */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t border-gray-200">
+              {/* Trust Features */}
+              <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-200">
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
                   </div>
-                  <span className="text-gray-700">1 měsíc záruka</span>
+                  <div>
+                    <div className="font-semibold text-gray-900">3 měsíců záruka</div>
+                    <div className="text-gray-600">Oficiální záruka</div>
+                  </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                    <Truck className="w-4 h-4 text-blue-600" />
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <Truck className="w-5 h-5 text-blue-600" />
                   </div>
-                  <span className="text-gray-700">Doprava zdarma</span>
+                  <div>
+                    <div className="font-semibold text-gray-900">Doprava zdarma</div>
+                    <div className="text-gray-600">Po celé ČR</div>
+                  </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-                    <Shield className="w-4 h-4 text-purple-600" />
+                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-purple-600" />
                   </div>
-                  <span className="text-gray-700">Vrácení do 14 dnů</span>
+                  <div>
+                    <div className="font-semibold text-gray-900">Vrácení 14 dnů</div>
+                    <div className="text-gray-600">Bez udání důvodu</div>
+                  </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
-                    <Star className="w-4 h-4 text-orange-600" />
+                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                    <Star className="w-5 h-5 text-orange-600" />
                   </div>
-                  <span className="text-gray-700">Kvalita ověřena</span>
+                  <div>
+                    <div className="font-semibold text-gray-900">Kvalita ověřena</div>
+                    <div className="text-gray-600">Profesionální test</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Social Proof Section */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6 md:p-8 mb-12">
+          <div className="text-center mb-6">
+            <Title variant="h2" className="text-2xl font-bold text-gray-900 mb-2">
+              Proč si zákazníci vybírají naše repasované iPhony?
+            </Title>
+            <Text className="text-gray-600">Přes 1,000+ spokojených zákazníků</Text>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-8 h-8 text-blue-600" />
+              </div>
+              <Title variant="h3" className="text-lg font-semibold mb-2">
+                Ověřená kvalita
+              </Title>
+              <Text className="text-gray-600">
+                Všechny telefony procházejí důkladnou kontrolou a testováním funkčnosti
+              </Text>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Truck className="w-8 h-8 text-green-600" />
+              </div>
+              <Title variant="h3" className="text-lg font-semibold mb-2">
+                Rychlé doručení
+              </Title>
+              <Text className="text-gray-600">Doručení do 24 hodin po celé České republice</Text>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-8 h-8 text-purple-600" />
+              </div>
+              <Title variant="h3" className="text-lg font-semibold mb-2">
+                Záruka a podpora
+              </Title>
+              <Text className="text-gray-600">
+                3 měsíce záruky a profesionální zákaznická podpora
+              </Text>
+            </div>
+          </div>
+        </div>
+
         {/* Description */}
-        <div className="bg-white/80 backdrop-blur-sm border border-white/20 shadow-xl rounded-2xl p-8 mb-8">
-          <Title
-            variant="h2"
-            className="mb-6 text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent"
-          >
+        <div className="bg-white border border-gray-200 shadow-xl rounded-2xl p-6 md:p-8 mb-12">
+          <Title variant="h2" className="mb-6 text-2xl font-bold text-gray-900">
             Popis produktu
           </Title>
-          <Text
-            dangerouslySetInnerHTML={{ __html: product.large_desc }}
-            className="text-gray-700 leading-relaxed whitespace-pre-line"
-          />
+          <div className="prose prose-lg max-w-none">
+            <Text
+              dangerouslySetInnerHTML={{ __html: product.large_desc }}
+              className="text-gray-700 leading-relaxed whitespace-pre-line"
+            />
+          </div>
         </div>
 
         {/* Specifications */}
-        <div className="bg-white/80 backdrop-blur-sm border border-white/20 shadow-xl rounded-2xl p-8 mb-8">
-          <Title
-            variant="h2"
-            className="mb-8 text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent text-center"
-          >
+        <div className="bg-white border border-gray-200 shadow-xl rounded-2xl p-6 md:p-8 mb-12">
+          <Title variant="h2" className="mb-8 text-2xl font-bold text-gray-900 text-center">
             Technické specifikace
           </Title>
 
@@ -389,11 +488,8 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
 
         {/* Similar Products */}
         {similarProducts.length > 0 && (
-          <div className="bg-white/80 backdrop-blur-sm border border-white/20 shadow-xl rounded-2xl p-8 mb-8">
-            <Title
-              variant="h2"
-              className="mb-8 text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent text-center"
-            >
+          <div className="bg-white border border-gray-200 shadow-xl rounded-2xl p-6 md:p-8 mb-12">
+            <Title variant="h2" className="mb-8 text-2xl font-bold text-gray-900 text-center">
               Podobné modely
             </Title>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -405,11 +501,8 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
         )}
 
         {/* FAQ */}
-        <div className="bg-white/80 backdrop-blur-sm border border-white/20 shadow-xl rounded-2xl p-8">
-          <Title
-            variant="h2"
-            className="mb-8 text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent text-center"
-          >
+        <div className="bg-white border border-gray-200 shadow-xl rounded-2xl p-6 md:p-8 mb-12">
+          <Title variant="h2" className="mb-8 text-2xl font-bold text-gray-900 text-center">
             Často kladené dotazy
           </Title>
           <Accordion type="single" collapsible className="w-full mx-auto">
@@ -450,6 +543,37 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+        </div>
+
+        {/* Final CTA Section */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-center text-white">
+          <Title variant="h2" className="text-3xl font-bold mb-4">
+            Neváhejte a ušetřete!
+          </Title>
+          <Text className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
+            Repasované iPhony nabízí skvělý poměr cena/výkon. Funkční zařízení za výrazně nižší cenu
+            s ověřenou kvalitou a zárukou.
+          </Text>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              href="/products"
+              size="lg"
+              className="bg-white/10 backdrop-blur-sm border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 drop-shadow-lg"
+            >
+              Prohlédnout všechny produkty
+            </Button>
+            <Button
+              onClick={() => {
+                dispatch(addToCart(product));
+                window.location.href = '/cart';
+              }}
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
+            >
+              <Zap className="w-5 h-5 mr-2" />
+              Koupit nyní
+            </Button>
+          </div>
         </div>
       </Container>
 
