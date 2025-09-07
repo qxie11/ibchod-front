@@ -4,6 +4,7 @@ import { ArrowRight, Calendar, Clock, Tag, User } from 'lucide-react';
 
 import Image from 'next/image';
 
+import { AnimatedHero } from '@/components/animated-hero';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import Container from '@/shared/ui/container';
@@ -75,7 +76,7 @@ export default function BlogPage({ articles }: BlogPageProps) {
       />
 
       {/* Hero Section */}
-      <header className="bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white py-16">
+      <AnimatedHero>
         <Container>
           <div className="text-center max-w-4xl mx-auto">
             <Title variant="h1" className="text-4xl md:text-6xl font-bold mb-6">
@@ -106,7 +107,7 @@ export default function BlogPage({ articles }: BlogPageProps) {
             </nav>
           </div>
         </Container>
-      </header>
+      </AnimatedHero>
 
       <main>
         <Container className="py-12">

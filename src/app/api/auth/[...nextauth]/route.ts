@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth';
+import NextAuth, { type AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 async function refreshAccessToken(token: any) {
@@ -34,7 +34,7 @@ async function refreshAccessToken(token: any) {
   }
 }
 
-export const authOptions = {
+export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({

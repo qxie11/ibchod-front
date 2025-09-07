@@ -100,15 +100,13 @@ export default function BlogArticlePage({ article, relatedArticles = [] }: BlogA
     wordCount: article.content.replace(/<[^>]*>/g, '').split(' ').length,
   };
 
-  // Извлекаем время чтения из контента
   const wordCount = article.content.replace(/<[^>]*>/g, '').split(' ').length;
-  const readingTime = Math.ceil(wordCount / 200); // 200 слов в минуту
+  const readingTime = Math.ceil(wordCount / 200);
 
   return (
     <>
       <Header />
 
-      {/* Структурированные данные */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}

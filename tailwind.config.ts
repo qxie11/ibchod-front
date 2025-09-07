@@ -90,6 +90,33 @@ export default {
             transform: 'scale(1.03) rotate(0.5deg)',
           },
         },
+        'gradient-flow': {
+          '0%': {
+            background: 'linear-gradient(45deg, #3b82f6, #8b5cf6, #6366f1, #3b82f6)',
+            backgroundSize: '400% 400%',
+            backgroundPosition: '0% 50%',
+          },
+          '25%': {
+            background: 'linear-gradient(135deg, #8b5cf6, #6366f1, #3b82f6, #8b5cf6)',
+            backgroundSize: '400% 400%',
+            backgroundPosition: '100% 50%',
+          },
+          '50%': {
+            background: 'linear-gradient(225deg, #6366f1, #3b82f6, #8b5cf6, #6366f1)',
+            backgroundSize: '400% 400%',
+            backgroundPosition: '100% 100%',
+          },
+          '75%': {
+            background: 'linear-gradient(315deg, #3b82f6, #8b5cf6, #6366f1, #3b82f6)',
+            backgroundSize: '400% 400%',
+            backgroundPosition: '0% 100%',
+          },
+          '100%': {
+            background: 'linear-gradient(45deg, #3b82f6, #8b5cf6, #6366f1, #3b82f6)',
+            backgroundSize: '400% 400%',
+            backgroundPosition: '0% 50%',
+          },
+        },
         'hero-gradient-reverse': {
           '0%, 100%': {
             opacity: '0.6',
@@ -139,6 +166,7 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'hero-gradient': 'hero-gradient 6s ease-in-out infinite',
+        'gradient-flow': 'gradient-flow 15s ease-in-out infinite',
         'hero-gradient-reverse': 'hero-gradient-reverse 8s ease-in-out infinite',
         'hero-gradient-slow': 'hero-gradient-slow 10s ease-in-out infinite',
         'float-1': 'float-1 6s ease-in-out infinite',

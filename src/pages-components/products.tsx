@@ -4,6 +4,7 @@ import { Clock, Shield, Star, Truck, Zap } from 'lucide-react';
 
 import { useEffect } from 'react';
 
+import { AnimatedHero } from '@/components/animated-hero';
 import { ProductCard } from '@/entities/product';
 import {
   resetFilters,
@@ -94,46 +95,46 @@ export default function ProductsPage({
 
       <main>
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
+        <AnimatedHero>
           <Container>
             <div className="text-center mb-8">
               <Badge
                 variant="secondary"
-                className="mb-4 bg-red-100 text-red-800 border-red-200 animate-pulse"
+                className="mb-4 bg-white/20 text-white border-white/30 animate-pulse"
               >
                 <Clock className="w-3 h-3 mr-1" />
                 Omezená nabídka - Do vyprodání!
               </Badge>
-              <Title variant="h1" className="text-3xl md:text-5xl font-bold mb-4 text-gray-900">
+              <Title variant="h1" className="text-3xl md:text-5xl font-bold mb-4 text-white">
                 Repasované{' '}
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
                   iPhony
                 </span>{' '}
                 se zárukou
               </Title>
-              <Text className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
+              <Text className="text-lg text-blue-100 mb-6 max-w-2xl mx-auto">
                 Ušetřete až 40% na originálních iPhone s plnou zárukou 3 měsíců. Rychlé doručení a
                 30denní možnost vrácení.
               </Text>
 
               {/* Social Proof */}
-              <div className="flex items-center justify-center gap-6 mb-6 text-sm text-gray-600">
+              <div className="flex items-center justify-center gap-6 mb-6 text-sm text-blue-100">
                 <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                  <Star className="w-4 h-4 text-yellow-300 fill-current" />
                   <span>4.8/5 (500+ recenzí)</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Shield className="w-4 h-4 text-green-500" />
+                  <Shield className="w-4 h-4 text-green-300" />
                   <span>3 měsíců záruka</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Truck className="w-4 h-4 text-blue-500" />
+                  <Truck className="w-4 h-4 text-blue-200" />
                   <span>Doručení do 24h</span>
                 </div>
               </div>
             </div>
           </Container>
-        </section>
+        </AnimatedHero>
 
         {/* Products Section */}
         <section className="py-16 bg-gray-50">
