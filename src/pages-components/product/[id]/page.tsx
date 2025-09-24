@@ -18,7 +18,7 @@ import 'swiper/css/navigation';
 import { Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Image from 'next/image';
 
@@ -57,6 +57,26 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const dispatch = useAppDispatch();
+
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSelectedImage(null);
+      }
+    };
+
+    if (selectedImage) {
+      document.addEventListener('keydown', handleEscKey);
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedImage]);
 
   if (!product) {
     return (
@@ -580,22 +600,61 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
       {/* Image Modal */}
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >
-          <div className="relative max-w-4xl w-full h-full flex items-center justify-center">
+          <div
+            className="relative w-full h-full flex items-center justify-center overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
+              className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10 bg-black/50 rounded-full p-2 hover:bg-black/70"
             >
-              <X className="w-8 h-8" />
+              <X className="w-6 h-6" />
             </button>
+
+            {/* Navigation arrows */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const currentIndex = product.gallery.indexOf(selectedImage);
+                const prevIndex = currentIndex > 0 ? currentIndex - 1 : product.gallery.length - 1;
+                setSelectedImage(product.gallery[prevIndex]);
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-10 bg-black/50 rounded-full p-3 hover:bg-black/70"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const currentIndex = product.gallery.indexOf(selectedImage);
+                const nextIndex = currentIndex < product.gallery.length - 1 ? currentIndex + 1 : 0;
+                setSelectedImage(product.gallery[nextIndex]);
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-10 bg-black/50 rounded-full p-3 hover:bg-black/70"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+            {/* Image counter */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white bg-black/50 rounded-full px-4 py-2 text-sm">
+              {product.gallery.indexOf(selectedImage) + 1} / {product.gallery.length}
+            </div>
+
             <Image
               src={selectedImage}
               alt="Product full size"
-              width={800}
-              height={800}
-              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              width={1200}
+              height={1200}
+              className="max-w-full max-h-full object-contain rounded-lg cursor-zoom-in"
+              style={{
+                maxWidth: '90vw',
+                maxHeight: '90vh',
+                objectFit: 'contain',
+              }}
             />
           </div>
         </div>
