@@ -2,8 +2,10 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { getAuthToken } from '../utils/auth';
 
+const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL,
+  baseUrl,
   prepareHeaders: async (headers) => {
     const token = await getAuthToken();
 

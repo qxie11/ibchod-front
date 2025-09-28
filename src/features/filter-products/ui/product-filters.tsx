@@ -3,7 +3,7 @@
 import { Filter, RotateCcw, X } from 'lucide-react';
 import { useDebounce } from 'react-use';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -45,7 +45,18 @@ export function ProductFilters({
   colors,
   resetFilters,
 }: ProductFiltersProps) {
-  const [localPriceRange, setLocalPriceRange] = useState([minPrice, maxPrice]);
+  const [localPriceRange, setLocalPriceRange] = useState(
+    priceRange && priceRange.length === 2 ? priceRange : [minPrice, maxPrice]
+  );
+
+  // Sync local price range with props when they change
+  useEffect(() => {
+    if (priceRange && priceRange.length === 2) {
+      setLocalPriceRange(priceRange);
+    } else if (minPrice !== undefined && maxPrice !== undefined) {
+      setLocalPriceRange([minPrice, maxPrice]);
+    }
+  }, [priceRange, minPrice, maxPrice]);
 
   useDebounce(
     () => {

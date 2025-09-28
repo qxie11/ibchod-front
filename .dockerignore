@@ -1,0 +1,43 @@
+# Node.js
+node_modules
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+# Keep package-lock.json for npm ci
+# package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# Build artifacts
+.next
+out
+dist
+
+# Local env files
+.env
+.env*.local
+
+# OS / Editor junk
+.DS_Store
+.vscode
+.idea
+*.swp
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Additional Docker optimizations
+README.md
+.git
+.gitignore
+docker-compose.yml
+docker-run.sh
+docker-run-dev.sh
+docker-run-stage.sh
+*.md

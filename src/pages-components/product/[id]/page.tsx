@@ -605,7 +605,10 @@ export default function ProductDetailPage({ product, similarProducts }: ProductD
         >
           <div
             className="relative w-full h-full flex items-center justify-center overflow-auto"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedImage(null);
+            }}
           >
             <button
               onClick={() => setSelectedImage(null)}

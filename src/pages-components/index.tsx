@@ -80,25 +80,31 @@ export default function HomePage({
       take: ITEMS_PER_PAGE,
       skip,
       name: selectedModel !== 'all' ? selectedModel : undefined,
-      minPrice: priceRange?.[0] || minPrice,
-      maxPrice: priceRange?.[1] || maxPrice,
+      minPrice: priceRange?.[0] !== undefined ? priceRange[0] : minPrice,
+      maxPrice: priceRange?.[1] !== undefined ? priceRange[1] : maxPrice,
       color: selectedColor !== 'all' ? selectedColor : undefined,
       capacity: selectedStorage !== 'all' ? selectedStorage : undefined,
     },
     {
-      skip: !priceRange || JSON.stringify(priceRange) === JSON.stringify([minPrice, maxPrice]),
+      skip: false, // Always fetch, let the API handle filtering
     }
   );
 
   useEffect(() => {
-    if (minPrice !== undefined && maxPrice !== undefined && priceRange?.[1] === 0) {
+    if (
+      minPrice !== undefined &&
+      maxPrice !== undefined &&
+      (!priceRange || priceRange.length === 0)
+    ) {
       dispatch(setPriceRange([minPrice, maxPrice]));
     }
   }, [dispatch, maxPrice, minPrice, priceRange]);
 
   const handleResetFilters = () => {
     dispatch(resetFilters());
-    dispatch(setPriceRange([minPrice, maxPrice]));
+    if (minPrice !== undefined && maxPrice !== undefined) {
+      dispatch(setPriceRange([minPrice, maxPrice]));
+    }
     onPageChange(1);
   };
 

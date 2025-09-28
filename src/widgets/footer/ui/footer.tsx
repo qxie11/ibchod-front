@@ -75,6 +75,12 @@ export function Footer() {
               <Link href="#" className="block text-gray-300 hover:text-white transition-colors">
                 Ochrana osobních údajů
               </Link>
+              <Link
+                href="/sitemap"
+                className="block text-gray-300 hover:text-white transition-colors"
+              >
+                Mapa stránek
+              </Link>
             </div>
           </div>
 
