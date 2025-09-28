@@ -5,9 +5,9 @@ import Container from '@/shared/ui/container';
 import { Header } from '@/widgets/header';
 
 interface PaymentStatusPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({
@@ -23,7 +23,9 @@ export async function generateMetadata({
   };
 }
 
-export default function PaymentStatusPage({ params: _params }: PaymentStatusPageProps) {
+export default async function PaymentStatusPage({ params }: PaymentStatusPageProps) {
+  const { id } = await params;
+
   return (
     <>
       <Header />
@@ -33,7 +35,7 @@ export default function PaymentStatusPage({ params: _params }: PaymentStatusPage
             <h1 className="text-3xl font-bold mb-2">Stav platby</h1>
             <p className="text-gray-600">Sledujeme stav vaší platby v reálném čase</p>
           </div>
-          <PaymentStatus paymentId={_params.id} />
+          <PaymentStatus paymentId={id} />
         </div>
       </Container>
     </>

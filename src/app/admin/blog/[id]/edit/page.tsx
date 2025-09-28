@@ -9,8 +9,9 @@ export const metadata: Metadata = {
   description: 'Úprava článku blogu',
 };
 
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const articlesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, {
       cache: 'no-store',
     });
@@ -20,7 +21,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     }
 
     const articlesData = await articlesResponse.json();
-    const article = articlesData.items?.find((item: any) => item.id.toString() === params.id);
+    const article = articlesData.items?.find((item: any) => item.id.toString() === id);
 
     if (!article) {
       notFound();

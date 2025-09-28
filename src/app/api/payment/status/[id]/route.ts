@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { goPayService } from '@/shared/lib/utils/gopay';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const paymentId = params.id;
+    const { id: paymentId } = await params;
 
     if (!paymentId) {
       return NextResponse.json(
