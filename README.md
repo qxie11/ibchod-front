@@ -108,3 +108,5 @@ You can adjust the revalidation frequency by changing this value:
 ## Build a Deploy
 
 Sitemap bude automaticky vygenerován během procesu build a bude dostupný na `/sitemap.xml` na vašem nasazeném webu.
+
+# Test commit for CI/CD
