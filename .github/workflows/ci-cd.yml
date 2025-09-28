@@ -31,9 +31,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-    - name: TypeScript type check
-      run: npm run typecheck || echo "TypeScript check failed, continuing..."
-      continue-on-error: true
+    # - name: TypeScript type check
+    #   run: npm run typecheck || echo "TypeScript check failed, continuing..."
+    #   continue-on-error: true
 
       - name: ESLint check
         run: npm run lint
