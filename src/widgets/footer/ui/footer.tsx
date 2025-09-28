@@ -61,18 +61,18 @@ export function Footer() {
             <h3 className="font-semibold text-lg">Zákaznický servis</h3>
             <div className="space-y-2">
               <Link
-                href="/about"
+                href="/how-it-works"
                 className="block text-gray-300 hover:text-white transition-colors"
               >
                 Jak to funguje
               </Link>
-              <Link href="#" className="block text-gray-300 hover:text-white transition-colors">
+              <Link href="/faq" className="block text-gray-300 hover:text-white transition-colors">
+                Často kladené otázky
+              </Link>
+              <Link href="/terms-of-service" className="block text-gray-300 hover:text-white transition-colors">
                 Obchodní podmínky
               </Link>
-              <Link href="#" className="block text-gray-300 hover:text-white transition-colors">
-                Reklamace a vrácení
-              </Link>
-              <Link href="#" className="block text-gray-300 hover:text-white transition-colors">
+              <Link href="/privacy-policy" className="block text-gray-300 hover:text-white transition-colors">
                 Ochrana osobních údajů
               </Link>
               <Link
