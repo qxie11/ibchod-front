@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, stage, dev]
   pull_request:
     branches: [main]
 
@@ -31,14 +31,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-    # - name: TypeScript type check
-    #   run: npm run typecheck || echo "TypeScript check failed, continuing..."
-    #   continue-on-error: true
-
-      - name: ESLint check
-        run: npm run lint
-        continue-on-error: true
-
       - name: Build application
         run: npm run build
         env:
@@ -49,7 +41,7 @@ jobs:
     name: Continuous Deployment
     runs-on: ubuntu-latest
     needs: ci
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/dev'
     outputs:
       aws-credentials-present: ${{ steps.check-creds.outputs.credentials-present }}
       deployment-status: ${{ steps.deployment.outcome }}
@@ -57,6 +49,24 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set deployment variables
+        id: set-vars
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "branch=main" >> $GITHUB_OUTPUT
+            echo "tag=latest" >> $GITHUB_OUTPUT
+            echo "environment=production" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/stage" ]; then
+            echo "branch=stage" >> $GITHUB_OUTPUT
+            echo "tag=stage" >> $GITHUB_OUTPUT
+            echo "environment=staging" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
+            echo "branch=dev" >> $GITHUB_OUTPUT
+            echo "tag=dev" >> $GITHUB_OUTPUT
+            echo "environment=development" >> $GITHUB_OUTPUT
+          fi
+          echo "Deploying to: ${{ steps.set-vars.outputs.environment }} with tag: ${{ steps.set-vars.outputs.tag }}"
 
       - name: Check AWS credentials
         id: check-creds
@@ -90,6 +100,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
+          BRANCH_TAG: ${{ steps.set-vars.outputs.tag }}
         run: |
           # Проверяем наличие Dockerfile
           if [ ! -f "Dockerfile" ]; then
@@ -97,18 +108,21 @@ jobs:
             exit 1
           fi
 
+          echo "Building image for ${{ steps.set-vars.outputs.environment }} environment..."
+          echo "Tags: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG, $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG"
+
           docker build \
             --build-arg NEXT_PUBLIC_API_URL=https://iobchod.shop/v1/api \
             --build-arg NEXT_PUBLIC_BASE_URL=https://iobchod.shop \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG \
             .
 
-          echo "Pushing image to ECR..."
+          echo "Pushing images to ECR..."
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG
 
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG" >> $GITHUB_OUTPUT
 
       - name: Check ECS service status
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
@@ -169,14 +183,32 @@ jobs:
     name: Notify Deployment Status
     runs-on: ubuntu-latest
     needs: [ci, cd]
-    if: always() && github.ref == 'refs/heads/main'
+    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/dev')
 
     steps:
+      - name: Set notification variables
+        id: notify-vars
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+            echo "url=https://iobchod.shop" >> $GITHUB_OUTPUT
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/stage" ]; then
+            echo "environment=staging" >> $GITHUB_OUTPUT
+            echo "url=https://stage.iobchod.shop" >> $GITHUB_OUTPUT
+            echo "tag=stage" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
+            echo "environment=development" >> $GITHUB_OUTPUT
+            echo "url=https://dev.iobchod.shop" >> $GITHUB_OUTPUT
+            echo "tag=dev" >> $GITHUB_OUTPUT
+          fi
+
       - name: Notify Success
         if: needs.cd.result == 'success' && needs.cd.outputs.aws-credentials-present == 'true'
         run: |
-          echo "🎉 Deployment to production completed successfully!"
-          echo "🌐 Application is available at: https://iobchod.shop"
+          echo "🎉 Deployment to ${{ steps.notify-vars.outputs.environment }} completed successfully!"
+          echo "🏷️ Image tag: ${{ steps.notify-vars.outputs.tag }}"
+          echo "🌐 Application is available at: ${{ steps.notify-vars.outputs.url }}"
 
       - name: Notify CD Skipped
         if: needs.cd.outputs.aws-credentials-present == 'false'
@@ -188,5 +220,5 @@ jobs:
       - name: Notify Failure
         if: needs.cd.result == 'failure'
         run: |
-          echo "❌ Deployment to production failed!"
+          echo "❌ Deployment to ${{ steps.notify-vars.outputs.environment }} failed!"
           echo "Please check the logs and fix the issues."
