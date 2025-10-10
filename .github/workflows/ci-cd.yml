@@ -147,26 +147,185 @@ jobs:
             --services $ECS_SERVICE \
             --query 'services[0].{status:status,runningCount:runningCount,pendingCount:pendingCount,desiredCount:desiredCount}'
 
+      - name: Get AWS Account ID
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        id: get-account-id
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "account-id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
+          echo "✅ AWS Account ID: $ACCOUNT_ID"
+
+      - name: Ensure CloudWatch Log Group exists
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        run: |
+          echo "Ensuring CloudWatch Log Group exists..."
+          
+          LOG_GROUP_NAME="/ecs/iobchod-frontend"
+          
+          # Check if log group exists
+          if aws logs describe-log-groups --log-group-name-prefix "$LOG_GROUP_NAME" --query "logGroups[?logGroupName=='$LOG_GROUP_NAME']" --output text | grep -q "$LOG_GROUP_NAME"; then
+            echo "✅ Log group $LOG_GROUP_NAME already exists"
+          else
+            echo "Creating log group $LOG_GROUP_NAME..."
+            aws logs create-log-group --log-group-name "$LOG_GROUP_NAME"
+            
+            # Set retention policy (optional)
+            aws logs put-retention-policy \
+              --log-group-name "$LOG_GROUP_NAME" \
+              --retention-in-days 14
+            
+            echo "✅ Log group $LOG_GROUP_NAME created"
+          fi
+
+      - name: Update ECS task definition
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        id: task-def
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ steps.set-vars.outputs.tag }}
+          ACCOUNT_ID: ${{ steps.get-account-id.outputs.account-id }}
+        run: |
+          echo "Updating task definition with new image..."
+          
+          # Replace placeholders in task definition
+          sed -i "s|IMAGE_URI|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" ecs-task-definition.json
+          sed -i "s|ACCOUNT_ID|$ACCOUNT_ID|g" ecs-task-definition.json
+          
+          # Register new task definition
+          NEW_TASK_DEFINITION=$(aws ecs register-task-definition \
+            --cli-input-json file://ecs-task-definition.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          
+          echo "task-definition-arn=$NEW_TASK_DEFINITION" >> $GITHUB_OUTPUT
+          echo "✅ New task definition registered: $NEW_TASK_DEFINITION"
+
       - name: Update ECS service
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
         id: deployment
         run: |
-          echo "Updating ECS service with new image..."
+          echo "Updating ECS service with new task definition..."
           aws ecs update-service \
             --cluster $ECS_CLUSTER \
             --service $ECS_SERVICE \
-            --force-new-deployment
+            --task-definition ${{ steps.task-def.outputs.task-definition-arn }}
+          
+          echo "✅ ECS service update initiated"
 
       - name: Wait for ECS service to be stable
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
         run: |
-          echo "Waiting for ECS service to be stable (timeout: 10 minutes)..."
-          timeout 600 aws ecs wait services-stable \
+          echo "Waiting for ECS service to be stable (timeout: 15 minutes)..."
+          echo "This may take several minutes as the new container needs to:"
+          echo "  1. Pull the new Docker image"
+          echo "  2. Start the container"
+          echo "  3. Pass health checks (2 minutes startup period + retries)"
+          echo "  4. Replace old tasks"
+          
+          # Monitor deployment progress
+          start_time=$(date +%s)
+          timeout=900  # 15 minutes
+          
+          while true; do
+            current_time=$(date +%s)
+            elapsed=$((current_time - start_time))
+            
+            if [ $elapsed -gt $timeout ]; then
+              echo "❌ Timeout after 15 minutes waiting for service to be stable"
+              echo "Current service status:"
+              aws ecs describe-services \
+                --cluster $ECS_CLUSTER \
+                --services $ECS_SERVICE \
+                --query 'services[0].{status:status,runningCount:runningCount,pendingCount:pendingCount,desiredCount:desiredCount,deployments:deployments[*].{status:status,taskDefinition:taskDefinition,runningCount:runningCount,pendingCount:pendingCount}}'
+              exit 1
+            fi
+            
+            # Check service status
+            SERVICE_STATUS=$(aws ecs describe-services \
+              --cluster $ECS_CLUSTER \
+              --services $ECS_SERVICE \
+              --query 'services[0].deployments[0].status' \
+              --output text)
+            
+            RUNNING_COUNT=$(aws ecs describe-services \
+              --cluster $ECS_CLUSTER \
+              --services $ECS_SERVICE \
+              --query 'services[0].runningCount' \
+              --output text)
+            
+            DESIRED_COUNT=$(aws ecs describe-services \
+              --cluster $ECS_CLUSTER \
+              --services $ECS_SERVICE \
+              --query 'services[0].desiredCount' \
+              --output text)
+            
+            echo "⏱️  Elapsed: ${elapsed}s | Status: $SERVICE_STATUS | Running: $RUNNING_COUNT/$DESIRED_COUNT"
+            
+            if [ "$SERVICE_STATUS" = "STABLE" ] && [ "$RUNNING_COUNT" = "$DESIRED_COUNT" ]; then
+              echo "✅ Service is stable!"
+              break
+            fi
+            
+            sleep 30
+          done
+
+      - name: Check for failed tasks
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        run: |
+          echo "Checking for any failed tasks in the last 10 minutes..."
+          
+          # Get tasks that stopped recently
+          STOPPED_TASKS=$(aws ecs list-tasks \
             --cluster $ECS_CLUSTER \
-            --services $ECS_SERVICE || {
-            echo "❌ Timeout waiting for service to be stable"
-            exit 1
-          }
+            --service-name $ECS_SERVICE \
+            --desired-status STOPPED \
+            --query 'taskArns' \
+            --output text)
+          
+          if [ "$STOPPED_TASKS" != "None" ] && [ -n "$STOPPED_TASKS" ]; then
+            echo "⚠️  Found recently stopped tasks. Checking for failures..."
+            
+            for task_arn in $STOPPED_TASKS; do
+              TASK_DETAILS=$(aws ecs describe-tasks \
+                --cluster $ECS_CLUSTER \
+                --tasks $task_arn \
+                --query 'tasks[0].{stoppedReason:stoppedReason,stopCode:stopCode,containers:containers[*].{name:name,exitCode:exitCode,reason:reason}}')
+              
+              echo "Task: $task_arn"
+              echo "$TASK_DETAILS"
+              echo "---"
+            done
+          else
+            echo "✅ No recently stopped tasks found"
+          fi
+
+      - name: Get container logs
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        run: |
+          echo "Getting recent container logs..."
+          
+          # Get the latest task ARN
+          LATEST_TASK=$(aws ecs list-tasks \
+            --cluster $ECS_CLUSTER \
+            --service-name $ECS_SERVICE \
+            --desired-status RUNNING \
+            --query 'taskArns[0]' \
+            --output text)
+          
+          if [ "$LATEST_TASK" != "None" ] && [ -n "$LATEST_TASK" ]; then
+            echo "📋 Latest task: $LATEST_TASK"
+            echo "Recent logs from CloudWatch (last 5 minutes):"
+            
+            # Get logs from CloudWatch (if available)
+            aws logs get-log-events \
+              --log-group-name "/ecs/iobchod-frontend" \
+              --log-stream-name "ecs/iphone-store-prod/$(basename $LATEST_TASK)" \
+              --start-time $(($(date +%s) * 1000 - 300000)) \
+              --query 'events[*].message' \
+              --output text || echo "⚠️  Unable to fetch logs from CloudWatch"
+          else
+            echo "⚠️  No running tasks found"
+          fi
 
       - name: Verify deployment
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
@@ -174,8 +333,8 @@ jobs:
           echo "Verifying deployment..."
           aws ecs describe-services \
             --cluster $ECS_CLUSTER \
-            --services $ECS_SERVICE \
-            --query 'services[0].{status:status,runningCount:runningCount,pendingCount:pendingCount,desiredCount:desiredCount}'
+            --service $ECS_SERVICE \
+            --query 'services[0].{status:status,runningCount:runningCount,pendingCount:pendingCount,desiredCount:desiredCount,deployments:deployments[*].{status:status,taskDefinition:taskDefinition,createdAt:createdAt}}'
 
           echo "✅ Deployment completed successfully!"
 
