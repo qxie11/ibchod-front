@@ -11,7 +11,7 @@ env:
   ECR_REPOSITORY: iobchod-frontend
   ECS_CLUSTER: ecs-ec2-cluster
   ECS_SERVICE: frontend-service
-  CONTAINER_NAME: iphone-store-prod
+  CONTAINER_NAME: frontend
 
 jobs:
   ci:
@@ -319,7 +319,7 @@ jobs:
             # Get logs from CloudWatch (if available)
             aws logs get-log-events \
               --log-group-name "/ecs/iobchod-frontend" \
-              --log-stream-name "ecs/iphone-store-prod/$(basename $LATEST_TASK)" \
+              --log-stream-name "ecs/frontend/$(basename $LATEST_TASK)" \
               --start-time $(($(date +%s) * 1000 - 300000)) \
               --query 'events[*].message' \
               --output text || echo "⚠️  Unable to fetch logs from CloudWatch"

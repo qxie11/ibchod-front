@@ -7,7 +7,7 @@
   "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
   "containerDefinitions": [
     {
-      "name": "iphone-store-prod",
+      "name": "frontend",
       "image": "IMAGE_URI",
       "portMappings": [
         {
