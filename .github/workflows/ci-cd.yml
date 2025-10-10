@@ -53,20 +53,34 @@ jobs:
       - name: Set deployment variables
         id: set-vars
         run: |
+          echo "🔍 Detecting branch and setting deployment variables..."
+          echo "   GitHub Ref: ${{ github.ref }}"
+          
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "branch=main" >> $GITHUB_OUTPUT
-            echo "tag=latest" >> $GITHUB_OUTPUT
-            echo "environment=production" >> $GITHUB_OUTPUT
+            BRANCH="main"
+            TAG="latest"
+            ENV="production"
           elif [ "${{ github.ref }}" = "refs/heads/stage" ]; then
-            echo "branch=stage" >> $GITHUB_OUTPUT
-            echo "tag=stage" >> $GITHUB_OUTPUT
-            echo "environment=staging" >> $GITHUB_OUTPUT
+            BRANCH="stage"
+            TAG="stage"
+            ENV="staging"
           elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
-            echo "branch=dev" >> $GITHUB_OUTPUT
-            echo "tag=dev" >> $GITHUB_OUTPUT
-            echo "environment=development" >> $GITHUB_OUTPUT
+            BRANCH="dev"
+            TAG="dev"
+            ENV="development"
+          else
+            echo "❌ Unknown branch: ${{ github.ref }}"
+            exit 1
           fi
-          echo "Deploying to: ${{ steps.set-vars.outputs.environment }} with tag: ${{ steps.set-vars.outputs.tag }}"
+          
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "environment=$ENV" >> $GITHUB_OUTPUT
+          
+          echo "✅ Deployment Configuration Set:"
+          echo "   Branch: $BRANCH"
+          echo "   Tag: $TAG"
+          echo "   Environment: $ENV"
 
       - name: Check AWS credentials
         id: check-creds
@@ -108,8 +122,14 @@ jobs:
             exit 1
           fi
 
-          echo "Building image for ${{ steps.set-vars.outputs.environment }} environment..."
-          echo "Tags: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG, $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG"
+          echo "🐳 Building Docker image for ${{ steps.set-vars.outputs.environment }} environment..."
+          echo "   Branch: ${{ steps.set-vars.outputs.branch }}"
+          echo "   Branch Tag: $BRANCH_TAG"
+          echo "   Commit SHA: $IMAGE_TAG"
+          echo ""
+          echo "📦 Image will be tagged as:"
+          echo "   1. $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG (commit SHA)"
+          echo "   2. $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG (branch tag)"
 
           docker build \
             --build-arg NEXT_PUBLIC_API_URL=https://iobchod.shop/v1/api \
@@ -118,10 +138,14 @@ jobs:
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG \
             .
 
-          echo "Pushing images to ECR..."
+          echo ""
+          echo "⬆️  Pushing images to ECR..."
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG
 
+          echo ""
+          echo "✅ Images pushed successfully!"
+          echo "   Primary image for deployment: $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG"
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG" >> $GITHUB_OUTPUT
 
       - name: Check ECS service status
@@ -184,12 +208,24 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ steps.set-vars.outputs.tag }}
           ACCOUNT_ID: ${{ steps.get-account-id.outputs.account-id }}
+          BRANCH: ${{ steps.set-vars.outputs.branch }}
+          ENVIRONMENT: ${{ steps.set-vars.outputs.environment }}
         run: |
+          echo "🏷️  Deployment Configuration:"
+          echo "   Branch: $BRANCH"
+          echo "   Environment: $ENVIRONMENT"
+          echo "   Image Tag: $IMAGE_TAG"
+          echo "   Full Image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo ""
           echo "Updating task definition with new image..."
           
           # Replace placeholders in task definition
-          sed -i "s|IMAGE_URI|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" ecs-task-definition.json
+          FULL_IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          sed -i "s|IMAGE_URI|$FULL_IMAGE_URI|g" ecs-task-definition.json
           sed -i "s|ACCOUNT_ID|$ACCOUNT_ID|g" ecs-task-definition.json
+          
+          echo "Verifying task definition update..."
+          grep -A 2 "\"image\":" ecs-task-definition.json || echo "Could not verify image in task definition"
           
           # Register new task definition
           NEW_TASK_DEFINITION=$(aws ecs register-task-definition \
@@ -199,6 +235,14 @@ jobs:
           
           echo "task-definition-arn=$NEW_TASK_DEFINITION" >> $GITHUB_OUTPUT
           echo "✅ New task definition registered: $NEW_TASK_DEFINITION"
+          
+          # Verify the registered task definition
+          echo ""
+          echo "📋 Verifying registered task definition image:"
+          aws ecs describe-task-definition \
+            --task-definition $NEW_TASK_DEFINITION \
+            --query 'taskDefinition.containerDefinitions[0].{name:name,image:image}' \
+            --output table
 
       - name: Update ECS service
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
