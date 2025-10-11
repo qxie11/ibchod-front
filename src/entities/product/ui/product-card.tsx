@@ -14,6 +14,7 @@ import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader } from '@/shared/ui/card';
 import Text from '@/shared/ui/text';
 import { Title } from '@/shared/ui/title';
+import { useMetrics } from '@/hooks/use-metrics';
 
 import type { Smartphone } from '../model/types';
 
@@ -24,11 +25,12 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const savings = Math.round(+product.price * 0.2);
   const originalPrice = Math.round(+product.price * 1.2);
+  const { trackProductView } = useMetrics();
 
-  // Отправляем событие просмотра товара в GTM
   useEffect(() => {
     viewItem(product);
-  }, [product]);
+    trackProductView(product.id.toString(), product.categoryId?.toString());
+  }, [product, trackProductView]);
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 h-full group border-0 shadow-md">
