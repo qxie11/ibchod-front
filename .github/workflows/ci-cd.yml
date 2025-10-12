@@ -102,14 +102,15 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           BRANCH_TAG: ${{ steps.set-vars.outputs.tag }}
         run: |
-          # Проверяем наличие Dockerfile
           if [ ! -f "Dockerfile" ]; then
             echo "❌ Dockerfile not found in repository root"
             exit 1
           fi
 
-          echo "Building image for ${{ steps.set-vars.outputs.environment }} environment..."
-          echo "Tags: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG, $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG"
+          echo "🐳 Building image for ${{ steps.set-vars.outputs.environment }} environment..."
+          echo "📦 Tags:"
+          echo "   - Full SHA: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "   - Branch: $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG"
 
           docker build \
             --build-arg NEXT_PUBLIC_API_URL=https://iobchod.shop/v1/api \
@@ -118,11 +119,13 @@ jobs:
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG \
             .
 
-          echo "Pushing images to ECR..."
+          echo "⬆️  Pushing images to ECR..."
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG
 
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG" >> $GITHUB_OUTPUT
+          echo "✅ Images pushed successfully"
+          echo "🎯 Using SHA-based tag for deployment to avoid cache: $IMAGE_TAG"
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Check ECS service status
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
@@ -147,15 +150,63 @@ jobs:
             --services $ECS_SERVICE \
             --query 'services[0].{status:status,runningCount:runningCount,pendingCount:pendingCount,desiredCount:desiredCount}'
 
+      - name: Get AWS Account ID
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        id: get-account-id
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "account-id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
+          echo "✅ AWS Account ID: $ACCOUNT_ID"
+
+      - name: Ensure CloudWatch Log Group exists
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        run: |
+          LOG_GROUP_NAME="/ecs/iobchod-frontend"
+          
+          if aws logs describe-log-groups --log-group-name-prefix "$LOG_GROUP_NAME" --query "logGroups[?logGroupName=='$LOG_GROUP_NAME']" --output text | grep -q "$LOG_GROUP_NAME"; then
+            echo "✅ Log group $LOG_GROUP_NAME already exists"
+          else
+            echo "📝 Creating log group $LOG_GROUP_NAME..."
+            aws logs create-log-group --log-group-name "$LOG_GROUP_NAME"
+            aws logs put-retention-policy --log-group-name "$LOG_GROUP_NAME" --retention-in-days 14
+            echo "✅ Log group $LOG_GROUP_NAME created"
+          fi
+
+      - name: Update ECS task definition with new image
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        id: task-def
+        run: |
+          echo "📝 Updating task definition with SHA-based image..."
+          echo "   Image: ${{ steps.build-image.outputs.image }}"
+          
+          sed -i "s|IMAGE_URI|${{ steps.build-image.outputs.image }}|g" ecs-task-definition.json
+          sed -i "s|ACCOUNT_ID|${{ steps.get-account-id.outputs.account-id }}|g" ecs-task-definition.json
+          
+          echo "📋 Registering new task definition..."
+          NEW_TASK_DEF=$(aws ecs register-task-definition \
+            --cli-input-json file://ecs-task-definition.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          
+          echo "task-definition-arn=$NEW_TASK_DEF" >> $GITHUB_OUTPUT
+          echo "✅ New task definition: $NEW_TASK_DEF"
+          
+          aws ecs describe-task-definition \
+            --task-definition $NEW_TASK_DEF \
+            --query 'taskDefinition.containerDefinitions[0].{name:name,image:image}' \
+            --output table
+
       - name: Update ECS service
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
         id: deployment
         run: |
-          echo "Updating ECS service with new image..."
+          echo "🚀 Updating ECS service with new task definition..."
           aws ecs update-service \
             --cluster $ECS_CLUSTER \
             --service $ECS_SERVICE \
-            --force-new-deployment
+            --task-definition ${{ steps.task-def.outputs.task-definition-arn }}
+          
+          echo "✅ ECS service update initiated"
 
       - name: Wait for ECS service to be stable
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
