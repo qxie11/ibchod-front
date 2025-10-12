@@ -2,8 +2,8 @@
   "family": "iobchod-frontend-task",
   "networkMode": "bridge",
   "requiresCompatibilities": ["EC2"],
-  "cpu": "512",
-  "memory": "1024",
+  "cpu": "1024",
+  "memory": "2048",
   "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
   "containerDefinitions": [
     {
@@ -12,7 +12,7 @@
       "portMappings": [
         {
           "containerPort": 9002,
-          "hostPort": 0,
+          "hostPort": 9002,
           "protocol": "tcp"
         }
       ],
@@ -44,11 +44,11 @@
         }
       },
       "healthCheck": {
-        "command": ["CMD-SHELL", "curl -f http://localhost:9002/ || exit 1"],
+        "command": ["CMD-SHELL", "curl -f http://localhost:9002/api/metrics || curl -f http://localhost:9002/ || exit 1"],
         "interval": 30,
-        "timeout": 10,
-        "retries": 5,
-        "startPeriod": 120
+        "timeout": 15,
+        "retries": 10,
+        "startPeriod": 180
       }
     }
   ]
