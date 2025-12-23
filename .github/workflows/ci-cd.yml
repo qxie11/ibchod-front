@@ -10,7 +10,6 @@ env:
   AWS_REGION: eu-north-1
   ECR_REPOSITORY: iobchod-frontend
   ECS_CLUSTER: ecs-ec2-cluster
-  ECS_SERVICE: frontend-service
   CONTAINER_NAME: iphone-store-prod
 
 jobs:
@@ -57,24 +56,29 @@ jobs:
             BRANCH="main"
             DEPLOY_TAG="latest"
             ENV="production"
+            ECS_SERVICE="frontend-service-prod"
           elif [ "${{ github.ref }}" = "refs/heads/stage" ]; then
             BRANCH="stage"
             DEPLOY_TAG="stage"
             ENV="staging"
+            ECS_SERVICE="frontend-service-stage"
           elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
             BRANCH="dev"
             DEPLOY_TAG="dev"
             ENV="development"
+            ECS_SERVICE="frontend-service-dev"
           fi
           
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
           echo "deploy-tag=$DEPLOY_TAG" >> $GITHUB_OUTPUT
           echo "environment=$ENV" >> $GITHUB_OUTPUT
+          echo "ecs-service=$ECS_SERVICE" >> $GITHUB_OUTPUT
           
           echo "🏗️  Deployment Configuration:"
           echo "   Branch: $BRANCH"
           echo "   Deploy Tag: $DEPLOY_TAG"
           echo "   Environment: $ENV"
+          echo "   ECS Service: $ECS_SERVICE"
 
       - name: Check AWS credentials
         id: check-creds
@@ -173,6 +177,8 @@ jobs:
       - name: Check ECS service status
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
         id: check-service
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
         run: |
           echo "Checking current ECS service status..."
 
@@ -243,11 +249,14 @@ jobs:
       - name: Update ECS task definition with new image
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
         id: task-def
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
         run: |
           echo "📝 Updating task definition with branch-specific image..."
           echo "   Branch: ${{ steps.set-vars.outputs.branch }}"
           echo "   Deploy Tag: ${{ steps.set-vars.outputs.deploy-tag }}"
           echo "   Full Image: ${{ steps.build-image.outputs.image }}"
+          echo "   ECS Service: $ECS_SERVICE"
           echo ""
           echo "Using clean branch tags:"
           echo "   ✅ main → latest"
@@ -258,6 +267,7 @@ jobs:
           
           sed -i "s|IMAGE_URI|${{ steps.build-image.outputs.image }}|g" ecs-task-definition.json
           sed -i "s|ACCOUNT_ID|${{ steps.get-account-id.outputs.account-id }}|g" ecs-task-definition.json
+          sed -i "s|\"family\": \"iobchod-frontend-task\"|\"family\": \"$ECS_SERVICE\"|g" ecs-task-definition.json
           
           echo ""
           echo "📋 Registering new task definition..."
@@ -279,6 +289,8 @@ jobs:
       - name: Update ECS service
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
         id: deployment
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
         run: |
           echo "🚀 Updating ECS service with new task definition..."
           aws ecs update-service \
@@ -290,6 +302,8 @@ jobs:
 
       - name: Wait for ECS service to be stable
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
         run: |
           echo "⏳ Waiting for ECS service to be stable (timeout: 15 minutes)..."
           echo "📋 What happens during deployment:"
@@ -389,6 +403,8 @@ jobs:
 
       - name: Get container logs for debugging
         if: env.AWS_CREDENTIALS_PRESENT == 'true' && failure()
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
         run: |
           echo "🔍 Retrieving container logs for debugging..."
           
@@ -450,6 +466,8 @@ jobs:
 
       - name: Health check diagnosis
         if: env.AWS_CREDENTIALS_PRESENT == 'true' && failure()
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
         run: |
           echo ""
           echo "🏥 Health Check Diagnosis"
@@ -502,6 +520,8 @@ jobs:
 
       - name: Verify deployment and check ports
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
         run: |
           echo "🔍 Verifying deployment and port configuration..."
           
