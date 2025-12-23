@@ -10,7 +10,6 @@ env:
   AWS_REGION: eu-north-1
   ECR_REPOSITORY: iobchod-frontend
   ECS_CLUSTER: ecs-ec2-cluster
-  CONTAINER_NAME: iphone-store-prod
 
 jobs:
   ci:
@@ -234,8 +233,10 @@ jobs:
 
       - name: Ensure CloudWatch Log Group exists
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
         run: |
-          LOG_GROUP_NAME="/ecs/iobchod-frontend"
+          LOG_GROUP_NAME="/ecs/$ECS_SERVICE"
           
           if aws logs describe-log-groups --log-group-name-prefix "$LOG_GROUP_NAME" --query "logGroups[?logGroupName=='$LOG_GROUP_NAME']" --output text | grep -q "$LOG_GROUP_NAME"; then
             echo "✅ Log group $LOG_GROUP_NAME already exists"
@@ -251,12 +252,15 @@ jobs:
         id: task-def
         env:
           ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
+          ENVIRONMENT: ${{ steps.set-vars.outputs.environment }}
+          ACCOUNT_ID: ${{ steps.get-account-id.outputs.account-id }}
         run: |
           echo "📝 Updating task definition with branch-specific image..."
           echo "   Branch: ${{ steps.set-vars.outputs.branch }}"
           echo "   Deploy Tag: ${{ steps.set-vars.outputs.deploy-tag }}"
           echo "   Full Image: ${{ steps.build-image.outputs.image }}"
           echo "   ECS Service: $ECS_SERVICE"
+          echo "   Environment: $ENVIRONMENT"
           echo ""
           echo "Using clean branch tags:"
           echo "   ✅ main → latest"
@@ -265,9 +269,47 @@ jobs:
           echo ""
           echo "Task definition update forces ECS to pull fresh image"
           
+          # Determine environment suffix for roles and container name
+          if [ "$ENVIRONMENT" = "production" ]; then
+            ENV_SUFFIX="prod"
+          elif [ "$ENVIRONMENT" = "staging" ]; then
+            ENV_SUFFIX="stage"
+          else
+            ENV_SUFFIX="dev"
+          fi
+          
+          # Replace image URI
           sed -i "s|IMAGE_URI|${{ steps.build-image.outputs.image }}|g" ecs-task-definition.json
-          sed -i "s|ACCOUNT_ID|${{ steps.get-account-id.outputs.account-id }}|g" ecs-task-definition.json
+          
+          # Replace account ID
+          sed -i "s|ACCOUNT_ID|$ACCOUNT_ID|g" ecs-task-definition.json
+          
+          # Replace task definition family
           sed -i "s|\"family\": \"iobchod-frontend-task\"|\"family\": \"$ECS_SERVICE\"|g" ecs-task-definition.json
+          
+          # Replace container name
+          CONTAINER_NAME="iphone-store-$ENV_SUFFIX"
+          sed -i "s|\"name\": \"frontend\"|\"name\": \"$CONTAINER_NAME\"|g" ecs-task-definition.json
+          
+          # Replace log group
+          LOG_GROUP="/ecs/$ECS_SERVICE"
+          sed -i "s|\"awslogs-group\": \"/ecs/iobchod-frontend\"|\"awslogs-group\": \"$LOG_GROUP\"|g" ecs-task-definition.json
+          
+          # Replace execution role
+          EXEC_ROLE="frontend-service-$ENV_SUFFIX-execution-role"
+          sed -i "s|\"executionRoleArn\": \"arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole\"|\"executionRoleArn\": \"arn:aws:iam::$ACCOUNT_ID:role/$EXEC_ROLE\"|g" ecs-task-definition.json
+          
+          # Replace task role (if exists in JSON)
+          TASK_ROLE="frontend-service-$ENV_SUFFIX-task-role"
+          sed -i "s|\"taskRoleArn\": \"arn:aws:iam::ACCOUNT_ID:role/[^\"]*\"|\"taskRoleArn\": \"arn:aws:iam::$ACCOUNT_ID:role/$TASK_ROLE\"|g" ecs-task-definition.json || true
+          
+          echo ""
+          echo "✅ Task definition updated:"
+          echo "   Family: $ECS_SERVICE"
+          echo "   Container: $CONTAINER_NAME"
+          echo "   Log Group: $LOG_GROUP"
+          echo "   Execution Role: $EXEC_ROLE"
+          echo "   Task Role: $TASK_ROLE"
           
           echo ""
           echo "📋 Registering new task definition..."
@@ -424,15 +466,16 @@ jobs:
               echo "=================================="
               
               # Try to get logs from CloudWatch
-              LOG_STREAM="ecs/frontend/$TASK_ID"
+              LOG_STREAM="ecs/$ECS_SERVICE/$TASK_ID"
+              LOG_GROUP="/ecs/$ECS_SERVICE"
               
               # Get logs from the last 10 minutes
               START_TIME=$(($(date +%s) * 1000 - 600000))
               
-              echo "🔍 Checking CloudWatch logs: /ecs/iobchod-frontend/$LOG_STREAM"
+              echo "🔍 Checking CloudWatch logs: $LOG_GROUP/$LOG_STREAM"
               
               LOGS=$(aws logs get-log-events \
-                --log-group-name "/ecs/iobchod-frontend" \
+                --log-group-name "$LOG_GROUP" \
                 --log-stream-name "$LOG_STREAM" \
                 --start-time $START_TIME \
                 --query 'events[*].message' \
