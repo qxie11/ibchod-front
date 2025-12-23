@@ -303,6 +303,14 @@ jobs:
           TASK_ROLE="frontend-service-$ENV_SUFFIX-task-role"
           sed -i "s|\"taskRoleArn\": \"arn:aws:iam::ACCOUNT_ID:role/[^\"]*\"|\"taskRoleArn\": \"arn:aws:iam::$ACCOUNT_ID:role/$TASK_ROLE\"|g" ecs-task-definition.json || true
           
+          # Убрать health check если он есть (Terraform использует без health check)
+          if [ -f ecs-task-definition.json ]; then
+            # Используем jq для удаления healthCheck блока
+            jq 'del(.containerDefinitions[0].healthCheck)' ecs-task-definition.json > ecs-task-definition-temp.json
+            mv ecs-task-definition-temp.json ecs-task-definition.json
+            echo "✅ Health check removed from task definition"
+          fi
+          
           echo ""
           echo "✅ Task definition updated:"
           echo "   Family: $ECS_SERVICE"
@@ -447,8 +455,19 @@ jobs:
         if: env.AWS_CREDENTIALS_PRESENT == 'true' && failure()
         env:
           ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
+          ENVIRONMENT: ${{ steps.set-vars.outputs.environment }}
         run: |
           echo "🔍 Retrieving container logs for debugging..."
+          
+          # Определить ENV_SUFFIX для правильного формата log stream
+          if [ "$ENVIRONMENT" = "production" ]; then
+            ENV_SUFFIX="prod"
+          elif [ "$ENVIRONMENT" = "staging" ]; then
+            ENV_SUFFIX="stage"
+          else
+            ENV_SUFFIX="dev"
+          fi
+          CONTAINER_NAME="iphone-store-$ENV_SUFFIX"
           
           # Get the latest tasks
           RECENT_TASKS=$(aws ecs list-tasks \
@@ -465,8 +484,8 @@ jobs:
               echo "📋 Logs for task: $TASK_ID"
               echo "=================================="
               
-              # Try to get logs from CloudWatch
-              LOG_STREAM="ecs/$ECS_SERVICE/$TASK_ID"
+              # Правильный формат log stream: backend/container-name/task-id
+              LOG_STREAM="backend/$CONTAINER_NAME/$TASK_ID"
               LOG_GROUP="/ecs/$ECS_SERVICE"
               
               # Get logs from the last 10 minutes

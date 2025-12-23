@@ -40,7 +40,7 @@
         "options": {
           "awslogs-group": "/ecs/iobchod-frontend",
           "awslogs-region": "eu-north-1",
-          "awslogs-stream-prefix": "ecs"
+          "awslogs-stream-prefix": "backend"
         }
       },
       "healthCheck": {
