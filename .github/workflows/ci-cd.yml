@@ -297,7 +297,7 @@ jobs:
           
           # Replace execution role
           EXEC_ROLE="frontend-service-$ENV_SUFFIX-execution-role"
-          sed -i "s|\"executionRoleArn\": \"arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole\"|\"executionRoleArn\": \"arn:aws:iam::$ACCOUNT_ID:role/$EXEC_ROLE\"|g" ecs-task-definition.json
+          sed -i "s|\"executionRoleArn\": \"arn:aws:iam::ACCOUNT_ID:role/frontend-service-prod-execution-role\"|\"executionRoleArn\": \"arn:aws:iam::$ACCOUNT_ID:role/$EXEC_ROLE\"|g" ecs-task-definition.json
           
           # Replace task role (if exists in JSON)
           TASK_ROLE="frontend-service-$ENV_SUFFIX-task-role"

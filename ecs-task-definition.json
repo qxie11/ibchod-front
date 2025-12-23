@@ -4,7 +4,7 @@
   "requiresCompatibilities": ["EC2"],
   "cpu": "1024",
   "memory": "2048",
-  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/frontend-service-prod-execution-role",
   "containerDefinitions": [
     {
       "name": "frontend",
