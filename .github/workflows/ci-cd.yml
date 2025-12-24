@@ -272,10 +272,16 @@ jobs:
           # Determine environment suffix for roles and container name
           if [ "$ENVIRONMENT" = "production" ]; then
             ENV_SUFFIX="prod"
+            TASK_CPU="1024"
+            TASK_MEMORY="2048"
           elif [ "$ENVIRONMENT" = "staging" ]; then
             ENV_SUFFIX="stage"
+            TASK_CPU="512"
+            TASK_MEMORY="1024"
           else
             ENV_SUFFIX="dev"
+            TASK_CPU="256"
+            TASK_MEMORY="512"
           fi
           
           # Replace image URI
@@ -287,9 +293,17 @@ jobs:
           # Replace task definition family
           sed -i "s|\"family\": \"iobchod-frontend-task\"|\"family\": \"$ECS_SERVICE\"|g" ecs-task-definition.json
           
+          # Replace CPU and Memory based on environment
+          sed -i "s|\"cpu\": \"1024\"|\"cpu\": \"$TASK_CPU\"|g" ecs-task-definition.json
+          sed -i "s|\"memory\": \"2048\"|\"memory\": \"$TASK_MEMORY\"|g" ecs-task-definition.json
+          
           # Replace container name
           CONTAINER_NAME="iphone-store-$ENV_SUFFIX"
           sed -i "s|\"name\": \"frontend\"|\"name\": \"$CONTAINER_NAME\"|g" ecs-task-definition.json
+          
+          # Replace hostPort to 0 (dynamic port) for graceful deployment
+          # This allows new tasks to start on different ports while old tasks are still running
+          sed -i 's|"hostPort": 9002|"hostPort": 0|g' ecs-task-definition.json
           
           # Replace log group
           LOG_GROUP="/ecs/$ECS_SERVICE"
@@ -315,6 +329,8 @@ jobs:
           echo "✅ Task definition updated:"
           echo "   Family: $ECS_SERVICE"
           echo "   Container: $CONTAINER_NAME"
+          echo "   CPU: $TASK_CPU"
+          echo "   Memory: $TASK_MEMORY MB"
           echo "   Log Group: $LOG_GROUP"
           echo "   Execution Role: $EXEC_ROLE"
           echo "   Task Role: $TASK_ROLE"
