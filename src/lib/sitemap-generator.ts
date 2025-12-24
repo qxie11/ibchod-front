@@ -258,14 +258,8 @@ export class SitemapGenerator {
     };
   }
 
-  /**
-   * Генерирует sitemap
-   */
   public generateSitemap(): MetadataRoute.Sitemap {
-    console.log('🔍 Сканируем страницы приложения...');
-
     const discoveredPages = this.scanPages(this.appDir);
-    console.log(`📄 Найдено ${discoveredPages.length} страниц`);
 
     const sitemapEntries: MetadataRoute.Sitemap = [];
 
@@ -280,8 +274,6 @@ export class SitemapGenerator {
       });
     }
 
-    console.log(`✅ Сгенерировано ${sitemapEntries.length} записей в sitemap`);
-
     return sitemapEntries;
   }
 
@@ -292,8 +284,6 @@ export class SitemapGenerator {
     const staticEntries = this.generateSitemap();
 
     try {
-      console.log('📦 Загружаем продукты из API...');
-
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/smartphones?take=1000&skip=0`,
         {
@@ -330,9 +320,6 @@ export class SitemapGenerator {
             index === self.findIndex((r: any) => r.url === route.url)
         );
 
-      // Загружаем статьи блога
-      console.log('📝 Загружаем статьи блога из API...');
-
       const blogResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog?take=1000&skip=0`, {
         headers: {
           'Content-Type': 'application/json',
@@ -365,10 +352,6 @@ export class SitemapGenerator {
       }
 
       const allEntries = [...staticEntries, ...productEntries, ...blogEntries];
-
-      console.log(
-        `Sitemap: Generated ${allEntries.length} routes (${staticEntries.length} static + ${productEntries.length} products + ${blogEntries.length} blog articles)`
-      );
 
       return allEntries;
     } catch (error) {
