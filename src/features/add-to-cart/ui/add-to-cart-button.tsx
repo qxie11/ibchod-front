@@ -6,6 +6,7 @@ import React, { HTMLAttributes } from 'react';
 
 import { addToCart } from '@/entities/cart/model/slice';
 import type { Smartphone } from '@/entities/product/model/types';
+import { useMetrics } from '@/hooks/use-metrics';
 import { addToCart as gtmAddToCart } from '@/lib/gtm';
 import { useCartItem } from '@/shared/lib/hooks';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch';
@@ -32,6 +33,7 @@ export const AddToCartButton = ({
   const dispatch = useAppDispatch();
   const cartItem = useCartItem(product.id);
   const isClient = useIsClient();
+  const { trackCartOperation } = useMetrics();
 
   const handleAddToCart = (e?: React.MouseEvent<HTMLButtonElement>) => {
     if (e) {
@@ -39,8 +41,8 @@ export const AddToCartButton = ({
       e.stopPropagation();
     }
     dispatch(addToCart(product));
-    // Отправляем событие в GTM
     gtmAddToCart(product);
+    trackCartOperation('add');
   };
 
   if (!isClient) {

@@ -1,18 +1,18 @@
 {
-  "family": "iobchod-store-task",
+  "family": "iobchod-frontend-task",
   "networkMode": "bridge",
   "requiresCompatibilities": ["EC2"],
-  "cpu": "512",
-  "memory": "1024",
-  "executionRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "cpu": "1024",
+  "memory": "2048",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/frontend-service-prod-execution-role",
   "containerDefinitions": [
     {
-      "name": "iphone-store-prod",
-      "image": "YOUR_ACCOUNT_ID.dkr.ecr.eu-north-1.amazonaws.com/iobchod-store:latest",
+      "name": "frontend",
+      "image": "IMAGE_URI",
       "portMappings": [
         {
           "containerPort": 9002,
-          "hostPort": 0,
+          "hostPort": 9002,
           "protocol": "tcp"
         }
       ],
@@ -38,17 +38,17 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/iobchod-store",
+          "awslogs-group": "/ecs/iobchod-frontend",
           "awslogs-region": "eu-north-1",
-          "awslogs-stream-prefix": "ecs"
+          "awslogs-stream-prefix": "backend"
         }
       },
       "healthCheck": {
-        "command": ["CMD-SHELL", "curl -f http://localhost:9002/ || exit 1"],
+        "command": ["CMD-SHELL", "curl -f http://localhost:9002/api/metrics || curl -f http://localhost:9002/ || exit 1"],
         "interval": 30,
-        "timeout": 5,
-        "retries": 3,
-        "startPeriod": 60
+        "timeout": 15,
+        "retries": 10,
+        "startPeriod": 180
       }
     }
   ]

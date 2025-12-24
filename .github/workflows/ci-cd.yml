@@ -10,8 +10,6 @@ env:
   AWS_REGION: eu-north-1
   ECR_REPOSITORY: iobchod-frontend
   ECS_CLUSTER: ecs-ec2-cluster
-  ECS_SERVICE: frontend-service
-  CONTAINER_NAME: iphone-store-prod
 
 jobs:
   ci:
@@ -54,19 +52,32 @@ jobs:
         id: set-vars
         run: |
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "branch=main" >> $GITHUB_OUTPUT
-            echo "tag=latest" >> $GITHUB_OUTPUT
-            echo "environment=production" >> $GITHUB_OUTPUT
+            BRANCH="main"
+            DEPLOY_TAG="latest"
+            ENV="production"
+            ECS_SERVICE="frontend-service-prod"
           elif [ "${{ github.ref }}" = "refs/heads/stage" ]; then
-            echo "branch=stage" >> $GITHUB_OUTPUT
-            echo "tag=stage" >> $GITHUB_OUTPUT
-            echo "environment=staging" >> $GITHUB_OUTPUT
+            BRANCH="stage"
+            DEPLOY_TAG="stage"
+            ENV="staging"
+            ECS_SERVICE="frontend-service-stage"
           elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
-            echo "branch=dev" >> $GITHUB_OUTPUT
-            echo "tag=dev" >> $GITHUB_OUTPUT
-            echo "environment=development" >> $GITHUB_OUTPUT
+            BRANCH="dev"
+            DEPLOY_TAG="dev"
+            ENV="development"
+            ECS_SERVICE="frontend-service-dev"
           fi
-          echo "Deploying to: ${{ steps.set-vars.outputs.environment }} with tag: ${{ steps.set-vars.outputs.tag }}"
+          
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "deploy-tag=$DEPLOY_TAG" >> $GITHUB_OUTPUT
+          echo "environment=$ENV" >> $GITHUB_OUTPUT
+          echo "ecs-service=$ECS_SERVICE" >> $GITHUB_OUTPUT
+          
+          echo "🏗️  Deployment Configuration:"
+          echo "   Branch: $BRANCH"
+          echo "   Deploy Tag: $DEPLOY_TAG"
+          echo "   Environment: $ENV"
+          echo "   ECS Service: $ECS_SERVICE"
 
       - name: Check AWS credentials
         id: check-creds
@@ -99,38 +110,77 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-          BRANCH_TAG: ${{ steps.set-vars.outputs.tag }}
+          FULL_SHA: ${{ github.sha }}
+          DEPLOY_TAG: ${{ steps.set-vars.outputs.deploy-tag }}
         run: |
-          # Проверяем наличие Dockerfile
           if [ ! -f "Dockerfile" ]; then
             echo "❌ Dockerfile not found in repository root"
             exit 1
           fi
 
-          echo "Building image for ${{ steps.set-vars.outputs.environment }} environment..."
-          echo "Tags: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG, $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG"
+          echo "🐳 Building image for ${{ steps.set-vars.outputs.environment }} environment..."
+          echo "📦 Creating tags:"
+          echo "   1. Full SHA: $ECR_REGISTRY/$ECR_REPOSITORY:$FULL_SHA"
+          echo "   2. Deploy Tag: $ECR_REGISTRY/$ECR_REPOSITORY:$DEPLOY_TAG"
+          echo ""
+          echo "🎯 ECS will use: $ECR_REGISTRY/$ECR_REPOSITORY:$DEPLOY_TAG"
 
           docker build \
             --build-arg NEXT_PUBLIC_API_URL=https://iobchod.shop/v1/api \
             --build-arg NEXT_PUBLIC_BASE_URL=https://iobchod.shop \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$FULL_SHA \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$DEPLOY_TAG \
             .
 
-          echo "Pushing images to ECR..."
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG
+          echo ""
+          echo "⬆️  Pushing images to ECR..."
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$FULL_SHA
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$DEPLOY_TAG
 
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG" >> $GITHUB_OUTPUT
+          echo ""
+          echo "✅ Images pushed successfully!"
+          echo "   🎯 Deploy Image: $ECR_REGISTRY/$ECR_REPOSITORY:$DEPLOY_TAG"
+          
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$DEPLOY_TAG" >> $GITHUB_OUTPUT
+
+      - name: Cleanup old SHA images
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        run: |
+          echo "🧹 Cleaning up old SHA-based images..."
+          
+          # Keep last 10 SHA images (full commit hashes)
+          OLD_SHA_IMAGES=$(aws ecr describe-images \
+            --repository-name $ECR_REPOSITORY \
+            --query 'sort_by(imageDetails, &imagePushedAt)[:-10].imageIds[?imageTag && length(imageTag)==`40`]' \
+            --output json | jq -r '.[].imageTag' 2>/dev/null || echo "")
+          
+          DELETED_COUNT=0
+          
+          if [ -n "$OLD_SHA_IMAGES" ] && [ "$OLD_SHA_IMAGES" != "" ]; then
+            echo "   Deleting old SHA images (keeping latest 10):"
+            for tag in $OLD_SHA_IMAGES; do
+              echo "   - $tag"
+              aws ecr batch-delete-image \
+                --repository-name $ECR_REPOSITORY \
+                --image-ids imageTag=$tag >/dev/null 2>&1 || true
+              DELETED_COUNT=$((DELETED_COUNT + 1))
+            done
+          fi
+          
+          if [ $DELETED_COUNT -gt 0 ]; then
+            echo "✅ Deleted $DELETED_COUNT old SHA images"
+          else
+            echo "✅ No old SHA images to clean"
+          fi
 
       - name: Check ECS service status
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
         id: check-service
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
         run: |
           echo "Checking current ECS service status..."
 
-          # Проверяем существование сервиса
           SERVICE_EXISTS=$(aws ecs describe-services \
             --cluster $ECS_CLUSTER \
             --services $ECS_SERVICE \
@@ -142,40 +192,476 @@ jobs:
             exit 1
           fi
 
+          echo "📋 Service Configuration:"
           aws ecs describe-services \
             --cluster $ECS_CLUSTER \
             --services $ECS_SERVICE \
-            --query 'services[0].{status:status,runningCount:runningCount,pendingCount:pendingCount,desiredCount:desiredCount}'
+            --query 'services[0].{
+              status:status,
+              runningCount:runningCount,
+              pendingCount:pendingCount,
+              desiredCount:desiredCount,
+              loadBalancers:loadBalancers,
+              deploymentConfiguration:deploymentConfiguration
+            }' \
+            --output table
+
+          echo ""
+          echo "🔍 Load Balancer Setup:"
+          LB_SETUP=$(aws ecs describe-services \
+            --cluster $ECS_CLUSTER \
+            --services $ECS_SERVICE \
+            --query 'services[0].loadBalancers' \
+            --output json)
+
+          if [ "$LB_SETUP" = "[]" ] || [ "$LB_SETUP" = "null" ]; then
+            echo "⚠️  WARNING: No Load Balancer configured!"
+            echo "   With hostPort:0 (dynamic ports), you need ALB/NLB for automatic traffic routing"
+            echo "   Current setup may require manual port updates after container restart"
+          else
+            echo "✅ Load Balancer configured:"
+            echo "$LB_SETUP" | jq '.'
+          fi
+
+      - name: Get AWS Account ID
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        id: get-account-id
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "account-id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
+          echo "✅ AWS Account ID: $ACCOUNT_ID"
+
+      - name: Ensure CloudWatch Log Group exists
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
+        run: |
+          LOG_GROUP_NAME="/ecs/$ECS_SERVICE"
+          
+          if aws logs describe-log-groups --log-group-name-prefix "$LOG_GROUP_NAME" --query "logGroups[?logGroupName=='$LOG_GROUP_NAME']" --output text | grep -q "$LOG_GROUP_NAME"; then
+            echo "✅ Log group $LOG_GROUP_NAME already exists"
+          else
+            echo "📝 Creating log group $LOG_GROUP_NAME..."
+            aws logs create-log-group --log-group-name "$LOG_GROUP_NAME"
+            aws logs put-retention-policy --log-group-name "$LOG_GROUP_NAME" --retention-in-days 14
+            echo "✅ Log group $LOG_GROUP_NAME created"
+          fi
+
+      - name: Update ECS task definition with new image
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        id: task-def
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
+          ENVIRONMENT: ${{ steps.set-vars.outputs.environment }}
+          ACCOUNT_ID: ${{ steps.get-account-id.outputs.account-id }}
+        run: |
+          echo "📝 Updating task definition with branch-specific image..."
+          echo "   Branch: ${{ steps.set-vars.outputs.branch }}"
+          echo "   Deploy Tag: ${{ steps.set-vars.outputs.deploy-tag }}"
+          echo "   Full Image: ${{ steps.build-image.outputs.image }}"
+          echo "   ECS Service: $ECS_SERVICE"
+          echo "   Environment: $ENVIRONMENT"
+          echo ""
+          echo "Using clean branch tags:"
+          echo "   ✅ main → latest"
+          echo "   ✅ stage → stage"
+          echo "   ✅ dev → dev"
+          echo ""
+          echo "Task definition update forces ECS to pull fresh image"
+          
+          # Determine environment suffix for roles and container name
+          if [ "$ENVIRONMENT" = "production" ]; then
+            ENV_SUFFIX="prod"
+          elif [ "$ENVIRONMENT" = "staging" ]; then
+            ENV_SUFFIX="stage"
+          else
+            ENV_SUFFIX="dev"
+          fi
+          
+          # Replace image URI
+          sed -i "s|IMAGE_URI|${{ steps.build-image.outputs.image }}|g" ecs-task-definition.json
+          
+          # Replace account ID
+          sed -i "s|ACCOUNT_ID|$ACCOUNT_ID|g" ecs-task-definition.json
+          
+          # Replace task definition family
+          sed -i "s|\"family\": \"iobchod-frontend-task\"|\"family\": \"$ECS_SERVICE\"|g" ecs-task-definition.json
+          
+          # Replace container name
+          CONTAINER_NAME="iphone-store-$ENV_SUFFIX"
+          sed -i "s|\"name\": \"frontend\"|\"name\": \"$CONTAINER_NAME\"|g" ecs-task-definition.json
+          
+          # Replace log group
+          LOG_GROUP="/ecs/$ECS_SERVICE"
+          sed -i "s|\"awslogs-group\": \"/ecs/iobchod-frontend\"|\"awslogs-group\": \"$LOG_GROUP\"|g" ecs-task-definition.json
+          
+          # Replace execution role
+          EXEC_ROLE="frontend-service-$ENV_SUFFIX-execution-role"
+          sed -i "s|\"executionRoleArn\": \"arn:aws:iam::ACCOUNT_ID:role/frontend-service-prod-execution-role\"|\"executionRoleArn\": \"arn:aws:iam::$ACCOUNT_ID:role/$EXEC_ROLE\"|g" ecs-task-definition.json
+          
+          # Replace task role (if exists in JSON)
+          TASK_ROLE="frontend-service-$ENV_SUFFIX-task-role"
+          sed -i "s|\"taskRoleArn\": \"arn:aws:iam::ACCOUNT_ID:role/[^\"]*\"|\"taskRoleArn\": \"arn:aws:iam::$ACCOUNT_ID:role/$TASK_ROLE\"|g" ecs-task-definition.json || true
+          
+          # Убрать health check если он есть (Terraform использует без health check)
+          if [ -f ecs-task-definition.json ]; then
+            # Используем jq для удаления healthCheck блока
+            jq 'del(.containerDefinitions[0].healthCheck)' ecs-task-definition.json > ecs-task-definition-temp.json
+            mv ecs-task-definition-temp.json ecs-task-definition.json
+            echo "✅ Health check removed from task definition"
+          fi
+          
+          echo ""
+          echo "✅ Task definition updated:"
+          echo "   Family: $ECS_SERVICE"
+          echo "   Container: $CONTAINER_NAME"
+          echo "   Log Group: $LOG_GROUP"
+          echo "   Execution Role: $EXEC_ROLE"
+          echo "   Task Role: $TASK_ROLE"
+          
+          echo ""
+          echo "📋 Registering new task definition..."
+          NEW_TASK_DEF=$(aws ecs register-task-definition \
+            --cli-input-json file://ecs-task-definition.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          
+          echo "task-definition-arn=$NEW_TASK_DEF" >> $GITHUB_OUTPUT
+          echo "✅ New task definition: $NEW_TASK_DEF"
+          
+          echo ""
+          echo "🔍 Verifying task definition image:"
+          aws ecs describe-task-definition \
+            --task-definition $NEW_TASK_DEF \
+            --query 'taskDefinition.containerDefinitions[0].{name:name,image:image}' \
+            --output table
 
       - name: Update ECS service
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
         id: deployment
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
         run: |
-          echo "Updating ECS service with new image..."
+          echo "🚀 Updating ECS service with new task definition..."
           aws ecs update-service \
             --cluster $ECS_CLUSTER \
             --service $ECS_SERVICE \
-            --force-new-deployment
+            --task-definition ${{ steps.task-def.outputs.task-definition-arn }}
+          
+          echo "✅ ECS service update initiated"
 
       - name: Wait for ECS service to be stable
         if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
         run: |
-          echo "Waiting for ECS service to be stable (timeout: 10 minutes)..."
-          timeout 600 aws ecs wait services-stable \
+          echo "⏳ Waiting for ECS service to be stable (timeout: 15 minutes)..."
+          echo "📋 What happens during deployment:"
+          echo "   1. ECS starts new task with updated image"
+          echo "   2. Container starts and health checks begin"
+          echo "   3. Health check grace period: 2 minutes"
+          echo "   4. After successful health checks, old task is stopped"
+          echo ""
+          
+          start_time=$(date +%s)
+          timeout=900  # 15 minutes
+          
+          while true; do
+            current_time=$(date +%s)
+            elapsed=$((current_time - start_time))
+            
+            if [ $elapsed -gt $timeout ]; then
+              echo "❌ Timeout after 15 minutes"
+              break
+            fi
+            
+            # Get service status
+            SERVICE_INFO=$(aws ecs describe-services \
+              --cluster $ECS_CLUSTER \
+              --services $ECS_SERVICE \
+              --query 'services[0]')
+            
+            SERVICE_STATUS=$(echo "$SERVICE_INFO" | jq -r '.status')
+            RUNNING_COUNT=$(echo "$SERVICE_INFO" | jq -r '.runningCount')
+            PENDING_COUNT=$(echo "$SERVICE_INFO" | jq -r '.pendingCount')
+            DESIRED_COUNT=$(echo "$SERVICE_INFO" | jq -r '.desiredCount')
+            
+            DEPLOYMENTS=$(echo "$SERVICE_INFO" | jq -r '.deployments')
+            DEPLOYMENT_COUNT=$(echo "$DEPLOYMENTS" | jq 'length')
+            
+            echo "⏱️  ${elapsed}s | Service: $SERVICE_STATUS | Tasks: $RUNNING_COUNT/$DESIRED_COUNT (pending: $PENDING_COUNT) | Deployments: $DEPLOYMENT_COUNT"
+            
+            # Show deployment details
+            echo "$DEPLOYMENTS" | jq -r '.[] | "   \(.status): \(.runningCount) running, \(.pendingCount) pending (\(.taskDefinition | split(":") | .[1]))"'
+            
+            # Check if stable
+            if [ "$SERVICE_STATUS" = "ACTIVE" ] && \
+               [ "$RUNNING_COUNT" = "$DESIRED_COUNT" ] && \
+               [ "$PENDING_COUNT" = "0" ] && \
+               [ "$DEPLOYMENT_COUNT" = "1" ]; then
+              echo "✅ Service is stable!"
+              exit 0
+            fi
+            
+            # Get task details if there are issues
+            if [ $elapsed -gt 300 ]; then  # After 5 minutes, start showing task details
+              LATEST_TASKS=$(aws ecs list-tasks \
+                --cluster $ECS_CLUSTER \
+                --service-name $ECS_SERVICE \
+                --max-items 3 \
+                --query 'taskArns' \
+                --output text)
+              
+              if [ -n "$LATEST_TASKS" ] && [ "$LATEST_TASKS" != "None" ]; then
+                echo "🔍 Recent task status:"
+                for task in $LATEST_TASKS; do
+                  TASK_INFO=$(aws ecs describe-tasks \
+                    --cluster $ECS_CLUSTER \
+                    --tasks $task \
+                    --query 'tasks[0]')
+                  
+                  TASK_STATUS=$(echo "$TASK_INFO" | jq -r '.lastStatus')
+                  HEALTH_STATUS=$(echo "$TASK_INFO" | jq -r '.containers[0].healthStatus // "UNKNOWN"')
+                  
+                  echo "   $(basename $task): $TASK_STATUS (health: $HEALTH_STATUS)"
+                  
+                  # Show stopped reason if task failed
+                  if [ "$TASK_STATUS" = "STOPPED" ]; then
+                    STOPPED_REASON=$(echo "$TASK_INFO" | jq -r '.stoppedReason // "Unknown"')
+                    echo "     Stopped reason: $STOPPED_REASON"
+                    
+                    # Show container exit details
+                    echo "$TASK_INFO" | jq -r '.containers[0] | "     Container: \(.name) - exit code: \(.exitCode // "N/A"), reason: \(.reason // "N/A")"'
+                  fi
+                done
+                echo ""
+              fi
+            fi
+            
+            sleep 30
+          done
+          
+          # Final status check
+          echo ""
+          echo "🔍 Final diagnosis:"
+          aws ecs describe-services \
             --cluster $ECS_CLUSTER \
-            --services $ECS_SERVICE || {
-            echo "❌ Timeout waiting for service to be stable"
+            --services $ECS_SERVICE \
+            --query 'services[0].{status:status,runningCount:runningCount,pendingCount:pendingCount,desiredCount:desiredCount,deployments:deployments[*].{status:status,taskDefinition:taskDefinition,runningCount:runningCount,pendingCount:pendingCount,createdAt:createdAt}}'
+          
             exit 1
-          }
 
-      - name: Verify deployment
-        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+      - name: Get container logs for debugging
+        if: env.AWS_CREDENTIALS_PRESENT == 'true' && failure()
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
+          ENVIRONMENT: ${{ steps.set-vars.outputs.environment }}
         run: |
-          echo "Verifying deployment..."
+          echo "🔍 Retrieving container logs for debugging..."
+          
+          # Определить ENV_SUFFIX для правильного формата log stream
+          if [ "$ENVIRONMENT" = "production" ]; then
+            ENV_SUFFIX="prod"
+          elif [ "$ENVIRONMENT" = "staging" ]; then
+            ENV_SUFFIX="stage"
+          else
+            ENV_SUFFIX="dev"
+          fi
+          CONTAINER_NAME="iphone-store-$ENV_SUFFIX"
+          
+          # Get the latest tasks
+          RECENT_TASKS=$(aws ecs list-tasks \
+            --cluster $ECS_CLUSTER \
+            --service-name $ECS_SERVICE \
+            --max-items 5 \
+            --query 'taskArns' \
+            --output text)
+          
+          if [ -n "$RECENT_TASKS" ] && [ "$RECENT_TASKS" != "None" ]; then
+            for task in $RECENT_TASKS; do
+              TASK_ID=$(basename $task)
+              echo ""
+              echo "📋 Logs for task: $TASK_ID"
+              echo "=================================="
+              
+              # Правильный формат log stream: backend/container-name/task-id
+              LOG_STREAM="backend/$CONTAINER_NAME/$TASK_ID"
+              LOG_GROUP="/ecs/$ECS_SERVICE"
+              
+              # Get logs from the last 10 minutes
+              START_TIME=$(($(date +%s) * 1000 - 600000))
+              
+              echo "🔍 Checking CloudWatch logs: $LOG_GROUP/$LOG_STREAM"
+              
+              LOGS=$(aws logs get-log-events \
+                --log-group-name "$LOG_GROUP" \
+                --log-stream-name "$LOG_STREAM" \
+                --start-time $START_TIME \
+                --query 'events[*].message' \
+                --output text 2>/dev/null || echo "No logs available")
+              
+              if [ "$LOGS" = "No logs available" ] || [ -z "$LOGS" ]; then
+                echo "⚠️  No CloudWatch logs found for this task"
+                
+                # Check task status for more details
+                TASK_DETAILS=$(aws ecs describe-tasks \
+                  --cluster $ECS_CLUSTER \
+                  --tasks $task \
+                  --query 'tasks[0]')
+                
+                echo "Task details:"
+                echo "$TASK_DETAILS" | jq -r '{
+                  lastStatus: .lastStatus,
+                  desiredStatus: .desiredStatus,
+                  healthStatus: .containers[0].healthStatus,
+                  exitCode: .containers[0].exitCode,
+                  reason: .containers[0].reason,
+                  stoppedReason: .stoppedReason
+                }'
+              else
+                echo "$LOGS" | tail -50  # Show last 50 log lines
+              fi
+            done
+          else
+            echo "⚠️  No tasks found to retrieve logs from"
+          fi
+
+      - name: Health check diagnosis
+        if: env.AWS_CREDENTIALS_PRESENT == 'true' && failure()
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
+        run: |
+          echo ""
+          echo "🏥 Health Check Diagnosis"
+          echo "========================"
+          echo "Expected health check: curl -f http://localhost:9002/"
+          echo ""
+          echo "Common issues:"
+          echo "1. App not listening on port 9002"
+          echo "2. App not responding to HTTP requests on /"
+          echo "3. App taking longer than 2 minutes to start"
+          echo "4. Insufficient CPU/memory resources"
+          echo "5. Missing environment variables"
+          echo "6. Build/dependency issues"
+          echo ""
+          echo "Checking if health check endpoint is accessible..."
+          
+          # Get one running task to test
+          RUNNING_TASK=$(aws ecs list-tasks \
+            --cluster $ECS_CLUSTER \
+            --service-name $ECS_SERVICE \
+            --desired-status RUNNING \
+            --max-items 1 \
+            --query 'taskArns[0]' \
+            --output text)
+          
+          if [ -n "$RUNNING_TASK" ] && [ "$RUNNING_TASK" != "None" ]; then
+            echo "Testing health check on running task..."
+            
+            # Get task details
+            TASK_DETAILS=$(aws ecs describe-tasks \
+              --cluster $ECS_CLUSTER \
+              --tasks $RUNNING_TASK \
+              --query 'tasks[0]')
+            
+            # Try to get public IP or private IP
+            ENI_ID=$(echo "$TASK_DETAILS" | jq -r '.attachments[0].details[] | select(.name=="networkInterfaceId") | .value // empty')
+            
+            if [ -n "$ENI_ID" ]; then
+              PRIVATE_IP=$(aws ec2 describe-network-interfaces \
+                --network-interface-ids $ENI_ID \
+                --query 'NetworkInterfaces[0].PrivateIpAddress' \
+                --output text 2>/dev/null || echo "")
+              
+              if [ -n "$PRIVATE_IP" ]; then
+                echo "Task private IP: $PRIVATE_IP"
+                echo "Health check URL: http://$PRIVATE_IP:9002/"
+              fi
+            fi
+          fi
+
+      - name: Verify deployment and check ports
+        if: env.AWS_CREDENTIALS_PRESENT == 'true'
+        env:
+          ECS_SERVICE: ${{ steps.set-vars.outputs.ecs-service }}
+        run: |
+          echo "🔍 Verifying deployment and port configuration..."
+          
           aws ecs describe-services \
             --cluster $ECS_CLUSTER \
             --services $ECS_SERVICE \
             --query 'services[0].{status:status,runningCount:runningCount,pendingCount:pendingCount,desiredCount:desiredCount}'
+
+          echo ""
+          echo "🔌 Current Running Tasks and Ports:"
+          
+          # Get running tasks
+          RUNNING_TASKS=$(aws ecs list-tasks \
+            --cluster $ECS_CLUSTER \
+            --service-name $ECS_SERVICE \
+            --desired-status RUNNING \
+            --query 'taskArns' \
+            --output text)
+
+          if [ -n "$RUNNING_TASKS" ] && [ "$RUNNING_TASKS" != "None" ]; then
+            for task in $RUNNING_TASKS; do
+              TASK_ID=$(basename $task)
+              echo "📋 Task: $TASK_ID"
+              
+              # Get task details including network bindings
+              TASK_DETAILS=$(aws ecs describe-tasks \
+                --cluster $ECS_CLUSTER \
+                --tasks $task \
+                --query 'tasks[0]')
+              
+              # Show port mappings
+              NETWORK_BINDINGS=$(echo "$TASK_DETAILS" | jq -r '.containers[0].networkBindings[]? | "   Container Port \(.containerPort) → Host Port \(.hostPort) (Protocol: \(.protocol))"')
+              
+              if [ -n "$NETWORK_BINDINGS" ]; then
+                echo "$NETWORK_BINDINGS"
+              else
+                echo "   ⚠️  No network bindings found"
+              fi
+              
+              # Get container instance info for public IP
+              CONTAINER_INSTANCE_ARN=$(echo "$TASK_DETAILS" | jq -r '.containerInstanceArn')
+              
+              if [ "$CONTAINER_INSTANCE_ARN" != "null" ]; then
+                INSTANCE_ID=$(aws ecs describe-container-instances \
+                  --cluster $ECS_CLUSTER \
+                  --container-instances $CONTAINER_INSTANCE_ARN \
+                  --query 'containerInstances[0].ec2InstanceId' \
+                  --output text)
+                
+                if [ "$INSTANCE_ID" != "None" ]; then
+                  PUBLIC_IP=$(aws ec2 describe-instances \
+                    --instance-ids $INSTANCE_ID \
+                    --query 'Reservations[0].Instances[0].PublicIpAddress' \
+                    --output text)
+                  
+                  PRIVATE_IP=$(aws ec2 describe-instances \
+                    --instance-ids $INSTANCE_ID \
+                    --query 'Reservations[0].Instances[0].PrivateIpAddress' \
+                    --output text)
+                  
+                  HOST_PORT=$(echo "$TASK_DETAILS" | jq -r '.containers[0].networkBindings[0].hostPort // empty')
+                  
+                  if [ -n "$HOST_PORT" ] && [ "$HOST_PORT" != "null" ]; then
+                    echo "   🌐 Access URLs:"
+                    if [ "$PUBLIC_IP" != "None" ] && [ -n "$PUBLIC_IP" ]; then
+                      echo "   Public:  http://$PUBLIC_IP:$HOST_PORT"
+                    fi
+                    if [ "$PRIVATE_IP" != "None" ] && [ -n "$PRIVATE_IP" ]; then
+                      echo "   Private: http://$PRIVATE_IP:$HOST_PORT"
+                    fi
+                  fi
+                fi
+              fi
+              echo ""
+            done
+          else
+            echo "⚠️  No running tasks found"
+          fi
 
           echo "✅ Deployment completed successfully!"
 
