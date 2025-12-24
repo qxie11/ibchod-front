@@ -358,9 +358,9 @@ jobs:
           echo "⏳ Waiting for ECS service to be stable (timeout: 15 minutes)..."
           echo "📋 What happens during deployment:"
           echo "   1. ECS starts new task with updated image"
-          echo "   2. Container starts and health checks begin"
-          echo "   3. Health check grace period: 2 minutes"
-          echo "   4. After successful health checks, old task is stopped"
+          echo "   2. Container starts and becomes running"
+          echo "   3. PRIMARY deployment should have all desired tasks running"
+          echo "   4. Old deployment tasks are drained and stopped"
           echo ""
           
           start_time=$(date +%s)
@@ -389,18 +389,97 @@ jobs:
             DEPLOYMENTS=$(echo "$SERVICE_INFO" | jq -r '.deployments')
             DEPLOYMENT_COUNT=$(echo "$DEPLOYMENTS" | jq 'length')
             
+            # Get PRIMARY deployment info
+            PRIMARY_DEPLOYMENT=$(echo "$DEPLOYMENTS" | jq -r '.[] | select(.status == "PRIMARY")')
+            
             echo "⏱️  ${elapsed}s | Service: $SERVICE_STATUS | Tasks: $RUNNING_COUNT/$DESIRED_COUNT (pending: $PENDING_COUNT) | Deployments: $DEPLOYMENT_COUNT"
             
             # Show deployment details
             echo "$DEPLOYMENTS" | jq -r '.[] | "   \(.status): \(.runningCount) running, \(.pendingCount) pending (\(.taskDefinition | split(":") | .[1]))"'
             
             # Check if stable
+            # Service is stable when:
+            # 1. Service status is ACTIVE
+            # 2. Running count matches desired count
+            # 3. No pending tasks
+            # 4. PRIMARY deployment has the desired count of tasks (or only one deployment exists)
             if [ "$SERVICE_STATUS" = "ACTIVE" ] && \
                [ "$RUNNING_COUNT" = "$DESIRED_COUNT" ] && \
-               [ "$PENDING_COUNT" = "0" ] && \
-               [ "$DEPLOYMENT_COUNT" = "1" ]; then
-              echo "✅ Service is stable!"
-              exit 0
+               [ "$PENDING_COUNT" = "0" ]; then
+              
+              # If only one deployment exists, deployment is complete
+              if [ "$DEPLOYMENT_COUNT" = "1" ]; then
+                echo "✅ Service is stable! (deployment complete)"
+                exit 0
+              fi
+              
+              # If multiple deployments, check that PRIMARY has all the tasks
+              if [ -n "$PRIMARY_DEPLOYMENT" ] && [ "$PRIMARY_DEPLOYMENT" != "null" ]; then
+                PRIMARY_RUNNING=$(echo "$PRIMARY_DEPLOYMENT" | jq -r '.runningCount // 0')
+                PRIMARY_PENDING=$(echo "$PRIMARY_DEPLOYMENT" | jq -r '.pendingCount // 0')
+                
+                # PRIMARY deployment should have all desired tasks
+                if [ "$PRIMARY_RUNNING" = "$DESIRED_COUNT" ] && [ "$PRIMARY_PENDING" = "0" ]; then
+                  # Also check that non-PRIMARY deployments have 0 running (they're draining)
+                  OTHER_RUNNING=$(echo "$DEPLOYMENTS" | jq -r '[.[] | select(.status != "PRIMARY") | .runningCount] | add // 0')
+                  if [ "$OTHER_RUNNING" = "0" ]; then
+                    echo "✅ Service is stable! (PRIMARY deployment active with all tasks, old deployments drained)"
+                    exit 0
+                  fi
+                fi
+              fi
+            fi
+            
+            # If PRIMARY deployment has 0 tasks, check why
+            if [ -n "$PRIMARY_DEPLOYMENT" ] && [ "$PRIMARY_DEPLOYMENT" != "null" ]; then
+              PRIMARY_RUNNING=$(echo "$PRIMARY_DEPLOYMENT" | jq -r '.runningCount // 0')
+              PRIMARY_TASK_DEF=$(echo "$PRIMARY_DEPLOYMENT" | jq -r '.taskDefinition')
+              
+              if [ "$PRIMARY_RUNNING" = "0" ] && [ $elapsed -gt 120 ]; then
+                echo "⚠️  PRIMARY deployment has 0 running tasks. Checking why..."
+                
+                # Get tasks from PRIMARY deployment (including stopped ones)
+                PRIMARY_TASKS=$(aws ecs list-tasks \
+                  --cluster $ECS_CLUSTER \
+                  --service-name $ECS_SERVICE \
+                  --desired-status STOPPED \
+                  --max-items 5 \
+                  --query 'taskArns' \
+                  --output text 2>/dev/null || echo "")
+                
+                if [ -n "$PRIMARY_TASKS" ] && [ "$PRIMARY_TASKS" != "None" ]; then
+                  echo "🔍 Checking stopped PRIMARY deployment tasks:"
+                  for task in $PRIMARY_TASKS; do
+                    TASK_INFO=$(aws ecs describe-tasks \
+                      --cluster $ECS_CLUSTER \
+                      --tasks $task \
+                      --query 'tasks[0]' 2>/dev/null || echo "{}")
+                    
+                    if [ "$TASK_INFO" != "{}" ]; then
+                      TASK_DEF_ARN=$(echo "$TASK_INFO" | jq -r '.taskDefinitionArn // ""')
+                      # Check if this task belongs to PRIMARY deployment
+                      if echo "$TASK_DEF_ARN" | grep -q "$(echo $PRIMARY_TASK_DEF | cut -d: -f6-)"; then
+                        STOPPED_REASON=$(echo "$TASK_INFO" | jq -r '.stoppedReason // "Unknown"')
+                        EXIT_CODE=$(echo "$TASK_INFO" | jq -r '.containers[0].exitCode // "N/A"')
+                        REASON=$(echo "$TASK_INFO" | jq -r '.containers[0].reason // "N/A"')
+                        echo "   Task $(basename $task):"
+                        echo "     Stopped reason: $STOPPED_REASON"
+                        echo "     Exit code: $EXIT_CODE"
+                        echo "     Container reason: $REASON"
+                      fi
+                    fi
+                  done
+                fi
+                
+                # Check service events for errors
+                echo "📋 Recent service events (last 5):"
+                aws ecs describe-services \
+                  --cluster $ECS_CLUSTER \
+                  --services $ECS_SERVICE \
+                  --query 'services[0].events[0:5]' \
+                  --output json | jq -r '.[] | "   [\(.createdAt)] \(.message)"' 2>/dev/null || echo "   Could not retrieve events"
+                echo ""
+              fi
             fi
             
             # Get task details if there are issues
@@ -408,12 +487,13 @@ jobs:
               LATEST_TASKS=$(aws ecs list-tasks \
                 --cluster $ECS_CLUSTER \
                 --service-name $ECS_SERVICE \
+                --desired-status RUNNING \
                 --max-items 3 \
                 --query 'taskArns' \
                 --output text)
               
               if [ -n "$LATEST_TASKS" ] && [ "$LATEST_TASKS" != "None" ]; then
-                echo "🔍 Recent task status:"
+                echo "🔍 Recent running task status:"
                 for task in $LATEST_TASKS; do
                   TASK_INFO=$(aws ecs describe-tasks \
                     --cluster $ECS_CLUSTER \
@@ -422,17 +502,9 @@ jobs:
                   
                   TASK_STATUS=$(echo "$TASK_INFO" | jq -r '.lastStatus')
                   HEALTH_STATUS=$(echo "$TASK_INFO" | jq -r '.containers[0].healthStatus // "UNKNOWN"')
+                  TASK_DEF_ARN=$(echo "$TASK_INFO" | jq -r '.taskDefinitionArn')
                   
-                  echo "   $(basename $task): $TASK_STATUS (health: $HEALTH_STATUS)"
-                  
-                  # Show stopped reason if task failed
-                  if [ "$TASK_STATUS" = "STOPPED" ]; then
-                    STOPPED_REASON=$(echo "$TASK_INFO" | jq -r '.stoppedReason // "Unknown"')
-                    echo "     Stopped reason: $STOPPED_REASON"
-                    
-                    # Show container exit details
-                    echo "$TASK_INFO" | jq -r '.containers[0] | "     Container: \(.name) - exit code: \(.exitCode // "N/A"), reason: \(.reason // "N/A")"'
-                  fi
+                  echo "   $(basename $task): $TASK_STATUS (health: $HEALTH_STATUS) - TaskDef: $(echo $TASK_DEF_ARN | cut -d: -f6-)"
                 done
                 echo ""
               fi
@@ -444,12 +516,31 @@ jobs:
           # Final status check
           echo ""
           echo "🔍 Final diagnosis:"
-          aws ecs describe-services \
+          FINAL_SERVICE_INFO=$(aws ecs describe-services \
             --cluster $ECS_CLUSTER \
             --services $ECS_SERVICE \
-            --query 'services[0].{status:status,runningCount:runningCount,pendingCount:pendingCount,desiredCount:desiredCount,deployments:deployments[*].{status:status,taskDefinition:taskDefinition,runningCount:runningCount,pendingCount:pendingCount,createdAt:createdAt}}'
+            --query 'services[0]')
           
-            exit 1
+          echo "$FINAL_SERVICE_INFO" | jq '{status:status,runningCount:runningCount,pendingCount:pendingCount,desiredCount:desiredCount,deployments:deployments[*].{status:status,taskDefinition:taskDefinition,runningCount:runningCount,pendingCount:pendingCount,createdAt:createdAt}}'
+          
+          # Check for resource constraint errors in events
+          echo ""
+          echo "📋 Checking service events for errors:"
+          EVENTS=$(echo "$FINAL_SERVICE_INFO" | jq -r '.events[0:10]')
+          RESOURCE_ERRORS=$(echo "$EVENTS" | jq -r '.[] | select(.message | contains("insufficient") or contains("unable to place")) | .message' | head -3)
+          
+          if [ -n "$RESOURCE_ERRORS" ] && [ "$RESOURCE_ERRORS" != "" ]; then
+            echo "⚠️  Resource constraint errors detected:"
+            echo "$RESOURCE_ERRORS"
+            echo ""
+            echo "💡 Possible solutions:"
+            echo "   1. Increase EC2 instance size (more CPU/Memory)"
+            echo "   2. Reduce CPU/Memory requirements in task definition"
+            echo "   3. Add more EC2 instances to the cluster"
+            echo "   4. Configure deployment with minimum healthy percent to allow graceful shutdown"
+          fi
+          
+          exit 1
 
       - name: Get container logs for debugging
         if: env.AWS_CREDENTIALS_PRESENT == 'true' && failure()
